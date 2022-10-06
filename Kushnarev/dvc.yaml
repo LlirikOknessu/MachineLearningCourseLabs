@@ -1,0 +1,13 @@
+stages:
+  data_preparation:
+    cmd: data_preparation.py -id path -od path
+    deps:
+      - data_preparation.py
+      - data/raw
+    outs:
+      - od
+    params:
+      - data_preparation
+
+# model construction:
+#
