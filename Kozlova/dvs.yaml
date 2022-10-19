@@ -1,12 +1,10 @@
 stages:
   data_preparation:
-    cmd data_preparation.py -id data/raw -od data/prepared -p params.yaml
-  deps:
-    -data_preparation.py
-    -data/raw
-  outs:
-    - od
-  params:
-    - data_preparation
-
- #model_constraction
+    cmd: python data_preparation.py -id data/raw -od data/prepared
+    deps:
+      - data_preparation.py
+      - data/raw
+    outs:
+      - data/prepared
+    params:
+      - data_preparation
