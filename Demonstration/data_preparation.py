@@ -90,6 +90,8 @@ if __name__ == '__main__':
         X_train , X_val, y_train, y_val = train_test_split(X_train, y_train,
                                                           train_size=params.get('train_val_raitio'),
                                                           random_state=params.get('random_state'))
+        X_full_name = output_dir / 'X_full.csv'
+        y_full_name = output_dir / 'y_full.csv'
         X_train_name = output_dir / 'X_train.csv'
         y_train_name = output_dir / 'y_train.csv'
         X_test_name = output_dir / 'X_test.csv'
@@ -97,6 +99,8 @@ if __name__ == '__main__':
         X_val_name = output_dir / 'X_val.csv'
         y_val_name = output_dir / 'y_val.csv'
 
+        X.to_csv(X_full_name, index=False)
+        y.to_csv(y_full_name, index=False)
         X_train.to_csv(X_train_name, index=False)
         y_train.to_csv(y_train_name, index=False)
         X_test.to_csv(X_test_name, index=False)
