@@ -1,6 +1,6 @@
 stages:
   data_preparation:
-    cmd: python data+preparation.py -id data/row -od data/prepared -p params.yaml
+    cmd: python data_preparation.py -id data/raw -od data/prepared -p params.yaml
     deps:
       - data_preparation.py
       - data/raw
