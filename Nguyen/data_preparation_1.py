@@ -47,16 +47,16 @@ x_val, x_test, y_val, y_test = train_test_split(x_test, y_test, test_size=VALIDA
 
 
 # Export prepared data
-x.to_csv(r''+OUTPUT_PATH + 'x_full.csv', index=False, header=True)
-y.to_csv(r''+OUTPUT_PATH + 'y_full.csv', index=False, header=True)
+x.to_csv(OUTPUT_PATH + 'x_full.csv', index=False, header=True)
+y.to_csv(OUTPUT_PATH + 'y_full.csv', index=False, header=True)
 
-x_train.to_csv(r''+OUTPUT_PATH + 'x_train.csv', index=False, header=True)
-y_train.to_csv(r''+OUTPUT_PATH + 'y_train.csv', index=False, header=True)
+x_train.to_csv(OUTPUT_PATH + 'x_train.csv', index=False, header=True)
+y_train.to_csv(OUTPUT_PATH + 'y_train.csv', index=False, header=True)
 
-x_val.to_csv(r''+OUTPUT_PATH + 'x_val.csv', index=False, header=True)
-y_val.to_csv(r''+OUTPUT_PATH + 'y_val.csv', index=False, header=True)
+x_val.to_csv(OUTPUT_PATH + 'x_val.csv', index=False, header=True)
+y_val.to_csv(OUTPUT_PATH + 'y_val.csv', index=False, header=True)
 
-x_test.to_csv(r''+OUTPUT_PATH + 'x_test.csv', index=False, header=True)
-y_test.to_csv(r''+OUTPUT_PATH + 'y_test.csv', index=False, header=True)
+x_test.to_csv(OUTPUT_PATH + 'x_test.csv', index=False, header=True)
+y_test.to_csv(OUTPUT_PATH + 'y_test.csv', index=False, header=True)
 
 # print(yaml.safe_load(open('dvc.yaml'))['stages']['data_preparation']['params'])
