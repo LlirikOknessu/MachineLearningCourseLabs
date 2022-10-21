@@ -36,7 +36,7 @@ df.drop(columns=["seller_type"], inplace=True)
 df.drop(columns=["transmission"], inplace=True)
 df.drop(columns=["owner"], inplace=True)
 
-# Split dependence and independence variables from dataframe
+# Split dependent and independent variables from dataframe
 y = df.iloc[:, 0]
 x = df.iloc[:, 1:]
 
