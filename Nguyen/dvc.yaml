@@ -1,0 +1,12 @@
+stages:
+  data_preparation:
+    cmd: python data_preparation_1.py
+    params:
+    - train_ratio
+    - validation_test_ratio
+    - random_state
+    deps:
+    - data/raw/rawDataset1.csv
+    - data_preparation_1.py
+    outs:
+    - data/prepared/
