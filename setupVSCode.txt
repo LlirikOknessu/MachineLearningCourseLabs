@@ -1,0 +1,14 @@
+1. Clone repository
+
+2. Setup vitual environment:
+    $ py -3 -m venv .venv
+    $ .venv\scripts\activate
+
+3. Install needed packages
+    $ python -m pip install "packages"
+
+    Needed packages could be all included in an requirements.txt file
+    Then use command: $ python -m pip install -r requirements.txt
+
+4. Using .gitignore to untrack files from directory .venv (or others if needed)
+    Right click on the directory/files in Source Control tab and choose Add to .gitignore
