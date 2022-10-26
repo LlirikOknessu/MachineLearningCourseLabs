@@ -4,7 +4,7 @@ stages:
     params:
     - data_preparation
     deps:
-    - data/raw/rawDataset1.csv
+    - data/raw/dataset1
     - data_preparation_1.py
     outs:
     - data/prepared/

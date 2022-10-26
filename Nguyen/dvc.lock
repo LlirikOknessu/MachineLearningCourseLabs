@@ -1,0 +1,23 @@
+schema: '2.0'
+stages:
+  data_preparation:
+    cmd: python data_preparation_1.py -id data/raw/dataset1 -od data/prepared
+    deps:
+    - path: data/raw/dataset1
+      md5: 6c90b6d33213dbc6f7de2fcf9eb94885.dir
+      size: 974331
+      nfiles: 1
+    - path: data_preparation_1.py
+      md5: 3ee25247f1140256b29598e1c8abc6ab
+      size: 4404
+    params:
+      params.yaml:
+        data_preparation:
+          train_ratio: 0.7
+          validation_test_ratio: 0.5
+          random_state: 18
+    outs:
+    - path: data/prepared/
+      md5: c6d31e195d3997a4b455b742cc3e060a.dir
+      size: 607744
+      nfiles: 8
