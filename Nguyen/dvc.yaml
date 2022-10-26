@@ -1,6 +1,6 @@
 stages:
   data_preparation:
-    cmd: python data_preparation_1.py -id data/raw -od data/prepared
+    cmd: python data_preparation_1.py -id data/raw/dataset1 -od data/prepared
     params:
     - data_preparation
     deps:
