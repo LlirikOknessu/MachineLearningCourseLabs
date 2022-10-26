@@ -39,7 +39,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 def XY_split(df: pd.DataFrame) -> pd.DataFrame:
     y = df.iloc[:, 0]
     x = df.iloc[:, 1:]
-    return y, x
+    return x, y
 
 def train_val_test_split(x: pd.DataFrame, y: pd.DataFrame, train_ratio: float, val_test_ratio: float, randome_state: int) -> pd.DataFrame:
     x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=train_ratio, random_state=randome_state)
@@ -55,7 +55,11 @@ if __name__ == '__main__':
     in_dir = Path(args.input_dir)
     out_dir = Path(args.output_dir).mkdir(Parents=True, exist_ok=True)
     for data_file in in_dir.glob(*.csv):
-        df = pd.read_csv("")
+        full_df = pd.read_csv(data_file)
+        df_with_subs = create_subs_for_cats(full_df)
+        cleaned_df = clean_data(df_with_subs)
+        x_full, y_full = XY_split(cleaned_df)
+        
 
 
 
