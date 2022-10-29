@@ -1,0 +1,87 @@
+schema: '2.0'
+stages:
+  data_preparation:
+    cmd: python data_preparation.py -id data/raw -od data/prepared -p params.yaml
+    deps:
+    - path: data/raw
+      md5: 88bb7fa92753dd7f80de4f4e6f999610.dir
+      size: 1323849
+      nfiles: 1
+    - path: data_preparation.py
+      md5: d5ae82f66432ad1a77a104083cd44794
+      size: 3494
+    params:
+      params.yaml:
+        data_preparation:
+          train_test_ratio: 0.7
+          train_val_ratio: 0.9
+          random_state: 42
+    outs:
+    - path: data/prepared
+      md5: cff05e31f442fd4e0f940d6cc9245411.dir
+      size: 6062338
+      nfiles: 8
+  linear_regression:
+    cmd: python linear_regression.py -id data/prepared -od data/models -mn LinearRegression
+    deps:
+    - path: data/prepared
+      md5: cff05e31f442fd4e0f940d6cc9245411.dir
+      size: 6062338
+      nfiles: 8
+    - path: linear_regression.py
+      md5: 52692dd680c7b85680db65341413d031
+      size: 2566
+    params:
+      params.yaml:
+        linear_regression:
+          model_name: LinearRegression
+    outs:
+    - path: data/models/LinearRegression.csv
+      md5: 0ccd4d121e2a361b445c1e79372a4376
+      size: 201
+    - path: data/models/LinearRegression.joblib
+      md5: 77b39cfa7f3247e6d391c1f02484ead6
+      size: 1151
+  linear_regression_prod_version:
+    cmd: python linear_regression_full.py -id data/prepared/ -od data/models/ -mn
+      LinearRegression
+    deps:
+    - path: data/models/LinearRegression.joblib
+      md5: 77b39cfa7f3247e6d391c1f02484ead6
+      size: 1151
+    - path: data/prepared
+      md5: cff05e31f442fd4e0f940d6cc9245411.dir
+      size: 6062338
+      nfiles: 8
+    - path: linear_regression_full.py
+      md5: 93bd8cac8f1f2c2403336cfb70d0b0e7
+      size: 2022
+    params:
+      params.yaml:
+        linear_regression:
+          model_name: LinearRegression
+    outs:
+    - path: data/models/LinearRegression_prod.csv
+      md5: 6867b8dc7c2559ff9a2c13224b426ae5
+      size: 199
+    - path: data/models/LinearRegression_prod.joblib
+      md5: acf695418cf0dfaa2e5c79adf081a691
+      size: 1151
+  linear_regression_validation:
+    cmd: python linear_regression_validation.py -id data/prepared/ -im data/models/LinearRegression.joblib
+      -mn LinearRegression
+    deps:
+    - path: data/models/LinearRegression.joblib
+      md5: 77b39cfa7f3247e6d391c1f02484ead6
+      size: 1151
+    - path: data/prepared/
+      md5: cff05e31f442fd4e0f940d6cc9245411.dir
+      size: 6062338
+      nfiles: 8
+    - path: linear_regression_validation.py
+      md5: 95b974f92bc758f757a13938a7d6676c
+      size: 1647
+    params:
+      params.yaml:
+        linear_regression:
+          model_name: LinearRegression

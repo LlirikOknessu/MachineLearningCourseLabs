@@ -28,10 +28,17 @@ def titles_reduction(x) -> str:
     elif x.find('NEAR BAY') >= 0 or x.find('NEAR OCEAN') >= 0 or x.find('<1H OCEAN') >= 0:
         return 'NEAR OCEAN'
 
+def normalize(df: pd.DataFrame):
+    for column in df.columns:
+        if column != 'ocean_proximity':
+            df[column] = (df[column] - df[column].min()) / (df[column].max() - df[column].min())
+    return df
+
 def data_cleaner(df: pd.DataFrame) -> pd.DataFrame:
     df['ocean_proximity'] = df['ocean_proximity'].apply(titles_reduction)
-    df.drop(columns=['total_bedrooms'])
+    df.drop('total_bedrooms', axis=1, inplace=True)
     df = to_categorical(df)
+    df = normalize(df)
     return df
 
 
@@ -58,8 +65,10 @@ if __name__ == '__main__':
                                                             train_size=params.get('train_test_ratio'),
                                                             random_state=params.get('random_state'))
         X_train, X_val, y_train, y_val = train_test_split(X_train, y_train,
-                                                          train_size=params.get('train_val_raitio'),
+                                                          train_size=params.get('train_val_ratio'),
                                                           random_state=params.get('random_state'))
+        X_full_name = output_dir / 'X_full.csv'
+        y_full_name = output_dir / 'y_full.csv'
         X_train_name = output_dir / 'X_train.csv'
         y_train_name = output_dir / 'y_train.csv'
         X_test_name = output_dir / 'X_test.csv'
@@ -67,6 +76,8 @@ if __name__ == '__main__':
         X_val_name = output_dir / 'X_val.csv'
         y_val_name = output_dir / 'y_val.csv'
 
+        X.to_csv(X_full_name, index=False)
+        y.to_csv(y_full_name, index=False)
         X_train.to_csv(X_train_name, index=False)
         y_train.to_csv(y_train_name, index=False)
         X_test.to_csv(X_test_name, index=False)
