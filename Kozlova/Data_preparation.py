@@ -1,6 +1,7 @@
 import pandas as pd
 import argparse
 from pathlib import Path
+from sklearn import preprocessing
 import yaml
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -75,27 +76,29 @@ def add_region(df: pd.DataFrame):
         df.loc[df['Country'] == South_America[i], 'Region'] = 'South_America'
     for i in range(len(Australia_Oceania)):
         df.loc[df['Country'] == Australia_Oceania[i], 'Region'] = 'Australia_Oceania'
+    return df
 def to_categorical(df: pd.DataFrame):
-    df.columns = df.columns.map(lambda x: x.replace("-", "_").replace(" ", "_"))
     df.Status = pd.Categorical(df.Status)
-    df = df.assign(Status=df.employment_type.cat.codes)
+    df = df.assign(Status=df.Status.cat.codes)
     df.Region = pd.Categorical(df.Region)
     df = df.assign(Region=df.Region.cat.codes)
     return df
 
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
+    df.columns = df.columns.map(lambda x: x.replace("-", "_").replace(" ", "_"))
     df.drop("infant_deaths", axis=1, inplace=True)
     df.drop("Alcohol", axis=1, inplace=True)
     df.drop("percentage_expenditure", axis=1, inplace=True)
+    df.drop("_HIV/AIDS", axis=1, inplace=True)
     df.drop("Hepatitis_B", axis=1, inplace=True)
     df.drop("Measles_", axis=1, inplace=True)
-    df.drop("_BIM_", axis=1, inplace=True)
+    df.drop("_BMI_", axis=1, inplace=True)
     df.drop("under_five_deaths_", axis=1, inplace=True)
     df.drop("Total_expenditure", axis=1, inplace=True)
     df.drop("GDP", axis=1, inplace=True)
     df.drop("Population", axis=1, inplace=True)
-    df.drop("_thinness_1_19_years", axis=1, inplace=True)
+    df.drop("_thinness__1_19_years", axis=1, inplace=True)
     df.drop("_thinness_5_9_years", axis=1, inplace=True)
     df.drop("Country", axis=1, inplace=True)
     df = to_categorical(df)
@@ -115,14 +118,17 @@ if __name__ == '__main__':
 
     for data_file in input_dir.glob('*.csv'):
         full_data = pd.read_csv(data_file)
+        add_region = add_region(df=full_data)
         cleaned_data = clean_data(df=full_data)
         X, y = cleaned_data.drop("Life_expectancy_", axis=1), cleaned_data['Life_expectancy_']
         X_train , X_test, y_train, y_test = train_test_split(X, y,
                                                             train_size=params.get('train_test_ratio'),
                                                             random_state=params.get('random_state'))
         X_train , X_val, y_train, y_val = train_test_split(X_train, y_train,
-                                                          train_size=params.get('train_val_raitio'),
+                                                          train_size=params.get('train_val_ratio'),
                                                           random_state=params.get('random_state'))
+        X_full_name = output_dir / 'X_full.csv'
+        y_full_name = output_dir / 'y_full.csv'
         X_train_name = output_dir / 'X_train.csv'
         y_train_name = output_dir / 'y_train.csv'
         X_test_name = output_dir / 'X_test.csv'
@@ -130,6 +136,8 @@ if __name__ == '__main__':
         X_val_name = output_dir / 'X_val.csv'
         y_val_name = output_dir / 'y_val.csv'
 
+        X.to_csv(X_full_name, index=False)
+        y.to_csv(y_full_name, index=False)
         X_train.to_csv(X_train_name, index=False)
         y_train.to_csv(y_train_name, index=False)
         X_test.to_csv(X_test_name, index=False)
