@@ -58,7 +58,9 @@ def export_data(name: str, df: pd.DataFrame, out_dir: Path, index: bool, header:
 
 if __name__ == '__main__':
     args = parser_args()
-    params = yaml.safe_load(open(args.params))
+    with open(args.params, 'r') as f:
+        params_full = yaml.safe_load(f)
+    params = params_full['data_preparation']
     in_dir = Path(args.input_dir)
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)

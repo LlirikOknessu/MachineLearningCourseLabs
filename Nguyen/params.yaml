@@ -2,5 +2,7 @@ data_preparation:
   train_ratio: 0.7
   validation_test_ratio: 0.5
   random_state: 18
-linear_regression:
+regression:
   model_name: 'LinearRegression'
+  alpha: 0.1
+  l1_ratio: 0.8
