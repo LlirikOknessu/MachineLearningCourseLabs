@@ -7,7 +7,7 @@ stages:
     - data/raw/dataset1
     - data_preparation_1.py
     outs:
-    - data/prepared/
+    - data/prepared
   regression_train:
     cmd: python regression_train.py -id data/prepared -od data/models -mn ${regression.model_name}
     params:
@@ -19,10 +19,13 @@ stages:
     - data/models/${regression.model_name}.csv
     - data/models/${regression.model_name}.joblib
   regression_validation:
-    cmd:
+    cmd: python regression_validation.py -id data/prepared -im data/models/${regression.model_name}.joblib -mn ${regression.model_name}
     params:
+    - regression
     deps:
-    outs:
+    - regression_validation.py
+    - data/prepared
+    - data/models/${regression.model_name}.joblib
   regression_test:
     cmd:
     params:
