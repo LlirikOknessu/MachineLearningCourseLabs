@@ -7,8 +7,8 @@
 3. Install needed packages
     $ python -m pip install "packages"
 
-    Needed packages could be all included in an requirements.txt file
-    Then use command: $ python -m pip install -r requirements.txt
+    Needed packages could be all included in an requirementsVSCode.txt file
+    Then use command: $ python -m pip install -r requirementsVSCode.txt
 
 4. Using .gitignore to untrack files from directory .venv (or others if needed)
     Right click on the directory/files in Source Control tab and choose Add to .gitignore
