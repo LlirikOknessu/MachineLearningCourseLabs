@@ -101,6 +101,14 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df.drop("_thinness__1_19_years", axis=1, inplace=True)
     df.drop("_thinness_5_9_years", axis=1, inplace=True)
     df.drop("Country", axis=1, inplace=True)
+    df = df[df['Schooling'].notna()]
+    df = df[df['Polio'].notna()]
+    df = df[df['Diphtheria_'].notna()]
+    df = df[df['Income_composition_of_resources'].notna()]
+    df = df[df['Year'].notna()]
+    df = df[df['Status'].notna()]
+    df = df[df['Adult_Mortality'].notna()]
+    df = df[df['Region'].notna()]
     df = to_categorical(df)
     return df
 
@@ -121,10 +129,10 @@ if __name__ == '__main__':
         add_region = add_region(df=full_data)
         cleaned_data = clean_data(df=full_data)
         X, y = cleaned_data.drop("Life_expectancy_", axis=1), cleaned_data['Life_expectancy_']
-        X_train , X_test, y_train, y_test = train_test_split(X, y,
+        X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                             train_size=params.get('train_test_ratio'),
                                                             random_state=params.get('random_state'))
-        X_train , X_val, y_train, y_val = train_test_split(X_train, y_train,
+        X_train, X_val, y_train, y_val = train_test_split(X_train, y_train,
                                                           train_size=params.get('train_val_ratio'),
                                                           random_state=params.get('random_state'))
         X_full_name = output_dir / 'X_full.csv'
