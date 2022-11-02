@@ -27,7 +27,11 @@ stages:
     - data/prepared
     - data/models/${regression.model_name}.joblib
   regression_test:
-    cmd:
+    cmd: python regression_test.py -id data/prepared -im data/models/${regression.model_name}.joblib -mn ${regression.model_name}
     params:
+    - regression
     deps:
-    outs:
+    - regression_test.py
+    - data/prepared
+    - data/models/${regression.model_name}.joblib
+    
