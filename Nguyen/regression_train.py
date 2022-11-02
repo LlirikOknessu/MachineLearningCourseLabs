@@ -10,6 +10,8 @@ from sklearn.linear_model import ElasticNet
 from sklearn.metrics import mean_squared_error
 from joblib import dump
 import math
+from sklearn.model_selection import GridSearchCV
+from sklearn import metrics
 
 LINEAR_MODEL_MAPPER = {'LinearRegression': LinearRegression,
                         'Ridge': Ridge, 
@@ -40,7 +42,30 @@ def switch(model: str, alpha: float, l1_ratio: float):
         return reg
     elif model == 'ElasticNet':
         reg = ElasticNet(alpha=alpha, l1_ratio=l1_ratio)
-        return reg    
+        return reg
+
+def tuning(model: str, data: pd.DataFrame, labels: pd.DataFrame, alpha_low: float, alpha_high: float, alpha_step: float, l1_ratio_low = 1.0, l1_ratio_high = 1.0, l1_ratio_step = 1.0):
+    if model == 'LinearRegression':        
+        return
+    elif model == 'Ridge':
+        search = GridSearchCV(Ridge(), param_grid={'alpha': np.arange(alpha_low, alpha_high, alpha_step)}, scoring='neg_root_mean_squared_error', verbose=3)
+        search.fit(data,labels)
+        print(search.best_estimator_)
+        print(search.best_score_)
+        return 
+    elif model == 'Lasso':
+        search = GridSearchCV(Lasso(), param_grid={'alpha': np.arange(alpha_low, alpha_high, alpha_step)}, scoring='neg_root_mean_squared_error', verbose=3)
+        search.fit(data,labels)
+        print(search.best_estimator_)
+        print(search.best_score_)
+        return
+    elif model == 'ElasticNet':
+        search = GridSearchCV(ElasticNet(), param_grid={'alpha': np.arange(alpha_low, alpha_high, alpha_step), 'l1_ratio': np.arange(l1_ratio_low, l1_ratio_high, l1_ratio_step)}, scoring='neg_root_mean_squared_error', verbose=3)
+        search.fit(data,labels)
+        print(search.best_estimator_)
+        print(search.best_score_)
+        return
+
 
 if __name__ == '__main__':
     args = parser_args()
@@ -83,3 +108,5 @@ if __name__ == '__main__':
     out_model.to_csv(output_model_path, index = False)
 
     dump(reg, output_model_joblib_path)
+
+    #tuning(model=args.model_name, data=x_train, labels=y_train, alpha_low=10, alpha_high=100, alpha_step=1, l1_ratio_low=0.1, l1_ratio_high=1, l1_ratio_step=0.1)

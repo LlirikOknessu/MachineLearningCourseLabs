@@ -1,9 +1,12 @@
+from matplotlib.pyplot import sca
 import pandas as pd
 import datetime as dt
 import yaml
 import argparse
 from pathlib import Path
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
 
 #Parsing path for dependencies
 def parser_args():
@@ -29,7 +32,7 @@ def create_subs_for_cats(df: pd.DataFrame) -> pd.DataFrame:
 #In this case there is no need to reformating data. Data's already been reformatted when combining different data files
 #For other cases, formating data maybe needed.
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
-    df.drop(columns=["car_name"], inplace=True)
+    df.drop(columns=["car_name"], inplace=True) 
     df['cars_age'] = dt.date.today().year - df.year
     df.drop(columns="year", inplace=True)
     df.drop(columns=["fuel_type"], inplace=True)
@@ -72,11 +75,18 @@ if __name__ == '__main__':
         x_train, y_train, x_val, y_val, x_test, y_test = train_val_test_split(x_full, y_full, train_ratio=params.get('train_ratio'),
                                                                             val_test_ratio=params.get('validation_test_ratio'),
                                                                             random_state=params.get('random_state'))
-    export_data("X_full", x_full, out_dir=out_dir, index=False, header=True)
-    export_data("x_train", x_train, out_dir=out_dir, index=False, header=True)
-    export_data("x_val", x_val, out_dir=out_dir, index=False, header=True)
-    export_data("x_test", x_test, out_dir=out_dir, index=False, header=True)
-    export_data("Y_full", y_full, out_dir=out_dir, index=False, header=True)
+    scaler = StandardScaler()                                                                        
+    x_train_std = scaler.fit_transform(x_train)
+    x_val_std = scaler.transform(x_val)
+    x_test_std = scaler.transform(x_test)
+    x_train_df = pd.DataFrame(x_train_std, index=x_train.index, columns=x_train.columns)
+    x_val_df = pd.DataFrame(x_val_std, index=x_val.index, columns=x_val.columns)
+    x_test_df = pd.DataFrame(x_test_std, index=x_test.index, columns=x_test.columns)
+    export_data("x_full", x_full, out_dir=out_dir, index=False, header=True)
+    export_data("x_train", x_train_df, out_dir=out_dir, index=False, header=True)
+    export_data("x_val", x_val_df, out_dir=out_dir, index=False, header=True)
+    export_data("x_test", x_test_df, out_dir=out_dir, index=False, header=True)
+    export_data("y_full", y_full, out_dir=out_dir, index=False, header=True)
     export_data("y_train", y_train, out_dir=out_dir, index=False, header=True)
     export_data("y_val", y_val, out_dir=out_dir, index=False, header=True)
     export_data("y_test", y_test, out_dir=out_dir, index=False, header=True)
