@@ -75,28 +75,15 @@ if __name__ == '__main__':
     in_dir = Path(args.input_dir)
     out_dir = Path(args.output_dir)
     out_dir.mkdir(exist_ok=True, parents=True)
-    output_model_path = out_dir / (args.model_name + '.csv')
-    output_model_joblib_path = out_dir / (args.model_name + '.joblib')
+    output_model_path = out_dir / (args.model_name + '_prod.csv')
+    output_model_joblib_path = out_dir / (args.model_name + '_prod.joblib')
 
-    x_train = import_data("x_train", in_dir)
-    y_train = import_data("y_train", in_dir)
+    x_train = import_data("x_full", in_dir)
+    y_train = import_data("y_full", in_dir)
     
     reg = switch(model=args.model_name, alpha=params.get('alpha'), l1_ratio=params.get('l1_ratio'))
 
-    reg.fit(x_train, y_train)
-
-    y_mean = [y_train.mean()] * len(y_train)
-    y_norm_distr = np.random.normal(y_train.mean(), y_train.std(), len(y_train))
-    y_unif_distr = np.random.uniform(y_train.min(), y_train.max(), len(y_train))
-
-    predicted_value = reg.predict(x_train)
-    
-    print(args.model_name)
-    print("Model score: ", reg.score(x_train, y_train))
-    print("Baseline 1 (mean) RMSE: ", math.sqrt(mean_squared_error(y_train, y_mean)))
-    print("Baseline 2 (norm_distr) RMSE: ", math.sqrt(mean_squared_error(y_train, y_norm_distr)))
-    print("Baseline 3 (unif_distr) RMSE: ", math.sqrt(mean_squared_error(y_train, y_unif_distr)))
-    print("Model RMSE: ", math.sqrt(mean_squared_error(y_train, predicted_value)))
+    reg.fit(x_train, y_train)   
 
     intercept = reg.intercept_.astype(float)
     coefficients = reg.coef_.astype(float)
@@ -107,6 +94,4 @@ if __name__ == '__main__':
     out_model = pd.DataFrame([coefficients, intercept])
     out_model.to_csv(output_model_path, index = False)
 
-    dump(reg, output_model_joblib_path)
-
-    tuning(model=args.model_name, data=x_train, labels=y_train, alpha_low=0.1, alpha_high=2, alpha_step=1, l1_ratio_low=0.1, l1_ratio_high=1, l1_ratio_step=0.1)
+    dump(reg, output_model_joblib_path)   

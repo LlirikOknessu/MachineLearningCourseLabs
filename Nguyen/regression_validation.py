@@ -20,7 +20,7 @@ LINEAR_MODELS_MAPPER = {'LinearRegression': LinearRegression,
 def parser_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--input_dir', '-id', type=str, default='data/prepared')
-    parser.add_argument('--input_model', '-im', type=str, default='data/models/LinearRegression.joblib')
+    parser.add_argument('--input_model', '-im', type=str, default='data/models')
     parser.add_argument('--model_name', '-mn', type=str, default='LinearRegression')
     parser.add_argument('--params', '-p', type=str, default='params.yaml')
     return parser.parse_args()
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     print("Baseline 2 (norm_distr) RMSE: ", math.sqrt(mean_squared_error(y_val, y_norm_distr)))
     print("Baseline 3 (unif_distr) RMSE: ", math.sqrt(mean_squared_error(y_val, y_unif_distr)))
 
-    for model in Path('data/models').glob('*.joblib'):
+    for model in in_model.glob('*.joblib'):
         reg = load(model)
         print(model)
         print(reg.coef_.astype(float))
