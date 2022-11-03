@@ -12,6 +12,8 @@ from joblib import dump
 import math
 from sklearn.model_selection import GridSearchCV
 from sklearn import metrics
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
 
 LINEAR_MODEL_MAPPER = {'LinearRegression': LinearRegression,
                         'Ridge': Ridge, 
@@ -80,10 +82,13 @@ if __name__ == '__main__':
 
     x_train = import_data("x_full", in_dir)
     y_train = import_data("y_full", in_dir)
+    scaler = StandardScaler()                                                                        
+    x_train_std = scaler.fit_transform(x_train)
+    x_train_df = pd.DataFrame(x_train_std, index=x_train.index, columns=x_train.columns)
     
     reg = switch(model=args.model_name, alpha=params.get('alpha'), l1_ratio=params.get('l1_ratio'))
 
-    reg.fit(x_train, y_train)   
+    reg.fit(x_train_df, y_train)   
 
     intercept = reg.intercept_.astype(float)
     coefficients = reg.coef_.astype(float)
