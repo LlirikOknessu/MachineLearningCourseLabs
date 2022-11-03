@@ -75,6 +75,7 @@ if __name__ == '__main__':
         x_train, y_train, x_val, y_val, x_test, y_test = train_val_test_split(x_full, y_full, train_ratio=params.get('train_ratio'),
                                                                             val_test_ratio=params.get('validation_test_ratio'),
                                                                             random_state=params.get('random_state'))
+    #Splitted data is standardized before extrating to files
     scaler = StandardScaler()                                                                        
     x_train_std = scaler.fit_transform(x_train)
     x_val_std = scaler.transform(x_val)
