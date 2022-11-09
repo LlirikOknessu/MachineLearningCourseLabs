@@ -57,6 +57,8 @@ if __name__ == '__main__':
     print("Model MAE: ", mean_absolute_error(y_train, predicted_values))
 
     intercept = reg.intercept_.astype(float)
+
+
     coefficients = reg.coef_.astype(float)
     intercept = pd.Series(intercept, name='intercept')
     coefficients = pd.Series(coefficients[0], name='coefficients')
