@@ -46,29 +46,6 @@ def switch(model: str, alpha: float, l1_ratio: float):
         reg = ElasticNet(alpha=alpha, l1_ratio=l1_ratio)
         return reg
 
-def tuning(model: str, data: pd.DataFrame, labels: pd.DataFrame, alpha_low: float, alpha_high: float, alpha_step: float, l1_ratio_low = 1.0, l1_ratio_high = 1.0, l1_ratio_step = 1.0):
-    if model == 'LinearRegression':        
-        return
-    elif model == 'Ridge':
-        search = GridSearchCV(Ridge(), param_grid={'alpha': np.arange(alpha_low, alpha_high, alpha_step)}, scoring='neg_root_mean_squared_error', verbose=3)
-        search.fit(data,labels)
-        print(search.best_estimator_)
-        print(search.best_score_)
-        return 
-    elif model == 'Lasso':
-        search = GridSearchCV(Lasso(), param_grid={'alpha': np.arange(alpha_low, alpha_high, alpha_step)}, scoring='neg_root_mean_squared_error', verbose=3)
-        search.fit(data,labels)
-        print(search.best_estimator_)
-        print(search.best_score_)
-        return
-    elif model == 'ElasticNet':
-        search = GridSearchCV(ElasticNet(), param_grid={'alpha': np.arange(alpha_low, alpha_high, alpha_step), 'l1_ratio': np.arange(l1_ratio_low, l1_ratio_high, l1_ratio_step)}, scoring='neg_root_mean_squared_error', verbose=3)
-        search.fit(data,labels)
-        print(search.best_estimator_)
-        print(search.best_score_)
-        return
-
-
 if __name__ == '__main__':
     args = parser_args()
     with open(args.params, 'r') as f:
@@ -80,15 +57,12 @@ if __name__ == '__main__':
     output_model_path = out_dir / (args.model_name + '_prod.csv')
     output_model_joblib_path = out_dir / (args.model_name + '_prod.joblib')
 
-    x_train = import_data("x_full", in_dir)
+    X_train = import_data("X_full", in_dir)
     y_train = import_data("y_full", in_dir)
-    scaler = StandardScaler()                                                                        
-    x_train_std = scaler.fit_transform(x_train)
-    x_train_df = pd.DataFrame(x_train_std, index=x_train.index, columns=x_train.columns)
     
     reg = switch(model=args.model_name, alpha=params.get('alpha'), l1_ratio=params.get('l1_ratio'))
 
-    reg.fit(x_train_df, y_train)   
+    reg.fit(X_train, y_train)
 
     intercept = reg.intercept_.astype(float)
     coefficients = reg.coef_.astype(float)

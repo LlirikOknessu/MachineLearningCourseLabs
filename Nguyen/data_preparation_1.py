@@ -1,11 +1,11 @@
 from matplotlib.pyplot import sca
 import pandas as pd
 import datetime as dt
+import numpy as np
 import yaml
 import argparse
 from pathlib import Path
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MinMaxScaler
 
 #Parsing path for dependencies
@@ -39,25 +39,44 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df.drop(columns=["seller_type"], inplace=True)
     df.drop(columns=["transmission"], inplace=True)
     df.drop(columns=["owner"], inplace=True)
+    # df['selling_price'] = df['selling_price'].apply(np.log)
     return df
 
 #Spliting data into 2 data frame for dependent and independent variables
 def XY_split(df: pd.DataFrame) -> pd.DataFrame:
     y = df.iloc[:, 0]
-    x = df.iloc[:, 1:]
-    return x, y
+    X = df.iloc[:, 1:]
+    return X, y
 
 #Spliting data into dataset for train, validation and test
 #train_ratio show ratio in full dataset between train set and validation+test sets
 #val_test_ratio show ratio between validation set and test set in remain data (full - train)
-def train_val_test_split(x: pd.DataFrame, y: pd.DataFrame, train_ratio: float, val_test_ratio: float, random_state: int) -> pd.DataFrame:
-    x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=train_ratio, random_state=random_state)
-    x_val, x_test, y_val, y_test = train_test_split(x_test, y_test, test_size=val_test_ratio, random_state=random_state)
-    return x_train, y_train, x_val, y_val, x_test, y_test
+def train_val_test_split(X: pd.DataFrame, y: pd.DataFrame, train_ratio: float, val_test_ratio: float, random_state: int) -> pd.DataFrame:
+    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_ratio, random_state=random_state)
+    X_val, X_test, y_val, y_test = train_test_split(X_test, y_test, test_size=val_test_ratio, random_state=random_state)
+    return X_train, y_train, X_val, y_val, X_test, y_test
 
 #Exporting a data frame outto the output directory
 def export_data(name: str, df: pd.DataFrame, out_dir: Path, index: bool, header: bool):
-        df.to_csv(out_dir/(name+'.csv'), index=index, header=header)
+    df.to_csv(out_dir/(name+'.csv'), index=index, header=header)
+
+#Scale datasets to get better results
+def data_scaling (X_full: pd.DataFrame, X_train: pd.DataFrame, X_val: pd.DataFrame, X_test: pd.DataFrame,
+                    y_full: pd.DataFrame, y_train: pd.DataFrame, y_val: pd.DataFrame, y_test: pd.DataFrame) -> pd.DataFrame:
+    scaler = MinMaxScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_full_scaled = scaler.transform(X_full)
+    X_val_scaled = scaler.transform(X_val)
+    X_test_scaled = scaler.transform(X_test)    
+    X_train_df = pd.DataFrame(X_train_scaled, index=X_train.index, columns=X_train.columns)
+    X_full_df = pd.DataFrame(X_full_scaled, index=X_full.index, columns=X_full.columns)
+    X_val_df = pd.DataFrame(X_val_scaled, index=X_val.index, columns=X_val.columns)
+    X_test_df = pd.DataFrame(X_test_scaled, index=X_test.index, columns=X_test.columns)
+    y_train_df = y_train.apply(np.log)
+    y_full_df = y_full.apply(np.log)
+    y_val_df = y_val.apply(np.log)
+    y_test_df = y_test.apply(np.log)
+    return X_full_df, X_train_df, X_val_df, X_test_df, y_full_df, y_train_df, y_val_df, y_test_df
 
 if __name__ == '__main__':
     args = parser_args()
@@ -71,23 +90,17 @@ if __name__ == '__main__':
         full_df = pd.read_csv(data_file)
         df_with_subs = create_subs_for_cats(full_df)
         cleaned_df = clean_data(df_with_subs)
-        x_full, y_full = XY_split(cleaned_df)
-        x_train, y_train, x_val, y_val, x_test, y_test = train_val_test_split(x_full, y_full, train_ratio=params.get('train_ratio'),
-                                                                            val_test_ratio=params.get('validation_test_ratio'),
-                                                                            random_state=params.get('random_state'))
-    #Splitted data is standardized before extrating to files
-    scaler = StandardScaler()                                                                        
-    x_train_std = scaler.fit_transform(x_train)
-    x_val_std = scaler.transform(x_val)
-    x_test_std = scaler.transform(x_test)
-    x_train_df = pd.DataFrame(x_train_std, index=x_train.index, columns=x_train.columns)
-    x_val_df = pd.DataFrame(x_val_std, index=x_val.index, columns=x_val.columns)
-    x_test_df = pd.DataFrame(x_test_std, index=x_test.index, columns=x_test.columns)
-    export_data("x_full", x_full, out_dir=out_dir, index=False, header=True)
-    export_data("x_train", x_train_df, out_dir=out_dir, index=False, header=True)
-    export_data("x_val", x_val_df, out_dir=out_dir, index=False, header=True)
-    export_data("x_test", x_test_df, out_dir=out_dir, index=False, header=True)
-    export_data("y_full", y_full, out_dir=out_dir, index=False, header=True)
-    export_data("y_train", y_train, out_dir=out_dir, index=False, header=True)
-    export_data("y_val", y_val, out_dir=out_dir, index=False, header=True)
-    export_data("y_test", y_test, out_dir=out_dir, index=False, header=True)
+        X_full, y_full = XY_split(cleaned_df)
+        X_train, y_train, X_val, y_val, X_test, y_test = train_val_test_split(X_full, y_full, train_ratio=params.get('train_ratio'),
+                                                                                val_test_ratio=params.get('validation_test_ratio'),
+                                                                                random_state=params.get('random_state'))                                       
+    X_full_df, X_train_df, X_val_df, X_test_df, y_full_df, y_train_df, y_val_df, y_test_df = data_scaling(X_full, X_train, X_val, X_test,
+                                                                                                            y_full, y_train, y_val, y_test)
+    export_data("X_full", X_full_df, out_dir=out_dir, index=False, header=True)
+    export_data("X_train", X_train_df, out_dir=out_dir, index=False, header=True)
+    export_data("X_val", X_val_df, out_dir=out_dir, index=False, header=True)
+    export_data("X_test", X_test_df, out_dir=out_dir, index=False, header=True)
+    export_data("y_full", y_full_df, out_dir=out_dir, index=False, header=True)
+    export_data("y_train", y_train_df, out_dir=out_dir, index=False, header=True)
+    export_data("y_val", y_val_df, out_dir=out_dir, index=False, header=True)
+    export_data("y_test", y_test_df, out_dir=out_dir, index=False, header=True)

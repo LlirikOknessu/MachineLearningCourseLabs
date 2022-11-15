@@ -44,26 +44,26 @@ def switch(model: str, alpha: float, l1_ratio: float):
         reg = ElasticNet(alpha=alpha, l1_ratio=l1_ratio)
         return reg
 
-def tuning(model: str, data: pd.DataFrame, labels: pd.DataFrame, alpha_low: float, alpha_high: float, alpha_step: float, l1_ratio_low = 1.0, l1_ratio_high = 1.0, l1_ratio_step = 1.0):
+def tuning(model: str, data: pd.DataFrame, labels: pd.DataFrame, alpha_start: float, alpha_end: float, alpha_step: float, l1_ratio_start = float, l1_ratio_end = float, l1_ratio_step = float):
     if model == 'LinearRegression':        
         return
     elif model == 'Ridge':
-        search = GridSearchCV(Ridge(), param_grid={'alpha': np.arange(alpha_low, alpha_high, alpha_step)}, scoring='neg_root_mean_squared_error', verbose=3)
+        search = GridSearchCV(Ridge(), param_grid={'alpha': np.arange(alpha_start, alpha_end, alpha_step)}, scoring='neg_root_mean_squared_error', verbose=3)
         search.fit(data,labels)
         print(search.best_estimator_)
-        print(search.best_score_)
+        print("Best score: ",search.best_score_)
         return 
     elif model == 'Lasso':
-        search = GridSearchCV(Lasso(), param_grid={'alpha': np.arange(alpha_low, alpha_high, alpha_step)}, scoring='neg_root_mean_squared_error', verbose=3)
+        search = GridSearchCV(Lasso(), param_grid={'alpha': np.arange(alpha_start, alpha_end, alpha_step)}, scoring='neg_root_mean_squared_error', verbose=3)
         search.fit(data,labels)
         print(search.best_estimator_)
-        print(search.best_score_)
+        print("Best score: ",search.best_score_)
         return
     elif model == 'ElasticNet':
-        search = GridSearchCV(ElasticNet(), param_grid={'alpha': np.arange(alpha_low, alpha_high, alpha_step), 'l1_ratio': np.arange(l1_ratio_low, l1_ratio_high, l1_ratio_step)}, scoring='neg_root_mean_squared_error', verbose=3)
+        search = GridSearchCV(ElasticNet(), param_grid={'alpha': np.arange(alpha_start, alpha_end, alpha_step), 'l1_ratio': np.arange(l1_ratio_start, l1_ratio_end, l1_ratio_step)}, scoring='neg_root_mean_squared_error', verbose=3)
         search.fit(data,labels)
         print(search.best_estimator_)
-        print(search.best_score_)
+        print("Best score: ", search.best_score_)
         return
 
 
@@ -78,18 +78,19 @@ if __name__ == '__main__':
     output_model_path = out_dir / (args.model_name + '.csv')
     output_model_joblib_path = out_dir / (args.model_name + '.joblib')
 
-    x_train = import_data("x_train", in_dir)
+    x_train = import_data("X_train", in_dir)
     y_train = import_data("y_train", in_dir)
+
+    tuning(model=args.model_name, data=x_train, labels=y_train, alpha_start=params.get('alpha_start_value'), alpha_end=params.get('alpha_end_value'), alpha_step=params.get('alpha_sweep_step'),
+             l1_ratio_start=params.get('l1_ratio_start_value'), l1_ratio_end=params.get('l1_ratio_end_value'), l1_ratio_step=params.get('l1_ratio_sweep_step'))
     
     reg = switch(model=args.model_name, alpha=params.get('alpha'), l1_ratio=params.get('l1_ratio'))
-
     reg.fit(x_train, y_train)
+    predicted_value = reg.predict(x_train)
 
     y_mean = [y_train.mean()] * len(y_train)
     y_norm_distr = np.random.normal(y_train.mean(), y_train.std(), len(y_train))
     y_unif_distr = np.random.uniform(y_train.min(), y_train.max(), len(y_train))
-
-    predicted_value = reg.predict(x_train)
     
     print(args.model_name)
     print("Model score: ", reg.score(x_train, y_train))
@@ -106,7 +107,4 @@ if __name__ == '__main__':
     print("List of coefficients: ", coefficients)
     out_model = pd.DataFrame([coefficients, intercept])
     out_model.to_csv(output_model_path, index = False)
-
     dump(reg, output_model_joblib_path)
-    
-    tuning(model=args.model_name, data=x_train, labels=y_train, alpha_low=0.1, alpha_high=2, alpha_step=1, l1_ratio_low=0.1, l1_ratio_high=1, l1_ratio_step=0.1)
