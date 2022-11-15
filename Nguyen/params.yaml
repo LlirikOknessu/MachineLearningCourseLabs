@@ -3,6 +3,12 @@ data_preparation:
   validation_test_ratio: 0.5
   random_state: 18
 regression:
-  model_name: 'ElasticNet'
-  alpha: 1
-  l1_ratio: 0.9
+  model_name: 'Ridge'
+  alpha_start_value: 1.0
+  alpha_sweep_step: 1.0
+  alpha_end_value: 10.0
+  l1_ratio_start_value: 0.01
+  l1_ratio_sweep_step: 0.01
+  l1_ratio_end_value: 0.11
+  alpha: 1.0
+  l1_ratio: 0.01
