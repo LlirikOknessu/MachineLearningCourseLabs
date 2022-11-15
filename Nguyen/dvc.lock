@@ -22,42 +22,114 @@ stages:
       size: 1843846
       nfiles: 8
   regression_validation:
-    cmd: python regression_validation.py -id data/prepared -im data/models/ElasticNet.joblib
-      -mn ElasticNet
+    cmd: python regression_validation.py -id data/prepared -im data/models
     deps:
-    - path: data/models/ElasticNet.joblib
-      md5: 142c72407d6fea6dc22c57b8f220c44b
-      size: 1151
+    - path: data/models/Ridge.joblib
+      md5: acb39f52ba3e9c08a6c61ce2fc394207
+      size: 1039
     - path: data/prepared
-      md5: 4161c8c56a7e71714cbe545b60d6e881.dir
-      size: 607744
+      md5: 30dc67899a147b2642a602e678f3c437.dir
+      size: 1843846
       nfiles: 8
     - path: regression_validation.py
-      md5: eaed4678390cf68690343c5ba7898372
-      size: 2206
+      md5: 788ec942ef08cc2dfffcee52e2edf794
+      size: 2304
     params:
       params.yaml:
         regression:
-          model_name: ElasticNet
-          alpha: 0.1
-          l1_ratio: 0.8
+          model_name: Ridge
+          alpha_start_value: 1.0
+          alpha_sweep_step: 1.0
+          alpha_end_value: 10.0
+          l1_ratio_start_value: 0.01
+          l1_ratio_sweep_step: 0.01
+          l1_ratio_end_value: 0.11
+          alpha: 1.0
+          l1_ratio: 0.01
   regression_test:
-    cmd: python regression_test.py -id data/prepared -im data/models/ElasticNet.joblib
-      -mn ElasticNet
+    cmd: python regression_test.py -id data/prepared -im data/models/Ridge.joblib
+      -mn Ridge
     deps:
-    - path: data/models/ElasticNet.joblib
-      md5: 142c72407d6fea6dc22c57b8f220c44b
-      size: 1151
+    - path: data/models/Ridge.joblib
+      md5: acb39f52ba3e9c08a6c61ce2fc394207
+      size: 1039
     - path: data/prepared
-      md5: 4161c8c56a7e71714cbe545b60d6e881.dir
-      size: 607744
+      md5: 30dc67899a147b2642a602e678f3c437.dir
+      size: 1843846
       nfiles: 8
     - path: regression_test.py
-      md5: ae3edf0537563fdce806d43f7ff8a1fe
-      size: 2149
+      md5: 6e7062e1753fcfebf82601b7447564c6
+      size: 2274
     params:
       params.yaml:
         regression:
-          model_name: ElasticNet
-          alpha: 0.1
-          l1_ratio: 0.8
+          model_name: Ridge
+          alpha_start_value: 1.0
+          alpha_sweep_step: 1.0
+          alpha_end_value: 10.0
+          l1_ratio_start_value: 0.01
+          l1_ratio_sweep_step: 0.01
+          l1_ratio_end_value: 0.11
+          alpha: 1.0
+          l1_ratio: 0.01
+  regression_train:
+    cmd: python regression_train.py -id data/prepared -od data/models -mn Ridge
+    deps:
+    - path: data/prepared
+      md5: 30dc67899a147b2642a602e678f3c437.dir
+      size: 1843846
+      nfiles: 8
+    - path: regression_train.py
+      md5: defaf2c14392be5ac2015a194ea26b2d
+      size: 5232
+    params:
+      params.yaml:
+        regression:
+          model_name: Ridge
+          alpha_start_value: 1.0
+          alpha_sweep_step: 1.0
+          alpha_end_value: 10.0
+          l1_ratio_start_value: 0.01
+          l1_ratio_sweep_step: 0.01
+          l1_ratio_end_value: 0.11
+          alpha: 1.0
+          l1_ratio: 0.01
+    outs:
+    - path: data/models/Ridge.csv
+      md5: 472abdd3b637df0419e499b09a0a818e
+      size: 156
+    - path: data/models/Ridge.joblib
+      md5: acb39f52ba3e9c08a6c61ce2fc394207
+      size: 1039
+  regression_prod:
+    cmd: python regression_full.py -id data/prepared -od data/models -mn Ridge
+    deps:
+    - path: data/models/Ridge.joblib
+      md5: acb39f52ba3e9c08a6c61ce2fc394207
+      size: 1039
+    - path: data/prepared
+      md5: 30dc67899a147b2642a602e678f3c437.dir
+      size: 1843846
+      nfiles: 8
+    - path: regression_full.py
+      md5: 6df96c504dd7ee07276a911fb24fb44c
+      size: 2959
+    params:
+      params.yaml:
+        regression:
+          model_name: Ridge
+          alpha_start_value: 1.0
+          alpha_sweep_step: 1.0
+          alpha_end_value: 10.0
+          l1_ratio_start_value: 0.01
+          l1_ratio_sweep_step: 0.01
+          l1_ratio_end_value: 0.11
+          alpha: 1.0
+          l1_ratio: 0.01
+    outs:
+    - path: data/models/Ridge_prod.csv
+      md5: 768bbf42ee6f6928c15fbbfcd2f003b2
+      size: 157
+    - path: data/models/Ridge_prod.joblib
+      md5: 1eecf0a02c06409c88f5a5bbae88a454
+      size: 1039
