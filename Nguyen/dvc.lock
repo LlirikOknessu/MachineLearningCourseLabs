@@ -8,8 +8,8 @@ stages:
       size: 974331
       nfiles: 1
     - path: data_preparation_1.py
-      md5: 8d346a684d62d1523522bfe3a4688ea0
-      size: 5072
+      md5: 9e0b55daeb37773a1b3fe8db99a14523
+      size: 6051
     params:
       params.yaml:
         data_preparation:
@@ -18,8 +18,8 @@ stages:
           random_state: 18
     outs:
     - path: data/prepared
-      md5: b00efc915974df8c7bc9ccece2efed8c.dir
-      size: 1808746
+      md5: 30dc67899a147b2642a602e678f3c437.dir
+      size: 1843846
       nfiles: 8
   regression_validation:
     cmd: python regression_validation.py -id data/prepared -im data/models/ElasticNet.joblib
