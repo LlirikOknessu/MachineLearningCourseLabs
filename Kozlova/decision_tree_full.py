@@ -16,8 +16,8 @@ TREES_MODELS_MAPPER = {'DecisionTree': tree.DecisionTreeRegressor,
 # Set the best parameters that you get on training stage for all used models
 TREES_MODELS_BEST_PARAMETERS = {
     'DecisionTree': {'max_depth': 7, 'min_samples_leaf': 4, 'min_samples_split': 2, 'splitter': 'best'},
-    'RandomForest': {'max_depth': 7, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 15},
-    'ExtraTree': {'max_depth': 7, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 15}}
+    'RandomForest': {'max_depth': 7, 'min_samples_leaf': 2, 'min_samples_split': 3, 'n_estimators': 10},
+    'ExtraTree': {'max_depth': 7, 'min_samples_leaf': 2, 'min_samples_split': 3, 'n_estimators': 15}}
 
 
 def parser_args_for_sac():
@@ -26,7 +26,7 @@ def parser_args_for_sac():
                         required=False, help='path to input data directory')
     parser.add_argument('--output_dir', '-od', type=str, default='data/models/',
                         required=False, help='path to save prepared data')
-    parser.add_argument('--model_name', '-mn', type=str, default='ExtraTree', required=False,
+    parser.add_argument('--model_name', '-mn', type=str, default='DecisionTree', required=False,
                         help='file with dvc stage params')
     return parser.parse_args()
 
@@ -61,6 +61,8 @@ if __name__ == '__main__':
                            class_names=y_train_cols,
                            fontsize=5,
                            filled=True,
-                           precision=1)
+                           precision=2)
         fig.savefig(output_model_path)
     dump(reg, output_model_joblib_path)
+
+    print(reg.score(X_train, y_train))
