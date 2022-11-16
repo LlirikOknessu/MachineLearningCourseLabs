@@ -44,5 +44,5 @@ if __name__ == '__main__':
     predicted_values = np.squeeze(reg.predict(X_val))
 
     print(reg.score(X_val, y_val))
-    print("Baseline MAE: ", mean_absolute_error(y_val, y_pred_baseline))
+    print("Baseline MAE : ", mean_absolute_error(y_val, y_pred_baseline))
     print("Model MAE: ", mean_absolute_error(y_val, predicted_values))
