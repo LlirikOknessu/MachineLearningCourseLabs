@@ -1,10 +1,6 @@
 /LinearRegression.csv
 /LinearRegression.joblib
-/LinearRegression_prod.csv
-/LinearRegression_prod.joblib
 /RandomForest.joblib
 /DecisionTree.joblib
-/DecisionTree_prod.joblib
-/RandomForest_prod.joblib
 /ExtraTree.joblib
-/ExtraTree_prod.joblib
+
