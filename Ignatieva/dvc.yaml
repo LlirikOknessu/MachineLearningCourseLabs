@@ -1,11 +1,11 @@
 stages:
   data_preparation:
-    cmd: python data_preparation.py -id data/raw -od data/prepared -p params.yaml
+    cmd: python data_preparation.py -id data/raw -od data/prepared
     deps:
       - data_preparation.py
-      - Ignatieva/data/raw
+      - data/raw
     outs:
-      - od
+      - data/prepared
     params:
       - data_preparation
   linear_regression:
