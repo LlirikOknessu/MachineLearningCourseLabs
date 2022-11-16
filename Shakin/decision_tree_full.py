@@ -15,9 +15,9 @@ TREES_MODELS_MAPPER = {'DecisionTree': tree.DecisionTreeRegressor,
 
 # Set the best parameters that you get on training stage for all used models
 TREES_MODELS_BEST_PARAMETERS = {
-    'DecisionTree': {'max_depth': 8, 'min_samples_leaf': 1, 'min_samples_split': 2, 'splitter': 'best'},
-    'RandomForest': {'max_depth': 8, 'min_samples_leaf': 1, 'min_samples_split': 4, 'n_estimators': 10},
-    'ExtraTree': {'max_depth': 8, 'min_samples_leaf': 2, 'min_samples_split': 4, 'n_estimators': 20}}
+    'DecisionTree': {'max_depth': 12, 'min_samples_leaf': 1, 'min_samples_split': 3, 'splitter': 'best'},
+    'RandomForest': {'max_depth': 12, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 20},
+    'ExtraTree': {'max_depth': 16, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 20}}
 
 
 def parser_args_for_sac():
