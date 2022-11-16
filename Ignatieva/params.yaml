@@ -3,7 +3,7 @@ data_preparation:
   train_val_ratio: 0.9
   random_state: 42
 linear_regression:
-  model_name: 'Ridge'
+  model_name: 'LinearRegression'
 decision_tree:
   DecisionTree:
     max_depth: [ 2, 4, 6, 7 ]
