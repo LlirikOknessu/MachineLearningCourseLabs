@@ -55,7 +55,7 @@ if __name__ == '__main__':
     reg = reg.fit(X_train, y_train)
 
     if isinstance(reg, tree.DecisionTreeRegressor):
-        fig = plt.figure(figsize=(60,25))
+        fig = plt.figure(figsize=(60*5,25*5))
         _ = tree.plot_tree(reg,
                            feature_names=X_train.columns,
                            class_names=y_train_cols,
