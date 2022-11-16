@@ -6,7 +6,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Ridge
 from sklearn.metrics import mean_absolute_error
 from joblib import dump
-#&&&
+from numpy import random
 
 def parser_args():
     parser = argparse.ArgumentParser(description='Paths parser')
@@ -45,13 +45,12 @@ if __name__ == '__main__':
 
     reg = LinearRegression().fit(X_train, y_train)
 
-    y_mean = y_test.mean()
-    y_pred_baseline = [y_mean] * len(y_test)
+    y_pred_baseline = [random.normal() % 1] * len(y_test)
 
     predicted_values = np.squeeze(reg.predict(X_test))
 
     print(reg.score(X_test, y_test))
-    print("Mean apt salary: ", y_mean)
+    print("Mean: ", y_test.mean())
     print("Baseline MAE: ", mean_absolute_error(y_test, y_pred_baseline))
     print("Model MAE: ", mean_absolute_error(y_test, predicted_values))
 

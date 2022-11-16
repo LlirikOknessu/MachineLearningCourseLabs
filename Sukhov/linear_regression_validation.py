@@ -6,6 +6,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Ridge
 from sklearn.metrics import mean_absolute_error
 from joblib import load
+from numpy import random
 
 
 def parser_args():
@@ -17,6 +18,7 @@ def parser_args():
     parser.add_argument('--model_name', '-mn', type=str, default='LR', required=False,
                         help='file with dvc stage params')
     return parser.parse_args()
+
 
 if __name__ == '__main__':
     args = parser_args()
@@ -34,10 +36,9 @@ if __name__ == '__main__':
 
     predicted_values = np.squeeze(reg.predict(X_val))
 
-    y_mean = y_val.mean()
-    y_pred_baseline = [y_mean] * len(y_val)
+    y_pred_baseline = [random.normal() % 1]*len(y_val)
 
     print(reg.score(X_val, y_val))
-    print("Mean apt salary: ", y_mean)
+    print("Mean: ", y_val.mean())
     print("Baseline MAE: ", mean_absolute_error(y_val, y_pred_baseline))
     print("Model MAE: ", mean_absolute_error(y_val, predicted_values))

@@ -7,6 +7,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Ridge
 from sklearn.metrics import mean_absolute_error
 from joblib import dump
+from numpy import random
+
 
 LINEAR_MODELS_MAPPER = {'Ridge': Ridge,
                         'LinearRegression': LinearRegression}
@@ -43,11 +45,10 @@ if __name__ == '__main__':
 
     predicted_values = np.squeeze(reg.predict(X_train))
 
-    y_mean = y_train.mean()
-    y_pred_baseline = [y_mean] * len(y_train)
+    y_pred_baseline = [random.normal() % 1]*len(y_train)
 
     print(reg.score(X_train, y_train))
-    print("Mean apt salary: ", y_mean)
+    print("Mean: ", y_train.mean())
     print("Baseline MAE: ", mean_absolute_error(y_train, y_pred_baseline))
     print("Model MAE: ", mean_absolute_error(y_train, predicted_values))
 

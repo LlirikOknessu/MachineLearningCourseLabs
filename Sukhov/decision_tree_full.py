@@ -15,9 +15,9 @@ TREES_MODELS_MAPPER = {'DecisionTree': tree.DecisionTreeRegressor,
 
 # Set the best parameters that you get on training stage for all used models
 TREES_MODELS_BEST_PARAMETERS = {
-    'DecisionTree': {'max_depth': 7, 'min_samples_leaf': 3, 'min_samples_split': 2, 'splitter': 'best'},
-    'RandomForest': {'max_depth': 7, 'min_samples_leaf': 2, 'min_samples_split': 4, 'n_estimators': 10},
-    'ExtraTree': {'max_depth': 7, 'min_samples_leaf': 4, 'min_samples_split': 2, 'n_estimators': 15}}
+    'DecisionTree': {'max_depth': 10, 'min_samples_leaf': 4, 'min_samples_split': 3, 'splitter': 'best'},
+    'RandomForest': {'max_depth': 15, 'min_samples_leaf': 3, 'min_samples_split': 3, 'n_estimators': 15},
+    'ExtraTree': {'max_depth': 15, 'min_samples_leaf': 1, 'min_samples_split': 4, 'n_estimators': 15}}
 
 
 def parser_args_for_sac():
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     reg = reg.fit(X_train, y_train)
 
     if isinstance(reg, tree.DecisionTreeRegressor):
-        fig = plt.figure(figsize=(60,25))
+        fig = plt.figure(figsize=(300,125))
         _ = tree.plot_tree(reg,
                            feature_names=X_train.columns,
                            class_names=y_train_cols,

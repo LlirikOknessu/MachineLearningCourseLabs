@@ -5,6 +5,7 @@ import yaml
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
+from sklearn import preprocessing
 
 
 def parser_args():
@@ -16,6 +17,15 @@ def parser_args():
     parser.add_argument('--params', '-p', type=str, default='params.yaml', required=False,
                         help='file with dvc stage params')
     return parser.parse_args()
+
+
+def Normalize(df):
+    result = df.copy()
+    for feature_name in df.columns:
+        max_value = df[feature_name].max()
+        min_value = df[feature_name].min()
+        result[feature_name] = (df[feature_name] - min_value) / (max_value - min_value)
+    return result
 
 
 def labelEncoder(labelColumn):
@@ -42,12 +52,16 @@ if __name__ == '__main__':
 
     for data_file in input_dir.glob('*.csv'):
         full_data = pd.read_csv(data_file)
-        full_data["ocean_proximity"] = labelEncoder(full_data["ocean_proximity"])
         full_data.info()
+        full_data["ocean_proximity"] = labelEncoder(full_data["ocean_proximity"])
         cleaned_data = full_data.drop("total_bedrooms", axis=1, inplace=False)
+        ##cleaned_data = cleaned_data.drop("ocean_proximity", axis=1, inplace=False)
         cleaned_data.info()
-        y = full_data['median_house_value']
-        X = cleaned_data.drop("median_house_value", axis=1)
+        normalized_data = Normalize(cleaned_data)
+        ##normalized_data.join(full_data["ocean_proximity"])
+        normalized_data.info()
+        y = normalized_data['median_house_value']
+        X = normalized_data.drop("median_house_value", axis=1)
         X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                             train_size=params.get('train_test_ratio'),
                                                             random_state=params.get('random_state'))
