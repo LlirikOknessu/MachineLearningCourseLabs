@@ -53,7 +53,7 @@ if __name__ == '__main__':
     model.fit(X_train, y_train)
 
     if isinstance(model, tree.DecisionTreeRegressor):
-        fig = plt.figure(figsize=(60, 25))
+        fig = plt.figure(figsize=(327, 327))
         _ = tree.plot_tree(model,
                            feature_names=X_train.columns,
                            class_names=columns,
