@@ -25,7 +25,6 @@ stages:
     deps:
     - regression_validation.py
     - data/prepared
-    - data/models/${regression.model_name}.joblib
   regression_test:
     cmd: python regression_test.py -id data/prepared -im data/models/${regression.model_name}.joblib -mn ${regression.model_name}
     params:
