@@ -55,11 +55,11 @@ if __name__ == '__main__':
     reg = reg.fit(X_train, y_train)
 
     if isinstance(reg, tree.DecisionTreeRegressor):
-        fig = plt.figure(figsize=(120,30), dpi=300)
+        fig = plt.figure(figsize=(16.54,11.69), dpi=300)
         _ = tree.plot_tree(reg,
                            feature_names=X_train.columns,
                            class_names=y_train_cols,
-                           fontsize=5,
+                           fontsize=1,
                            filled=True,
                            precision=2)
         fig.savefig(output_model_path)

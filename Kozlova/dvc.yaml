@@ -72,3 +72,30 @@ stages:
           - data/models/${key}_prod.joblib
         params:
           - decision_tree
+  XGBoosting:
+    cmd: python XGBoosting.py -id data/prepared -od data/models -mn ${XGBoosting.model_name}
+    deps:
+      - XGBoosting.py
+      - data/prepared
+    outs:
+      - data/models/${XGBoosting.model_name}.joblib
+    params:
+      - XGBoosting
+  XGBoosting_validation:
+    cmd: python XGBoosting_validation.py -id data/prepared/ -im data/models/ -mn ${XGBoosting.model_name}
+    deps:
+      - XGBoosting_validation.py
+      - data/prepared/
+      - data/models/
+    params:
+      - XGBoosting
+  XGBBoosting_prod_version:
+    cmd: python XGBoosting_full.py -id data/prepared/ -od data/models/ -mn ${XGBoosting.model_name}
+    deps:
+      - XGBoosting_full.py
+      - data/prepared
+      - data/models/${XGBoosting.model_name}.joblib
+    outs:
+      - data/models/${XGBoosting.model_name}_prod.joblib
+    params:
+      - XGBoosting
