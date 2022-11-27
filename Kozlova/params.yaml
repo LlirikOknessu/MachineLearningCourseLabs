@@ -22,3 +22,8 @@ decision_tree:
     min_samples_leaf: [ 1, 2, 3, 4, 18, 48 ]
 XGBoosting:
   model_name: 'XGBRegressor'
+CatBoosting:
+  iterations: 1000
+  depth: 5
+  learning_rate: 0.45
+  loss_function: 'RMSE'
