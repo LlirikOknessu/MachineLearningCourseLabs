@@ -100,7 +100,7 @@ stages:
     params:
       - XGBoosting
   CatBoosting:
-    cmd: python CatBoosting.py -id data/prepared -od data/models -mn ${CatBoosting.model_name}
+    cmd: python CatBoosting.py -id data/prepared -od data/models -mn ${CatBoosting.model_name} -p params.yaml
     deps:
       - CatBoosting.py
       - data/prepared
@@ -117,7 +117,7 @@ stages:
     params:
       - CatBoosting
   CatBoosting_prod_version:
-    cmd: python CatBoosting_full.py -id data/prepared/ -od data/models/ -mn ${CatBoosting.model_name}
+    cmd: python CatBoosting_full.py -id data/prepared/ -od data/models/ -mn ${CatBoosting.model_name} -p params.yaml
     deps:
       - XGBoosting_full.py
       - data/prepared

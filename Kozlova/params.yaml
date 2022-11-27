@@ -23,6 +23,7 @@ decision_tree:
 XGBoosting:
   model_name: 'XGBRegressor'
 CatBoosting:
+  model_name: 'CatBoosting'
   iterations: 1000
   depth: 5
   learning_rate: 0.45
