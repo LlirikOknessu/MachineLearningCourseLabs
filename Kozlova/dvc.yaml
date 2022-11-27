@@ -99,3 +99,30 @@ stages:
       - data/models/${XGBoosting.model_name}_prod.joblib
     params:
       - XGBoosting
+  CatBoosting:
+    cmd: python CatBoosting.py -id data/prepared -od data/models -mn ${CatBoosting.model_name}
+    deps:
+      - CatBoosting.py
+      - data/prepared
+    outs:
+      - data/models/${CatBoosting.model_name}.joblib
+    params:
+      - CatBoosting
+  CatBoosting_validation:
+    cmd: python CatBoosting_validation.py -id data/prepared/ -im data/models/ -mn ${CatBoosting.model_name}
+    deps:
+      - CatBoosting_validation.py
+      - data/prepared/
+      - data/models/
+    params:
+      - CatBoosting
+  CatBoosting_prod_version:
+    cmd: python CatBoosting_full.py -id data/prepared/ -od data/models/ -mn ${CatBoosting.model_name}
+    deps:
+      - XGBoosting_full.py
+      - data/prepared
+      - data/models/${CatBoosting.model_name}.joblib
+    outs:
+      - data/models/${CatBoosting.model_name}_prod.joblib
+    params:
+      - CatBoosting

@@ -5,7 +5,7 @@ import yaml
 import numpy as np
 from sklearn.metrics import mean_absolute_error
 from joblib import dump, load
-from xgboost import XGBRegressor
+from catboost import Pool, CatBoostRegressor
 
 def parser_args_for_sac():
     parser = argparse.ArgumentParser(description='Paths parser')
@@ -15,7 +15,7 @@ def parser_args_for_sac():
                         required=False, help='path to save prepared data')
     parser.add_argument('--baseline_model', '-bm', type=str, default='data/models/DecisionTree_prod.joblib',
                         required=False, help='path to linear regression prod version')
-    parser.add_argument('--model_name', '-mn', type=str, default='XGBRegressor', required=False,
+    parser.add_argument('--model_name', '-mn', type=str, default='CatBoosting', required=False,
                         help='file with dvc stage params')
     return parser.parse_args()
 
@@ -34,6 +34,8 @@ if __name__ == '__main__':
     X_val = pd.read_csv(X_val_name)
     y_val = pd.read_csv(y_val_name)
 
+    val_pool = Pool(X_val, y_val)
+
     reg = load(input_model / model)
 
     predicted_values = np.squeeze(reg.predict(X_val))
@@ -41,6 +43,6 @@ if __name__ == '__main__':
     baseline_model = load(baseline_model_path)
     y_pred_baseline = np.squeeze(baseline_model.predict(X_val))
 
-    print(reg.score(X_val, y_val))
+    print(reg.score(val_pool))
     print("Baseline MAE: ", mean_absolute_error(y_val, y_pred_baseline))
     print("Model MAE: ", mean_absolute_error(y_val, predicted_values))
