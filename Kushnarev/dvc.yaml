@@ -79,3 +79,33 @@ stages:
         - data/models/${key}_prod.joblib
       params:
         - decision_tree
+
+  xg_boost:
+    cmd: python xg_boost.py -id data/prepared/ -od data/models/ -bm data/models/DecisionTree_prod.joblib -p params.yaml
+    deps:
+      - xg_boost.py
+      - data/prepared
+      - data/models/DecisionTree_prod.joblib
+    outs:
+      - data/models/XGBRegressor.joblib
+    params:
+      - xg_boost
+
+  xg_boost_validation:
+    cmd: python xg_boost_validation.py -id data/prepared/ -im data/models/XGBRegressor.joblib -bm data/models/DecisionTree_prod.joblib
+    deps:
+      - xg_boost_validation.py
+      - data/prepared
+      - data/models/XGBRegressor.joblib
+      - data/models/DecisionTree_prod.joblib
+    params:
+      - xg_boost
+
+  xg_boost_prod_version:
+    cmd: python xg_boost_full.py -id data/prepared/ -od data/models/ -mn XGBRegressor
+    deps:
+      - xg_boost_full.py
+      - data/prepared
+      - data/models/XGBRegressor.joblib
+    outs:
+      - data/models/XGBRegressor_prod.joblib

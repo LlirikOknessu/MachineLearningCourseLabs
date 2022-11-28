@@ -5,7 +5,6 @@ import yaml
 import numpy as np
 from sklearn import tree
 from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor
-from sklearn.metrics import mean_absolute_error
 from joblib import dump
 import matplotlib.pyplot as plt
 
@@ -55,7 +54,7 @@ if __name__ == '__main__':
     reg = reg.fit(X_train, y_train)
 
     if isinstance(reg, tree.DecisionTreeRegressor):
-        fig = plt.figure(figsize=(60*5,25*5))
+        fig = plt.figure(figsize=(16,16))
         _ = tree.plot_tree(reg,
                            feature_names=X_train.columns,
                            class_names=y_train_cols,

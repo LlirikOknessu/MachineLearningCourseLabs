@@ -1,10 +1,7 @@
 import pandas as pd
 import argparse
 from pathlib import Path
-import yaml
 import numpy as np
-from sklearn import tree
-from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor
 from sklearn.metrics import mean_absolute_error
 from joblib import load
 
@@ -14,10 +11,8 @@ def parser_args_for_sac():
                         required=False, help='path to input data directory')
     parser.add_argument('--input_model', '-im', type=str, default='data/models/',
                         required=False, help='path to save prepared data')
-    parser.add_argument('--baseline_model', '-bm', type=str, default='data/models/LinearRegression_prod.joblib',
+    parser.add_argument('--baseline_model', '-bm', type=str, default='data/models/RandomForest_prod.joblib',
                         required=False, help='path to linear regression prod version')
-    parser.add_argument('--М', '-mn', type=str, default='LR', required=False,
-                        help='file with dvc stage params')
     return parser.parse_args()
 
 
