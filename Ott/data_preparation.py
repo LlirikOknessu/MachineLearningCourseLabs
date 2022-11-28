@@ -32,6 +32,11 @@ def imputing(X_train, X_val, X_test, X, strat='median'):
 def data_cleaner(df: pd.DataFrame) -> pd.DataFrame:
     df = df.dropna(axis=0, subset=['Life expectancy '])
     df = df.drop(columns='Country')
+    df = df.drop(columns='infant deaths')
+    df = df.drop(columns='Measles ')
+    df = df.drop(columns='under-five deaths ')
+    df = df.drop(columns='Population')
+    df = df.drop(columns='Total expenditure')
     # developing - 0, developed - 1
     df['Status'] = df['Status'].apply(lambda x: 0 if x == 'Developing' else 1)
     cols_with_nan = [col for col in df.columns

@@ -74,3 +74,58 @@ stages:
         - data/models/${key}_prod.joblib
       params:
         - decision_tree
+  XGboosting:
+    cmd: python OMGboosting.py -id data/prepared -od data/models -mn ${XGBoosting.model_name}
+    deps:
+      - OMGboosting.py
+      - data/prepared
+    outs:
+      - data/models/${XGBoosting.model_name}.joblib
+    params:
+      - XGBoosting
+  XGboosting_invalid:
+    cmd: python OMGboosting_invalid.py -id data/prepared/ -im data/models/${XGBoosting.model_name}.joblib -mn ${XGBoosting.model_name}
+    deps:
+      - OMGboosting_invalid.py
+      - data/prepared/
+      - data/models/${XGBoosting.model_name}.joblib
+    params:
+      - XGBoosting
+  XGboosting_prod:
+    cmd: python OMGboosting_prod.py -id data/prepared -od data/models -mn ${XGBoosting.model_name}
+    deps:
+      - OMGboosting_prod.py
+      - data/prepared
+      - data/models/${XGBoosting.model_name}.joblib
+    outs:
+      - data/models/${XGBoosting.model_name}_prod.joblib
+    params:
+      - XGBoosting
+  Cat:
+    cmd: python koshka.py -id data/prepared -od data/models -mn ${Cat.model_name}
+    deps:
+      - koshka.py
+      - data/prepared
+    outs:
+      - data/models/${Cat.model_name}.joblib
+    params:
+      - XGBoosting
+  Cat_valid:
+    cmd: python koshka_invalid.py -id data/prepared/ -im data/models/${Cat.model_name}.joblib -mn ${Cat.model_name}
+    deps:
+      - koshka_invalid.py
+      - data/prepared/
+      - data/models/${Cat.model_name}.joblib
+    params:
+      - Cat
+  Cat_prod:
+    cmd: python koshka_prod.py -id data/prepared -od data/models -mn ${Cat.model_name}
+    deps:
+      - koshka_prod.py
+      - data/prepared
+      - data/models/${Cat.model_name}.joblib
+    outs:
+      - data/models/${Cat.model_name}_prod.joblib
+    params:
+      - Cat
+
