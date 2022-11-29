@@ -1114,3 +1114,69 @@ stages:
     - path: data/models/XGBRegressor_prod.joblib
       md5: 6bf70807bb85bbfb4492bcc2a3d3169f
       size: 733
+  cat_boost:
+    cmd: python cat_boost.py -id data/prepared/ -od data/models/ -bm data/models/DecisionTree_prod.joblib
+      -p params.yaml -mn CatRegressor
+    deps:
+    - path: cat_boost.py
+      md5: 356e36634caf2bd1471e28f8f14aae47
+      size: 2591
+    - path: data/models/DecisionTree_prod.joblib
+      md5: 0e4dddfc8002d2944ec145ddd24913c7
+      size: 164689
+    - path: data/prepared
+      md5: cff05e31f442fd4e0f940d6cc9245411.dir
+      size: 6062338
+      nfiles: 8
+    params:
+      params.yaml:
+        cat_boost:
+          n_estimators:
+          - 50
+          - 80
+          max_depth:
+          - 3
+          - 4
+          - 5
+          - 9
+          - 12
+          silent:
+          - true
+    outs:
+    - path: data/models/CatRegressor.joblib
+      md5: f352af77799c1f7724eb6063756cebb7
+      size: 18526
+  cat_boost_validation:
+    cmd: python cat_boost_validation.py -id data/prepared/ -im data/models/CatRegressor.joblib
+      -bm data/models/DecisionTree_prod.joblib
+    deps:
+    - path: cat_boost_validation.py
+      md5: 217a10414616556016d75a419ffd467d
+      size: 1512
+    - path: data/models/CatRegressor.joblib
+      md5: f352af77799c1f7724eb6063756cebb7
+      size: 18526
+    - path: data/models/DecisionTree_prod.joblib
+      md5: 0e4dddfc8002d2944ec145ddd24913c7
+      size: 164689
+    - path: data/prepared
+      md5: cff05e31f442fd4e0f940d6cc9245411.dir
+      size: 6062338
+      nfiles: 8
+  cat_boost_prod_version:
+    cmd: python cat_boost_full.py -id data/prepared/ -od data/models/ -mn CatRegressor
+    deps:
+    - path: cat_boost_full.py
+      md5: 70a3a85d1d37314d998f7f16b58496c0
+      size: 1406
+    - path: data/models/CatRegressor.joblib
+      md5: f352af77799c1f7724eb6063756cebb7
+      size: 18526
+    - path: data/prepared
+      md5: cff05e31f442fd4e0f940d6cc9245411.dir
+      size: 6062338
+      nfiles: 8
+    outs:
+    - path: data/models/CatRegressor_prod.joblib
+      md5: 80963b3c9d94765551b3f4db4ce29ba5
+      size: 122
