@@ -98,8 +98,6 @@ stages:
       - data/prepared
       - data/models/XGBRegressor.joblib
       - data/models/DecisionTree_prod.joblib
-    params:
-      - xg_boost
 
   xg_boost_prod_version:
     cmd: python xg_boost_full.py -id data/prepared/ -od data/models/ -mn XGBRegressor
@@ -109,3 +107,31 @@ stages:
       - data/models/XGBRegressor.joblib
     outs:
       - data/models/XGBRegressor_prod.joblib
+
+  cat_boost:
+    cmd: python cat_boost.py -id data/prepared/ -od data/models/ -bm data/models/DecisionTree_prod.joblib -p params.yaml -mn CatRegressor
+    deps:
+      - cat_boost.py
+      - data/prepared
+      - data/models/DecisionTree_prod.joblib
+    outs:
+      - data/models/CatRegressor.joblib
+    params:
+      - cat_boost
+
+  cat_boost_validation:
+    cmd: python cat_boost_validation.py -id data/prepared/ -im data/models/CatRegressor.joblib -bm data/models/DecisionTree_prod.joblib
+    deps:
+      - cat_boost_validation.py
+      - data/prepared
+      - data/models/CatRegressor.joblib
+      - data/models/DecisionTree_prod.joblib
+
+  cat_boost_prod_version:
+    cmd: python cat_boost_full.py -id data/prepared/ -od data/models/ -mn CatRegressor
+    deps:
+      - cat_boost_full.py
+      - data/prepared
+      - data/models/CatRegressor.joblib
+    outs:
+      - data/models/CatRegressor_prod.joblib
