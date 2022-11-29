@@ -1,5 +1,3 @@
-# next para - pull request
-# 1 stage + 3 stages na next
 stages:
   data_preparation:
     cmd: python data_preparation.py -id data/raw -od data/prepared
@@ -74,3 +72,59 @@ stages:
         - data/models/${key}_prod.joblib
       params:
         - decision_tree
+
+  XG_boosting:
+    cmd: python XG_boost.py -id data/prepared/ -od data/models/ -bm data/models/DecisionTree_prod.joblib -p params.yaml
+    deps:
+      - XG_boost.py
+      - data/prepared
+      - data/models/DecisionTree_prod.joblib
+    outs:
+      - data/models/XGboosting_model.joblib
+    params:
+      - XG_boosting
+  XG_boosting_validation:
+    cmd: python XG_boost_validation.py -id data/prepared/ -im data/models/XGBoosting_model.joblib -bm data/models/DecisionTree_prod.joblib
+    deps:
+      - XG_boost_validation.py
+      - data/prepared
+      - data/models/XGboosting_model.joblib
+      - data/models/DecisionTree_prod.joblib
+    params:
+      - XG_boosting
+  XG_boosting_prod:
+    cmd: python XG_boost_full.py -id data/prepared/ -od data/models/ -mn XGboosting_model
+    deps:
+      - XG_boost_full.py
+      - data/prepared
+      - data/models/XGBoosting_model.joblib
+    outs:
+      - data/models/XGboosting_model_prod.joblib
+  CatBoosting:
+    cmd: python Cat_boosting.py -id data/prepared/ -od data/models/ -bm data/models/DecisionTree_prod.joblib -p params.yaml -mn CatBoosting_model
+    deps:
+      - Cat_boosting.py
+      - data/prepared
+      - data/models/DecisionTree_prod.joblib
+    outs:
+      - data/models/CatBoosting_model.joblib
+    params:
+      - CatBoosting
+  CatBoosting_validation:
+    cmd: python Cat_boosting_validation.py -id data/prepared/ -im data/models/CatBoosting_model.joblib -bm data/models/DecisionTree_prod.joblib
+    deps:
+      - Cat_boosting_validation.py
+      - data/prepared
+      - data/models/CatBoosting_model.joblib
+      - data/models/DecisionTree_prod.joblib
+
+  CatBoosting_prod_version:
+    cmd: python Cat_boosting_full.py -id data/prepared/ -od data/models/ -mn CatBoosting_model
+    deps:
+        - Cat_boosting_full.py
+        - data/prepared
+        - data/models/CatBoosting_model.joblib
+    outs:
+        - data/models/CatBoosting_model_prod.joblib
+
+

@@ -47,7 +47,7 @@ if __name__ == '__main__':
     y_pred_baseline = [y_mean] * len(y_train)
 
     print(reg.score(X_train, y_train))
-    print("Mean apt salary: ", y_mean)
+    print("Mean apt temperature ", y_mean)
     print("Baseline MAE: ", mean_absolute_error(y_train, y_pred_baseline))
     print("Model MAE: ", mean_absolute_error(y_train, predicted_values))
 

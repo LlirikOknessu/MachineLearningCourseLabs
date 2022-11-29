@@ -3,4 +3,18 @@
 /RandomForest.joblib
 /DecisionTree.joblib
 /ExtraTree.joblib
+/LinearRegression_prod.csv
+/LinearRegression_prod.joblib
+/DecisionTree_prod.joblib
+/DecisionTree_prod.jpg
+/ExtraTree_prod.joblib
+/RandomForest_prod.joblib
 
+
+
+/XGBRegressor.joblib
+/XGBRegressor_prod.joblib
+#/XGboosting_model_prod.joblib
+/XGboosting_model.joblib
+/CatBoosting_model.joblib
+#/CatBoosting_model_prod.joblib
