@@ -74,3 +74,39 @@ stages:
         - data/models/${key}_prod.joblib
       params:
         - decision_tree
+  boosting:
+    foreach: ${boosting}
+    do:
+      cmd: python boosting.py -id data/prepared -od data/models -bm data/models/${linear_regression.model_name}_prod.joblib -mn ${key} -p params.yaml
+      deps:
+        - boosting.py
+        - data/prepared
+        - data/models/${linear_regression.model_name}_prod.joblib
+      outs:
+        - data/models/${key}.joblib
+      params:
+        - boosting
+  boosting_validation:
+    foreach: ${boosting}
+    do:
+        cmd: python boosting_validation.py -id data/prepared/ -im data/models/${key}.joblib -bm data/models/${linear_regression.model_name}_prod.joblib -mn ${key}
+        deps:
+          - boosting_validation.py
+          - data/prepared/
+          - data/models/${key}.joblib
+          - data/models/${linear_regression.model_name}_prod.joblib
+        params:
+          - boosting
+  boosting_prod_version:
+    foreach: ${boosting}
+    do:
+        cmd: python boosting_full.py -id data/prepared/ -od data/models/ -mn ${key}
+        deps:
+          - boosting_full.py
+          - data/prepared
+          - data/models/${key}.joblib
+        outs:
+          - data/models/${key}_prod.joblib
+        params:
+          - boosting
+
