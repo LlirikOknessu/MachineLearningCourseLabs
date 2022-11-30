@@ -56,7 +56,7 @@ stages:
         deps:
           - decision_tree_validation.py
           - data/prepared/
-          - data/models/
+          - data/models/${key}.joblib
           - data/models/${linear_regression.model_name}_prod.joblib
         params:
           - decision_tree
@@ -72,3 +72,57 @@ stages:
           - data/models/${key}_prod.joblib
         params:
           - decision_tree
+  xgboost:
+    cmd: python XGboost.py -id data/prepared -od data/models -bm data/models/${linear_regression.model_name}_prod.joblib -mn ${xgboost.model_name}
+    deps:
+      - XGboost.py
+      - data/prepared
+    outs:
+      - data/models/${xgboost.model_name}.joblib
+    params:
+      - xgboost
+  xgboost_validation:
+    cmd: python XGboost_validation.py -id data/prepared/ -im data/models/ -bm data/models/${linear_regression.model_name}_prod.joblib -mn ${xgboost.model_name}
+    deps:
+      - XGboost_validation.py
+      - data/prepared/
+      - data/models/
+    params:
+      - xgboost
+  xgboost_prod_version:
+    cmd: python XGboost_full.py -id data/prepared/ -od data/models/ -mn ${xgboost.model_name}
+    deps:
+      - XGboost_full.py
+      - data/prepared
+      - data/models/${xgboost.model_name}.joblib
+    outs:
+      - data/models/${xgboost.model_name}_prod.joblib
+    params:
+      - xgboost
+  catboost:
+    cmd: python CatBoost.py -id data/prepared -od data/models -bm data/models/${linear_regression.model_name}_prod.joblib -mn ${catboost.model_name}
+    deps:
+      - CatBoost.py
+      - data/prepared
+    outs:
+      - data/models/${catboost.model_name}.joblib
+    params:
+      - catboost
+  catboost_validation:
+    cmd: python CatBoost_validation.py -id data/prepared/ -im data/models/ -bm data/models/${linear_regression.model_name}_prod.joblib -mn ${catboost.model_name}
+    deps:
+      - CatBoost_validation.py
+      - data/prepared/
+      - data/models/
+    params:
+      - catboost
+  catboost_prod_version:
+    cmd: python CatBoost_full.py -id data/prepared/ -od data/models/ -mn ${catboost.model_name}
+    deps:
+      - CatBoost_full.py
+      - data/prepared
+      - data/models/${catboost.model_name}.joblib
+    outs:
+      - data/models/${catboost.model_name}_prod.joblib
+    params:
+      - catboost
