@@ -11,7 +11,7 @@ from sklearn.preprocessing import MinMaxScaler
 #Parsing path for dependencies
 def parser_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input_dir', '-id', type=str, default='data/raw/dataset1', help="path to input directory")
+    parser.add_argument('--input_dir', '-id', type=str, default='data/raw/dataset2', help="path to input directory")
     parser.add_argument('--output_dir', '-od', type=str, default='data/prepared', help="path to output directory")
     parser.add_argument('--params', '-p', type=str, default="params.yaml", help="path to parameter file for dvc stage")
     return parser.parse_args()
