@@ -135,3 +135,14 @@ stages:
       - data/models/CatRegressor.joblib
     outs:
       - data/models/CatRegressor_prod.joblib
+
+  NN:
+    cmd: python NN.py -id data/prepared/ -od data/models/ -logd data/logs/ -bm data/models/DecisionTree_prod.joblib -p params.yaml -mn NN
+    deps:
+      - NN.py
+      - data/prepared/
+      - data/models/DecisionTree_prod.joblib
+    outs:
+      - data/models/NN
+    params:
+      - NN
