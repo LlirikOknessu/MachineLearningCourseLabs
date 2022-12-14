@@ -1,17 +1,12 @@
 import pandas as pd
 import argparse
 from pathlib import Path
-import yaml
 import numpy as np
 from sklearn import tree
 from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor
 from sklearn.metrics import mean_squared_error
 from joblib import load
 import math
-
-TREES_MODELS_MAPPER = {'DecisionTree': tree.DecisionTreeRegressor,
-                       'RandomForest': RandomForestRegressor,
-                       'ExtraTree': ExtraTreesRegressor}
 
 
 def parser_args_for_sac():

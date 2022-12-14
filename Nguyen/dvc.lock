@@ -1,149 +1,256 @@
 schema: '2.0'
 stages:
   data_preparation:
-    cmd: python data_preparation_1.py -id data/raw/dataset1 -od data/prepared
+    cmd: python data_preparation.py -id data/raw -od data/prepared
     deps:
-    - path: data/raw/dataset1
-      md5: 6c90b6d33213dbc6f7de2fcf9eb94885.dir
-      size: 974331
+    - path: data/raw
+      md5: e11cecd81c18cc80346193df85f18bea.dir
+      size: 983892
       nfiles: 1
-    - path: data_preparation_1.py
-      md5: 9e0b55daeb37773a1b3fe8db99a14523
-      size: 6051
+    - path: data_preparation.py
+      md5: 19f0c95344ec9a418ca043f4db0aa8ee
+      size: 5692
     params:
       params.yaml:
         data_preparation:
           train_ratio: 0.7
           validation_test_ratio: 0.5
-          random_state: 18
+          random_state: 42
     outs:
     - path: data/prepared
-      md5: 30dc67899a147b2642a602e678f3c437.dir
-      size: 1843846
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
       nfiles: 8
-  regression_validation:
-    cmd: python regression_validation.py -id data/prepared -im data/models
-    deps:
-    - path: data/prepared
-      md5: 30dc67899a147b2642a602e678f3c437.dir
-      size: 1843846
-      nfiles: 8
-    - path: regression_validation.py
-      md5: 788ec942ef08cc2dfffcee52e2edf794
-      size: 2304
-    params:
-      params.yaml:
-        regression:
-          model_name: ElasticNet
-          alpha_start_value: 1.0
-          alpha_sweep_step: 1.0
-          alpha_end_value: 10.0
-          l1_ratio_start_value: 0.01
-          l1_ratio_sweep_step: 0.01
-          l1_ratio_end_value: 0.11
-          alpha: 1.0
-          l1_ratio: 0.01
-  regression_test:
-    cmd: python regression_test.py -id data/prepared -im data/models/Ridge.joblib
-      -mn Ridge
-    deps:
-    - path: data/models/Ridge.joblib
-      md5: acb39f52ba3e9c08a6c61ce2fc394207
-      size: 1039
-    - path: data/prepared
-      md5: 30dc67899a147b2642a602e678f3c437.dir
-      size: 1843846
-      nfiles: 8
-    - path: regression_test.py
-      md5: 6e7062e1753fcfebf82601b7447564c6
-      size: 2274
-    params:
-      params.yaml:
-        regression:
-          model_name: Ridge
-          alpha_start_value: 1.0
-          alpha_sweep_step: 1.0
-          alpha_end_value: 10.0
-          l1_ratio_start_value: 0.01
-          l1_ratio_sweep_step: 0.01
-          l1_ratio_end_value: 0.11
-          alpha: 1.0
-          l1_ratio: 0.01
   regression_train:
-    cmd: python regression_train.py -id data/prepared -od data/models -mn ElasticNet
+    cmd: python linear_regression_train.py -id data/prepared -od data/models -mn ElasticNet
     deps:
     - path: data/prepared
-      md5: 30dc67899a147b2642a602e678f3c437.dir
-      size: 1843846
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
       nfiles: 8
-    - path: regression_train.py
-      md5: defaf2c14392be5ac2015a194ea26b2d
-      size: 5232
+    - path: linear_regression_train.py
+      md5: 8cfa46dac99634dadb6e873ff2bf9816
+      size: 5211
     params:
       params.yaml:
         regression:
           model_name: ElasticNet
-          alpha_start_value: 1.0
-          alpha_sweep_step: 1.0
-          alpha_end_value: 10.0
+          tuning: 0
+          alpha_start_value: 0.001
+          alpha_sweep_step: 0.001
+          alpha_end_value: 0.01
           l1_ratio_start_value: 0.01
           l1_ratio_sweep_step: 0.01
-          l1_ratio_end_value: 0.11
-          alpha: 1.0
-          l1_ratio: 0.01
+          l1_ratio_end_value: 0.1
+          alpha: 0.001
+          l1_ratio: 0.09
     outs:
     - path: data/models/ElasticNet.csv
-      md5: 1a7f990838796075b4b8762b7f980dac
-      size: 29
+      md5: 30e28cf9e2bbdceee92d19bfdb882cf2
+      size: 44
     - path: data/models/ElasticNet.joblib
-      md5: 7cb608d43ae047962f143b6460e61f2c
-      size: 1151
-  regression_prod:
-    cmd: python regression_full.py -id data/prepared -od data/models -mn Ridge
+      md5: 118cb0e1bc2c00e081e10c481d73f0d1
+      size: 1231
+  regression_validation:
+    cmd: python linear_regression_validation.py -id data/prepared -im data/models
     deps:
-    - path: data/models/Ridge.joblib
-      md5: acb39f52ba3e9c08a6c61ce2fc394207
-      size: 1039
+    - path: data/models
+      md5: 6b65348a4830188bd31ea899ebee029c.dir
+      size: 5477
+      nfiles: 9
     - path: data/prepared
-      md5: 30dc67899a147b2642a602e678f3c437.dir
-      size: 1843846
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
       nfiles: 8
-    - path: regression_full.py
-      md5: 6df96c504dd7ee07276a911fb24fb44c
-      size: 2959
+    - path: linear_regression_validation.py
+      md5: 2d79a81217534c6038a1b1f942c6934f
+      size: 2089
     params:
       params.yaml:
         regression:
-          model_name: Ridge
-          alpha_start_value: 1.0
-          alpha_sweep_step: 1.0
-          alpha_end_value: 10.0
+          model_name: ElasticNet
+          tuning: 0
+          alpha_start_value: 0.001
+          alpha_sweep_step: 0.001
+          alpha_end_value: 0.01
           l1_ratio_start_value: 0.01
           l1_ratio_sweep_step: 0.01
-          l1_ratio_end_value: 0.11
-          alpha: 1.0
-          l1_ratio: 0.01
-    outs:
-    - path: data/models/Ridge_prod.csv
-      md5: 768bbf42ee6f6928c15fbbfcd2f003b2
-      size: 157
-    - path: data/models/Ridge_prod.joblib
-      md5: 1eecf0a02c06409c88f5a5bbae88a454
-      size: 1039
-  decision_tree@ExtraTree:
-    cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/Ridge_prod.joblib
-      -mn ExtraTree -p params.yaml
+          l1_ratio_end_value: 0.1
+          alpha: 0.001
+          l1_ratio: 0.09
+  regression_test:
+    cmd: python linear_regression_test.py -id data/prepared -im data/models/Lasso.joblib
+      -mn Lasso
     deps:
-    - path: data/models/Ridge_prod.joblib
-      md5: 1eecf0a02c06409c88f5a5bbae88a454
-      size: 1039
+    - path: data/models/Lasso.joblib
+      md5: 4d671648e039eb1d041e39560227f5b5
+      size: 1231
     - path: data/prepared
-      md5: 30dc67899a147b2642a602e678f3c437.dir
-      size: 1843846
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: linear_regression_test.py
+      md5: 4fcdac46ea8fd30ad1ad43fae6746459
+      size: 2063
+    params:
+      params.yaml:
+        regression:
+          model_name: Lasso
+          tuning: 0
+          alpha_start_value: 0.001
+          alpha_sweep_step: 0.001
+          alpha_end_value: 0.01
+          l1_ratio_start_value: 0.01
+          l1_ratio_sweep_step: 0.01
+          l1_ratio_end_value: 0.1
+          alpha: 0.001
+          l1_ratio: 0.09
+  regression_prod:
+    cmd: python linear_regression_full.py -id data/prepared -od data/models -mn Lasso
+    deps:
+    - path: data/models/Lasso.joblib
+      md5: 4d671648e039eb1d041e39560227f5b5
+      size: 1231
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: linear_regression_full.py
+      md5: 7e0813ff374fc84c9ccb665aadb9b6f5
+      size: 2496
+    params:
+      params.yaml:
+        regression:
+          model_name: Lasso
+          tuning: 0
+          alpha_start_value: 0.001
+          alpha_sweep_step: 0.001
+          alpha_end_value: 0.01
+          l1_ratio_start_value: 0.01
+          l1_ratio_sweep_step: 0.01
+          l1_ratio_end_value: 0.1
+          alpha: 0.001
+          l1_ratio: 0.09
+    outs:
+    - path: data/models/Lasso_prod.csv
+      md5: 182592c25cf4b294adaa5cd17b5ed948
+      size: 29
+    - path: data/models/Lasso_prod.joblib
+      md5: 4cf0f3e9065bbb787a7613bd05a635ee
+      size: 1231
+  decision_tree@DecisionTree:
+    cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/Lasso_prod.joblib
+      -mn DecisionTree -p params.yaml
+    deps:
+    - path: data/models/Lasso_prod.joblib
+      md5: 4cf0f3e9065bbb787a7613bd05a635ee
+      size: 1231
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
       nfiles: 8
     - path: decision_tree.py
-      md5: dbe2c5e3353b327770a0412d7c51abb8
-      size: 3322
+      md5: ab0130b1ec2b43ea9ff8fcd5aa9bffba
+      size: 3340
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 6
+            - 7
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 10
+            - 15
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 18
+            - 48
+    outs:
+    - path: data/models/DecisionTree.joblib
+      md5: 3c8d6bddcf32f73d127c397f179f63e2
+      size: 139231
+  decision_tree@ExtraTree:
+    cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/Lasso_prod.joblib
+      -mn ExtraTree -p params.yaml
+    deps:
+    - path: data/models/Lasso_prod.joblib
+      md5: 4cf0f3e9065bbb787a7613bd05a635ee
+      size: 1231
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: decision_tree.py
+      md5: ab0130b1ec2b43ea9ff8fcd5aa9bffba
+      size: 3340
     params:
       params.yaml:
         decision_tree:
@@ -227,22 +334,22 @@ stages:
             - 48
     outs:
     - path: data/models/ExtraTree.joblib
-      md5: 77e622fff754a21c84a32753c14e6e81
-      size: 1604031
+      md5: bff0cadd42fbe18b222284f7bd9045ae
+      size: 2353279
   decision_tree@RandomForest:
-    cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/Ridge_prod.joblib
+    cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/Lasso_prod.joblib
       -mn RandomForest -p params.yaml
     deps:
-    - path: data/models/Ridge_prod.joblib
-      md5: 1eecf0a02c06409c88f5a5bbae88a454
-      size: 1039
+    - path: data/models/Lasso_prod.joblib
+      md5: 4cf0f3e9065bbb787a7613bd05a635ee
+      size: 1231
     - path: data/prepared
-      md5: 30dc67899a147b2642a602e678f3c437.dir
-      size: 1843846
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
       nfiles: 8
     - path: decision_tree.py
-      md5: dbe2c5e3353b327770a0412d7c51abb8
-      size: 3322
+      md5: ab0130b1ec2b43ea9ff8fcd5aa9bffba
+      size: 3340
     params:
       params.yaml:
         decision_tree:
@@ -326,222 +433,123 @@ stages:
             - 48
     outs:
     - path: data/models/RandomForest.joblib
-      md5: 7ad8aec46ad172fcfa58484336cbbd36
-      size: 1621551
-  decision_tree@DecisionTree:
-    cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/Ridge_prod.joblib
-      -mn DecisionTree -p params.yaml
-    deps:
-    - path: data/models/Ridge_prod.joblib
-      md5: 1eecf0a02c06409c88f5a5bbae88a454
-      size: 1039
-    - path: data/prepared
-      md5: 30dc67899a147b2642a602e678f3c437.dir
-      size: 1843846
-      nfiles: 8
-    - path: decision_tree.py
-      md5: dbe2c5e3353b327770a0412d7c51abb8
-      size: 3322
-    params:
-      params.yaml:
-        decision_tree:
-          DecisionTree:
-            max_depth:
-            - 2
-            - 4
-            - 6
-            - 7
-            - 10
-            - 15
-            splitter:
-            - best
-            - random
-            min_samples_split:
-            - 2
-            - 3
-            - 4
-            min_samples_leaf:
-            - 1
-            - 2
-            - 3
-            - 4
-          RandomForest:
-            n_estimators:
-            - 1
-            - 2
-            - 5
-            - 10
-            - 15
-            - 20
-            - 25
-            - 30
-            max_depth:
-            - 2
-            - 4
-            - 6
-            - 7
-            - 10
-            - 15
-            min_samples_split:
-            - 2
-            - 3
-            - 4
-            - 6
-            - 7
-            min_samples_leaf:
-            - 1
-            - 2
-            - 3
-            - 4
-          ExtraTree:
-            n_estimators:
-            - 1
-            - 2
-            - 5
-            - 10
-            - 15
-            - 20
-            - 25
-            - 30
-            max_depth:
-            - 2
-            - 4
-            - 6
-            - 7
-            - 10
-            - 15
-            min_samples_split:
-            - 2
-            - 3
-            - 4
-            - 10
-            - 15
-            min_samples_leaf:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 18
-            - 48
-    outs:
-    - path: data/models/DecisionTree.joblib
-      md5: fa193ca11e9e6d2f0f45c7092864c9aa
-      size: 57855
-  decision_tree_test@ExtraTree:
-    cmd: python decision_tree_test.py -id data/prepared/ -im data/models/ExtraTree.joblib
-      -bm data/models/Ridge_prod.joblib -mn ExtraTree
-    deps:
-    - path: data/models/ExtraTree.joblib
-      md5: 77e622fff754a21c84a32753c14e6e81
-      size: 1604031
-    - path: data/models/Ridge_prod.joblib
-      md5: 1eecf0a02c06409c88f5a5bbae88a454
-      size: 1039
-    - path: data/prepared/
-      md5: 30dc67899a147b2642a602e678f3c437.dir
-      size: 1843846
-      nfiles: 8
-    - path: decision_tree_test.py
-      md5: 111afd228f98e20e65f8286b42bb90cd
-      size: 2057
-    params:
-      params.yaml:
-        decision_tree:
-          DecisionTree:
-            max_depth:
-            - 2
-            - 4
-            - 6
-            - 7
-            - 10
-            - 15
-            splitter:
-            - best
-            - random
-            min_samples_split:
-            - 2
-            - 3
-            - 4
-            min_samples_leaf:
-            - 1
-            - 2
-            - 3
-            - 4
-          RandomForest:
-            n_estimators:
-            - 1
-            - 2
-            - 5
-            - 10
-            - 15
-            - 20
-            - 25
-            - 30
-            max_depth:
-            - 2
-            - 4
-            - 6
-            - 7
-            - 10
-            - 15
-            min_samples_split:
-            - 2
-            - 3
-            - 4
-            - 6
-            - 7
-            min_samples_leaf:
-            - 1
-            - 2
-            - 3
-            - 4
-          ExtraTree:
-            n_estimators:
-            - 1
-            - 2
-            - 5
-            - 10
-            - 15
-            - 20
-            - 25
-            - 30
-            max_depth:
-            - 2
-            - 4
-            - 6
-            - 7
-            - 10
-            - 15
-            min_samples_split:
-            - 2
-            - 3
-            - 4
-            - 10
-            - 15
-            min_samples_leaf:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 18
-            - 48
+      md5: 9e6dc62792023b3c0809bbb5c334bd6d
+      size: 3599567
   decision_tree_test@DecisionTree:
     cmd: python decision_tree_test.py -id data/prepared/ -im data/models/DecisionTree.joblib
-      -bm data/models/Ridge_prod.joblib -mn DecisionTree
+      -bm data/models/Lasso_prod.joblib -mn DecisionTree
     deps:
     - path: data/models/DecisionTree.joblib
-      md5: fa193ca11e9e6d2f0f45c7092864c9aa
-      size: 57855
-    - path: data/models/Ridge_prod.joblib
-      md5: 1eecf0a02c06409c88f5a5bbae88a454
-      size: 1039
+      md5: 3c8d6bddcf32f73d127c397f179f63e2
+      size: 139231
+    - path: data/models/Lasso_prod.joblib
+      md5: 4cf0f3e9065bbb787a7613bd05a635ee
+      size: 1231
     - path: data/prepared/
-      md5: 30dc67899a147b2642a602e678f3c437.dir
-      size: 1843846
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
       nfiles: 8
     - path: decision_tree_test.py
-      md5: 111afd228f98e20e65f8286b42bb90cd
-      size: 2057
+      md5: 37440fbe6d69c56c49cacf4c07a0b15a
+      size: 1853
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 6
+            - 7
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 10
+            - 15
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 18
+            - 48
+  decision_tree_test@ExtraTree:
+    cmd: python decision_tree_test.py -id data/prepared/ -im data/models/ExtraTree.joblib
+      -bm data/models/Lasso_prod.joblib -mn ExtraTree
+    deps:
+    - path: data/models/ExtraTree.joblib
+      md5: bff0cadd42fbe18b222284f7bd9045ae
+      size: 2353279
+    - path: data/models/Lasso_prod.joblib
+      md5: 4cf0f3e9065bbb787a7613bd05a635ee
+      size: 1231
+    - path: data/prepared/
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: decision_tree_test.py
+      md5: 37440fbe6d69c56c49cacf4c07a0b15a
+      size: 1853
     params:
       params.yaml:
         decision_tree:
@@ -625,21 +633,21 @@ stages:
             - 48
   decision_tree_test@RandomForest:
     cmd: python decision_tree_test.py -id data/prepared/ -im data/models/RandomForest.joblib
-      -bm data/models/Ridge_prod.joblib -mn RandomForest
+      -bm data/models/Lasso_prod.joblib -mn RandomForest
     deps:
+    - path: data/models/Lasso_prod.joblib
+      md5: 4cf0f3e9065bbb787a7613bd05a635ee
+      size: 1231
     - path: data/models/RandomForest.joblib
-      md5: 7ad8aec46ad172fcfa58484336cbbd36
-      size: 1621551
-    - path: data/models/Ridge_prod.joblib
-      md5: 1eecf0a02c06409c88f5a5bbae88a454
-      size: 1039
+      md5: 9e6dc62792023b3c0809bbb5c334bd6d
+      size: 3599567
     - path: data/prepared/
-      md5: 30dc67899a147b2642a602e678f3c437.dir
-      size: 1843846
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
       nfiles: 8
     - path: decision_tree_test.py
-      md5: 111afd228f98e20e65f8286b42bb90cd
-      size: 2057
+      md5: 37440fbe6d69c56c49cacf4c07a0b15a
+      size: 1853
     params:
       params.yaml:
         decision_tree:
@@ -721,117 +729,19 @@ stages:
             - 4
             - 18
             - 48
-  decision_tree_prod@RandomForest:
-    cmd: python decision_tree_full.py -id data/prepared/ -od data/models/ -mn RandomForest
-    deps:
-    - path: data/models/RandomForest.joblib
-      md5: 7ad8aec46ad172fcfa58484336cbbd36
-      size: 1621551
-    - path: data/prepared
-      md5: 30dc67899a147b2642a602e678f3c437.dir
-      size: 1843846
-      nfiles: 8
-    - path: decision_tree_full.py
-      md5: 878cfdfba06e55670e84acb9f320ce39
-      size: 3049
-    params:
-      params.yaml:
-        decision_tree:
-          DecisionTree:
-            max_depth:
-            - 2
-            - 4
-            - 6
-            - 7
-            - 10
-            - 15
-            splitter:
-            - best
-            - random
-            min_samples_split:
-            - 2
-            - 3
-            - 4
-            min_samples_leaf:
-            - 1
-            - 2
-            - 3
-            - 4
-          RandomForest:
-            n_estimators:
-            - 1
-            - 2
-            - 5
-            - 10
-            - 15
-            - 20
-            - 25
-            - 30
-            max_depth:
-            - 2
-            - 4
-            - 6
-            - 7
-            - 10
-            - 15
-            min_samples_split:
-            - 2
-            - 3
-            - 4
-            - 6
-            - 7
-            min_samples_leaf:
-            - 1
-            - 2
-            - 3
-            - 4
-          ExtraTree:
-            n_estimators:
-            - 1
-            - 2
-            - 5
-            - 10
-            - 15
-            - 20
-            - 25
-            - 30
-            max_depth:
-            - 2
-            - 4
-            - 6
-            - 7
-            - 10
-            - 15
-            min_samples_split:
-            - 2
-            - 3
-            - 4
-            - 10
-            - 15
-            min_samples_leaf:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 18
-            - 48
-    outs:
-    - path: data/models/RandomForest_prod.joblib
-      md5: 41d320eb6a80e003051ab104f61f8de5
-      size: 1648945
   decision_tree_prod@DecisionTree:
     cmd: python decision_tree_full.py -id data/prepared/ -od data/models/ -mn DecisionTree
     deps:
     - path: data/models/DecisionTree.joblib
-      md5: fa193ca11e9e6d2f0f45c7092864c9aa
-      size: 57855
+      md5: 3c8d6bddcf32f73d127c397f179f63e2
+      size: 139231
     - path: data/prepared
-      md5: 30dc67899a147b2642a602e678f3c437.dir
-      size: 1843846
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
       nfiles: 8
     - path: decision_tree_full.py
-      md5: 878cfdfba06e55670e84acb9f320ce39
-      size: 3049
+      md5: d4c3c3c9460c942c8bb7c3e79e41eb23
+      size: 3048
     params:
       params.yaml:
         decision_tree:
@@ -915,21 +825,21 @@ stages:
             - 48
     outs:
     - path: data/models/DecisionTree_prod.joblib
-      md5: d79af9130f614c7c8f94a1bd1d89ae1d
-      size: 32769
+      md5: 43e87f2df7aeb31fa4442ac0790d4ff7
+      size: 146097
   decision_tree_prod@ExtraTree:
     cmd: python decision_tree_full.py -id data/prepared/ -od data/models/ -mn ExtraTree
     deps:
     - path: data/models/ExtraTree.joblib
-      md5: 77e622fff754a21c84a32753c14e6e81
-      size: 1604031
+      md5: bff0cadd42fbe18b222284f7bd9045ae
+      size: 2353279
     - path: data/prepared
-      md5: 30dc67899a147b2642a602e678f3c437.dir
-      size: 1843846
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
       nfiles: 8
     - path: decision_tree_full.py
-      md5: 878cfdfba06e55670e84acb9f320ce39
-      size: 3049
+      md5: d4c3c3c9460c942c8bb7c3e79e41eb23
+      size: 3048
     params:
       params.yaml:
         decision_tree:
@@ -1013,5 +923,183 @@ stages:
             - 48
     outs:
     - path: data/models/ExtraTree_prod.joblib
-      md5: 2f3ac16cde8af06c5e2a4c1b732a5b1f
-      size: 1531953
+      md5: a5b7c9d8600c3314b3e723f4f71c9c12
+      size: 896305
+  decision_tree_prod@RandomForest:
+    cmd: python decision_tree_full.py -id data/prepared/ -od data/models/ -mn RandomForest
+    deps:
+    - path: data/models/RandomForest.joblib
+      md5: 9e6dc62792023b3c0809bbb5c334bd6d
+      size: 3599567
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: decision_tree_full.py
+      md5: d4c3c3c9460c942c8bb7c3e79e41eb23
+      size: 3048
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 6
+            - 7
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 10
+            - 15
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 18
+            - 48
+    outs:
+    - path: data/models/RandomForest_prod.joblib
+      md5: 85a2c64a8b6c82b56bc1da744b32af97
+      size: 4525313
+  xgboost:
+    cmd: python xgboost_train.py -id data/prepared -od data/models -bm data/models/Lasso_prod.joblib
+      -p params.yaml
+    deps:
+    - path: data/models/Lasso_prod.joblib
+      md5: 4cf0f3e9065bbb787a7613bd05a635ee
+      size: 1231
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: xgboost_train.py
+      md5: 35583592b3241666492cbfbb28e50eb9
+      size: 2247
+    params:
+      params.yaml:
+        xgboost:
+          n_estimators:
+          - 1
+          - 2
+          - 5
+          - 10
+          - 15
+          - 20
+          - 25
+          - 30
+          max_depth:
+          - 2
+          - 4
+          - 6
+          - 7
+          - 10
+          - 15
+          eta:
+          - 0.8
+          - 0.3
+          - 0.1
+          - 0.05
+          - 0.01
+          subsample:
+          - 0.6
+          - 0.7
+          - 0.8
+          - 0.9
+          - 1.0
+    outs:
+    - path: data/models/xgboost.joblib
+      md5: 4521f92f2aeaee1fa7b090a1a208a505
+      size: 581606
+  xgboost_test:
+    cmd: python xgboost_test.py -id data/prepared -im data/models/xgboost.joblib -bm
+      data/models/Lasso_prod.joblib
+    deps:
+    - path: data/models/Lasso_prod.joblib
+      md5: 4cf0f3e9065bbb787a7613bd05a635ee
+      size: 1231
+    - path: data/models/xgboost.joblib
+      md5: 4521f92f2aeaee1fa7b090a1a208a505
+      size: 581606
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: xgboost_test.py
+      md5: 9a5b44083043d5a50a30300be442ad9f
+      size: 1423
+  xgboost_prod:
+    cmd: python xgboost_full.py -id data/prepared -od data/models
+    deps:
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: xgboost_full.py
+      md5: def46f1a7e02e503e8d7bd7896bf650e
+      size: 1419
+    outs:
+    - path: data/models/xgboost_prod.joblib
+      md5: a5a397012f9c491da7321d20cdcd4375
+      size: 407102

@@ -56,9 +56,9 @@ if __name__ == '__main__':
     X_val = pd.read_csv(X_val_name)
     y_val = pd.read_csv(y_val_name)
 
-    random.seed(18)
+    random.seed(42)
     decision_tree_model = TREES_MODELS_MAPPER.get(args.model_name)()
-    decision_tree_regressor = GridSearchCV(decision_tree_model, params[args.model_name], scoring='neg_root_mean_squared_error')
+    decision_tree_regressor = GridSearchCV(decision_tree_model, params[args.model_name], scoring='neg_root_mean_squared_error', n_jobs=-1, cv=10)
 
     if isinstance(decision_tree_model, RandomForestRegressor) or isinstance(decision_tree_model, ExtraTreesRegressor):
         y_train = np.ravel(y_train.values)
