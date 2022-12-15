@@ -137,7 +137,7 @@ stages:
       - data/models/CatRegressor_prod.joblib
 
   NN:
-    cmd: python NN.py -id data/prepared/ -od data/models/ -logd data/logs/ -bm data/models/DecisionTree_prod.joblib -p params.yaml -mn NN
+    cmd: python NN.py -id data/prepared/ -od data/models/ -logd data/logs/ -bm data/models/DecisionTree_prod.joblib -p params.yaml
     deps:
       - NN.py
       - data/prepared/
@@ -146,3 +146,20 @@ stages:
       - data/models/NN
     params:
       - NN
+
+  NN_validation:
+    cmd: python NN_validation.py -id data/prepared/ -im data/models/NN -bm data/models/DecisionTree_prod.joblib
+    deps:
+      - NN_validation.py
+      - data/prepared
+      - data/models/NN
+      - data/models/DecisionTree_prod.joblib
+
+  NN_prod_version:
+    cmd: python NN_full.py -id data/prepared/ -od data/models/NN_prod -im data/models/NN -logd data/logs/
+    deps:
+      - NN_full.py
+      - data/prepared/
+      - data/models/NN
+    outs:
+      - data/models/NN_prod

@@ -1180,3 +1180,74 @@ stages:
     - path: data/models/CatRegressor_prod.joblib
       md5: 80963b3c9d94765551b3f4db4ce29ba5
       size: 122
+  NN:
+    cmd: python NN.py -id data/prepared/ -od data/models/ -logd data/logs/ -bm data/models/DecisionTree_prod.joblib
+      -p params.yaml
+    deps:
+    - path: NN.py
+      md5: c7ee402723df8b0cc120d379341cbb73
+      size: 8171
+    - path: data/models/DecisionTree_prod.joblib
+      md5: 0e4dddfc8002d2944ec145ddd24913c7
+      size: 164689
+    - path: data/prepared/
+      md5: cff05e31f442fd4e0f940d6cc9245411.dir
+      size: 6062338
+      nfiles: 8
+    params:
+      params.yaml:
+        NN:
+          neurons_cnt:
+          - 50
+          - 100
+          - 150
+          batch_size:
+          - 32
+          - 64
+          - 96
+          learning_rate:
+          - 0.03
+          - 0.05
+          - 0.09
+    outs:
+    - path: data/models/NN
+      md5: 0c452c322640a3072724e5269701d2f8.dir
+      size: 60402
+      nfiles: 5
+  NN_validation:
+    cmd: python NN_validation.py -id data/prepared/ -im data/models/NN -bm data/models/DecisionTree_prod.joblib
+    deps:
+    - path: NN_validation.py
+      md5: 0efc55dcda7f7ac54dcce40eda3e35e8
+      size: 1754
+    - path: data/models/DecisionTree_prod.joblib
+      md5: 0e4dddfc8002d2944ec145ddd24913c7
+      size: 164689
+    - path: data/models/NN
+      md5: 0c452c322640a3072724e5269701d2f8.dir
+      size: 60402
+      nfiles: 5
+    - path: data/prepared
+      md5: cff05e31f442fd4e0f940d6cc9245411.dir
+      size: 6062338
+      nfiles: 8
+  NN_prod_version:
+    cmd: python NN_full.py -id data/prepared/ -od data/models/NN_prod -im data/models/NN
+      -logd data/logs/
+    deps:
+    - path: NN_full.py
+      md5: 14c30f3dbbcc6dddab798bc6edf4bd98
+      size: 3749
+    - path: data/models/NN
+      md5: 0c452c322640a3072724e5269701d2f8.dir
+      size: 60402
+      nfiles: 5
+    - path: data/prepared/
+      md5: cff05e31f442fd4e0f940d6cc9245411.dir
+      size: 6062338
+      nfiles: 8
+    outs:
+    - path: data/models/NN_prod
+      md5: 08cc878b66e49223c69def1aa4e0be0b.dir
+      size: 53391
+      nfiles: 5
