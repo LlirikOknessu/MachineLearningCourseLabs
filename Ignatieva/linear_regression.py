@@ -41,9 +41,13 @@ if __name__ == '__main__':
 
     X_train_name = input_dir / 'X_train.csv'
     y_train_name = input_dir / 'y_train.csv'
+    X_test_name = input_dir / 'X_test.csv'
+    y_test_name = input_dir / 'y_test.csv'
 
     X_train = pd.read_csv(X_train_name)
     y_train = pd.read_csv(y_train_name)
+    X_test = pd.read_csv(X_test_name)
+    y_test = pd.read_csv(y_test_name)
 
     reg = LINEAR_MODELS_MAPPER.get(model_name)().fit(X_train, y_train)
 
@@ -51,12 +55,12 @@ if __name__ == '__main__':
     y_std = y_train.std()
     y_pred_baseline = np.random.normal(y_mean, y_std, len(y_train))
 
-    predicted_values = np.squeeze(reg.predict(X_train))
+    predicted_values = np.squeeze(reg.predict(X_test))
 
-    print(reg.score(X_train, y_train))
+    print(reg.score(X_test, y_test))
     print("Mean posttest value: ", y_mean)
     print("Baseline MAE: ", mean_absolute_error(y_train, y_pred_baseline))
-    print("Model MAE: ", mean_absolute_error(y_train, predicted_values))
+    print("Model MAE: ", mean_absolute_error(y_test, predicted_values))
 
     intercept = reg.intercept_.astype(float)
 
