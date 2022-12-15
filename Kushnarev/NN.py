@@ -21,32 +21,40 @@ def parser_args_for_sac():
                         required=False, help='path to input data directory')
     parser.add_argument('--output_dir', '-od', type=str, default='data/models/',
                         required=False, help='path to save prepared data')
-    parser.add_argument('--logs_dir', '-logd', type=str, default='data/models/',
+    parser.add_argument('--logs_dir', '-logd', type=str, default='data/logs/',
                         required=False, help='path to save prepared data')
-    parser.add_argument('--baseline_model', '-bm', type=str, default='data/models/RandomForest_prod.joblib',
+    parser.add_argument('--baseline_model', '-bm', type=str, default='data/models/DecisionTree_prod.joblib',
                         required=False, help='path to linear regression prod version')
     parser.add_argument('--params', '-p', type=str, default='params.yaml', required=False,
                         help='file with dvc stage params')
-    parser.add_argument('--model_name', '-mn', type=str, default='LR', required=False,
+    parser.add_argument('--model_name', '-mn', type=str, default='NN', required=False,
                         help='file with dvc stage params')
     return parser.parse_args()
 
 
 class SomeModel(Model):
-  def __init__(self, hidden_layers=3, neurons_cnt=128):
+  def __init__(self, neurons_cnt=128):
     super(SomeModel, self).__init__()
-    self.hidden_layers = hidden_layers
-
     self.d_in = Dense(8, activation='relu')
-    for cnt in range(self.hidden_layers):
-      self.__dict__[f'd{cnt}'] = Dense(neurons_cnt, activation='relu')
+    self.d_1 = Dense(neurons_cnt, activation='relu')
+    self.d_2 = Dense(neurons_cnt, activation='relu')
     self.d_out = Dense(1)
 
   def call(self, x):
-    x = self.d_in(x)
-    for cnt in range(self.hidden_layers):
-      x = getattr(self, f'd{cnt}')(x)
-    return self.d_out(x)
+      x = self.d_in(x)
+      x = self.d_1(x)
+      return self.d_out(x)
+
+  #   self.d_in = Dense(8, activation='relu')
+  #   for cnt in range(self.hidden_layers):
+  #     self.__dict__[f'd{cnt}'] = Dense(neurons_cnt, activation='relu')
+  #   self.d_out = Dense(1)
+  #
+  # def call(self, x):
+  #   x = self.d_in(x)
+  #   for cnt in range(self.hidden_layers):
+  #     x = getattr(self, f'd{cnt}')(x)
+  #   return self.d_out(x)
 
 
 @tf.function
@@ -70,6 +78,7 @@ def test_step(model, input_vector, labels):
 
   test_loss(t_loss)
   test_accuracy(labels, predictions)
+
 
 if __name__ == '__main__':
     args = parser_args_for_sac()
@@ -97,22 +106,27 @@ if __name__ == '__main__':
     y_test = pd.read_csv(y_test_name)
 
     BUFFER_SIZE = 128
-    EPOCHS = 50
+    EPOCHS = 16
 
     HP_NEURONS_CNT = params['neurons_cnt']
     HP_HIDDEN_LAYERS = params['hidden_layers']
     HP_BATCH_SIZE = params['batch_size']
     HP_LEARNING_RATE = params['learning_rate']
 
+    # HP_NEURONS_CNT = [100]
+    # HP_HIDDEN_LAYERS = [3]
+    # HP_BATCH_SIZE = [64]
+    # HP_LEARNING_RATE = [0.09]
+
     bestMAE = 100
     bestHP = []
 
     for neurons_cnt in HP_NEURONS_CNT:
-        for hidden_layers in HP_HIDDEN_LAYERS:
+        # for hidden_layers in HP_HIDDEN_LAYERS:
             for batch_size in HP_BATCH_SIZE:
                 for learning_rate in HP_LEARNING_RATE:
-                    print("\nPARAMETERS ARE: neurons_cnt: {}, hidden_layers: {}, batch_size: {}, learning_rate: {}\n".format(
-                        *[str(x) for x in [neurons_cnt, hidden_layers, batch_size, learning_rate]]
+                    print("\nPARAMETERS ARE: neurons_cnt: {}, batch_size: {}, learning_rate: {}\n".format(
+                        *[str(x) for x in [neurons_cnt, batch_size, learning_rate]]
                     ))
                     X_train_copy = pd.read_csv(X_train_name)
                     y_train_copy = pd.read_csv(y_train_name)
@@ -123,7 +137,7 @@ if __name__ == '__main__':
                         (X_train_copy, y_train_copy)).shuffle(BUFFER_SIZE).batch(batch_size)
                     test_ds = tf.data.Dataset.from_tensor_slices((X_test_copy, y_test_copy)).batch(batch_size)
 
-                    model = SomeModel(hidden_layers=hidden_layers, neurons_cnt=neurons_cnt)
+                    model = SomeModel(neurons_cnt=neurons_cnt)
 
                     loss_object = tf.keras.losses.MeanSquaredError()
                     optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate)
@@ -134,7 +148,7 @@ if __name__ == '__main__':
                     test_loss = tf.keras.metrics.Mean(name='test_loss')
                     test_accuracy = tf.keras.metrics.MeanAbsoluteError(name='test_mae')
 
-                    paramName = "_".join(str(x) for x in [neurons_cnt, hidden_layers, batch_size, learning_rate])
+                    paramName = "_".join(str(x) for x in [neurons_cnt, batch_size, learning_rate])
 
                     current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
                     train_log_dir = logs_path / paramName / 'gradient_tape' / current_time / 'train'
@@ -144,7 +158,7 @@ if __name__ == '__main__':
                     train_summary_writer = tf.summary.create_file_writer(str(train_log_dir))
                     test_summary_writer = tf.summary.create_file_writer(str(test_log_dir))
 
-                    logdir = logs_path / paramName / "fit" / datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+                    logdir = logs_path / "trash" / paramName / "fit" / datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
                     logdir.mkdir(exist_ok=True, parents=True)
                     fit_summary_writer = tf.summary.create_file_writer(str(logdir))
 
@@ -176,8 +190,9 @@ if __name__ == '__main__':
                         if epoch == EPOCHS-1:
                             if test_accuracy.result() < bestMAE:
                                 bestMAE = test_accuracy.result()
-                                bestHP = [neurons_cnt, hidden_layers, batch_size, learning_rate]
-                                # model.save('data/models/NN')
+                                bestHP = [neurons_cnt, batch_size, learning_rate]
+                                model.save('data/models/NN', overwrite=True)
+
 
                         # Reset metrics every epoch
                         train_loss.reset_states()
@@ -185,12 +200,13 @@ if __name__ == '__main__':
                         train_accuracy.reset_states()
                         test_accuracy.reset_states()
 
+                    # tf.keras.models.save_model(model, 'data/models/NN', overwrite=True)
                     with fit_summary_writer.as_default():
                         tf.summary.trace_export(
                             name="my_func_trace",
                             step=0,
                             profiler_outdir=logdir)
 
-    print("Best params are:\nneurons_cnt: {}, hidden_layers: {}, batch_size: {}, learning_rate: {}".format(
-        *[str(x) for x in bestHP]
-    ))
+    # print("Best params are:\nneurons_cnt: {}, batch_size: {}, learning_rate: {}".format(
+    #     *[str(x) for x in bestHP]
+    # ))
