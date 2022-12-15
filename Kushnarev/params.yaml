@@ -38,7 +38,6 @@ cat_boost:
   silent: [True]
 
 NN:
-  neurons_cnt: [100, 150 ]
-  hidden_layers: [3, 6]
-  batch_size: [64, 96]
-  learning_rate: [0.05, 0.09]
+  neurons_cnt: [50 ,100, 150]
+  batch_size: [32, 64, 96]
+  learning_rate: [0.03, 0.05, 0.09]
