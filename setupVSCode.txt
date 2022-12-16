@@ -14,6 +14,13 @@
     Right click on the directory/files in Source Control tab and choose Add to .gitignore
 
 
+to deactivate vitual environment
+$ deactivate
+
+to delete vitual environment
+$ rm -r .venv
+
+
 **Note for using git
 Clone:  Make a copy of remote repository onto local system
 Commit: Make record of changes on local system
