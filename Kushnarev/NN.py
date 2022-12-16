@@ -40,6 +40,7 @@ class SomeModel(Model):
   def call(self, x):
       x = self.d_in(x)
       x = self.d_1(x)
+      x = self.d_2(x)
       return self.d_out(x)
 
 
@@ -93,10 +94,9 @@ if __name__ == '__main__':
     HP_BATCH_SIZE = params['batch_size']
     HP_LEARNING_RATE = params['learning_rate']
 
-    # HP_NEURONS_CNT = [100]
-    # HP_HIDDEN_LAYERS = [3]
-    # HP_BATCH_SIZE = [64]
-    # HP_LEARNING_RATE = [0.09]
+    HP_NEURONS_CNT = [50]
+    HP_BATCH_SIZE = [32]
+    HP_LEARNING_RATE = [0.09]
 
     bestMAE = 100
     bestHP = []
