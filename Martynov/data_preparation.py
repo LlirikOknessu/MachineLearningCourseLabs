@@ -25,26 +25,12 @@ if __name__ == '__main__':
     output_dir.mkdir(exist_ok=True, parents=True)
 
     full_data = pd.read_csv('data/raw/Summary_of_Weather.csv')
-    zeros = full_data.isnull().sum()
-    zeros_percentages = zeros*100 / full_data.shape[0]
-    zeros_df = pd.DataFrame({'Null Percentage (%)': zeros_percentages})
 
-    dropped_cols = [col for col in zeros_df.index if zeros_df.loc[col][0] > 50]
-    full_data.drop(columns=dropped_cols, inplace=True)
-    full_data.drop(columns=['MIN', 'MAX', 'MEA', 'PRCP'], inplace=True)
     full_data['Snowfall'].replace(to_replace='#VALUE!', value=0, inplace=True)
-    full_data['Snowfall'] = full_data['Snowfall'].fillna(0)
-    full_data['Snowfall'] = full_data['Snowfall'].astype(float)
-    full_data['Precip'] = full_data['Precip'].fillna(method='bfill')
-    full_data['SNF'] = full_data['SNF'].fillna(0)
-    full_data.drop('Date', axis=1, inplace=True)
-    full_data['Precip'] = full_data['Precip'].replace('T', 0)
-    full_data['Precip'] = full_data.Precip.astype(float)
-    full_data['SNF'] = full_data['SNF'].replace('T', 0)
-    full_data['SNF'] = full_data['SNF'].astype(float)
-    full_data.drop('STA', axis=1, inplace=True)
+    full_data['Snowfall'] = full_data['Snowfall'].fillna(0).astype(float)
+    full_data['Precip'] = full_data['Precip'].fillna(method='bfill').replace('T', 0).astype(float)
 
-    X, y = full_data.drop('MeanTemp', axis=1), full_data['MeanTemp']
+    X, y = full_data['YR']+full_data['MO']+full_data['DA']+full_data['MinTemp']+full_data['MaxTemp']+full_data['Snowfall']+full_data['Precip'], full_data['MeanTemp']
     X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                         train_size=params.get('train_test_ratio'),
                                                         random_state=params.get('random_state'))
