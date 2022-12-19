@@ -88,7 +88,7 @@ if __name__ == '__main__':
     y_test_name = input_dir / 'y_test.csv'
 
     BUFFER_SIZE = 128
-    EPOCHS = 40
+    EPOCHS = 10
 
     HP_NEURONS_CNT = params['neurons_cnt']
     HP_BATCH_SIZE = params['batch_size']
