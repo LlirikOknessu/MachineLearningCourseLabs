@@ -126,3 +126,28 @@ stages:
       - data/models/${CatBoosting.model_name}_prod.joblib
     params:
       - CatBoosting
+  NeuralNetwork:
+    cmd: python NeuralNetwork.py -id data/prepared -od data/models -mn ${NeuralNetwork} -p params.yaml
+    deps:
+      - NeuralNetwork.py
+      - data/prepared
+    outs:
+      - data/models/NeuralNetwork
+    params:
+      - NeuralNetwork
+  NeuralNetwork_validation:
+    cmd: python NeuralNetwork_validation.py -id data/prepared/ -im data/models/NeuralNetwork -bm data/models/${linear_regression.model_name}_prod.joblib
+    deps:
+      - NeuralNetwork_validation.py
+      - data/prepared/
+      - data/models/
+    params:
+      - NeuralNetwork
+  NeuralNetwork_prod_version:
+    cmd: python NeuralNetwork_full.py -id data/prepared/ -od data/models -bm data/models/${linear_regression.model_name}_prod.joblib
+    deps:
+      - NeuralNetwork_full.py
+      - data/prepared
+      - data/models/NeuralNetwork
+    outs:
+      - data/models/NeuralNetwork_prob
