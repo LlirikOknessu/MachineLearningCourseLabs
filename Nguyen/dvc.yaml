@@ -1,0 +1,155 @@
+stages:
+  data_preparation:
+    cmd: python data_preparation.py -id data/raw -od data/prepared
+    params:
+    - data_preparation
+    deps:
+    - data/raw
+    - data_preparation.py
+    outs:
+    - data/prepared
+  regression_train:
+    cmd: python linear_regression_train.py -id data/prepared -od data/models -mn ${regression.model_name}
+    params:
+    - regression
+    deps:
+    - linear_regression_train.py
+    - data/prepared
+    outs:
+    - data/models/${regression.model_name}.csv
+    - data/models/${regression.model_name}.joblib
+  regression_validation:
+    cmd: python linear_regression_validation.py -id data/prepared -im data/models
+    params:
+    - regression
+    deps:
+    - linear_regression_validation.py
+    - data/prepared
+    - data/models
+  regression_test:
+    cmd: python linear_regression_test.py -id data/prepared -im data/models/${regression.model_name}.joblib -mn ${regression.model_name}
+    params:
+    - regression
+    deps:
+    - linear_regression_test.py
+    - data/prepared
+    - data/models/${regression.model_name}.joblib
+  regression_prod:
+    cmd: python linear_regression_full.py -id data/prepared -od data/models -mn ${regression.model_name}
+    params:
+    - regression
+    deps:
+    - linear_regression_full.py
+    - data/prepared
+    - data/models/${regression.model_name}.joblib
+    outs:
+    - data/models/${regression.model_name}_prod.csv
+    - data/models/${regression.model_name}_prod.joblib
+  decision_tree:
+    foreach: ${decision_tree}
+    do:
+      cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/${regression.model_name}_prod.joblib -mn ${key} -p params.yaml
+      deps:
+        - decision_tree.py
+        - data/prepared
+        - data/models/${regression.model_name}_prod.joblib
+      outs:
+        - data/models/${key}.joblib
+      params:
+        - decision_tree
+  decision_tree_test:
+    foreach: ${decision_tree}
+    do:
+      cmd: python decision_tree_test.py -id data/prepared/ -im data/models/${key}.joblib -bm data/models/${regression.model_name}_prod.joblib -mn ${key}
+      deps:
+        - decision_tree_test.py
+        - data/prepared/
+        - data/models/${key}.joblib
+        - data/models/${regression.model_name}_prod.joblib
+      params:
+        - decision_tree
+  decision_tree_prod:
+    foreach: ${decision_tree}
+    do:
+      cmd: python decision_tree_full.py -id data/prepared/ -od data/models/ -mn ${key}
+      deps:
+        - decision_tree_full.py
+        - data/prepared
+        - data/models/${key}.joblib
+      outs:
+        - data/models/${key}_prod.joblib
+      params:
+        - decision_tree
+  xgboost:
+    cmd: python xgboost_train.py -id data/prepared -od data/models -bm data/models/${regression.model_name}_prod.joblib -p params.yaml
+    deps:
+      - xgboost_train.py
+      - data/prepared
+      - data/models/${regression.model_name}_prod.joblib
+    outs:
+      - data/models/xgboost.joblib
+    params:
+      - xgboost
+  xgboost_test:
+    cmd: python xgboost_test.py -id data/prepared -im data/models/xgboost.joblib -bm data/models/${regression.model_name}_prod.joblib
+    deps:
+      - xgboost_test.py
+      - data/prepared
+      - data/models/xgboost.joblib
+      - data/models/${regression.model_name}_prod.joblib
+  xgboost_prod:
+    cmd: python xgboost_full.py -id data/prepared -od data/models
+    deps:
+      - xgboost_full.py
+      - data/prepared
+    outs:
+      - data/models/xgboost_prod.joblib
+  catboost:
+    cmd: python catboost_train.py -id data/prepared -od data/models -bm data/models/${regression.model_name}_prod.joblib -p params.yaml
+    deps:
+      - catboost_train.py
+      - data/prepared
+      - data/models/${regression.model_name}_prod.joblib
+    outs:
+      - data/models/catboost.joblib
+    params:
+      - catboost
+  catboost_test:
+    cmd: python catboost_test.py -id data/prepared -im data/models/catboost.joblib -bm data/models/${regression.model_name}_prod.joblib
+    deps:
+      - catboost_test.py
+      - data/prepared
+      - data/models/catboost.joblib
+      - data/models/${regression.model_name}_prod.joblib
+  catboost_prod:
+    cmd: python catboost_full.py -id data/prepared -od data/models
+    deps:
+      - catboost_full.py
+      - data/prepared
+    outs:
+      - data/models/catboost_prod.joblib
+  neural_network:
+    cmd: python NN.py -id data/prepared -od data/models -ld data/logs -bm data/models/${regression.model_name}_prod.joblib -p params.yaml
+    deps:
+      - NN.py
+      - data/prepared
+      - data/models/${regression.model_name}_prod.joblib
+    outs:
+      - data/models/NeuNet
+      - data/logs
+    params:
+      - neural_network
+  neural_network_test:
+    cmd: python NN_test.py -id data/prepared -im data/models/NeuNet -ld data/logs -bm data/models/${regression.model_name}_prod.joblib
+    deps:
+      - NN_test.py
+      - data/prepared
+      - data/models/NeuNet
+      - data/models/${regression.model_name}_prod.joblib
+  neural_network_prod:
+    cmd: python NN_full.py -id data/prepared -od data/models -ld data/logs
+    deps:
+      - NN_full.py
+      - data/prepared
+    outs:
+      - data/models/NeuNetProd
