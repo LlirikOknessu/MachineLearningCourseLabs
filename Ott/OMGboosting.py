@@ -6,6 +6,7 @@ import numpy as np
 from sklearn.metrics import mean_absolute_error as mae
 from joblib import dump, load
 import xgboost as xgb
+from sklearn.model_selection import GridSearchCV
 
 def parser_args_for_sac():
     parser = argparse.ArgumentParser(description='Paths parser')
@@ -24,6 +25,10 @@ def parser_args_for_sac():
 if __name__ == '__main__':
     args = parser_args_for_sac()
 
+    with open(args.params, 'r') as f:
+        params_a = yaml.safe_load(f)
+    params = params_a['XGBoosting']
+
     input_dir = Path(args.input_dir)
     output_dir = Path(args.output_dir)
     baseline_model_path = Path(args.baseline_model)
@@ -41,20 +46,28 @@ if __name__ == '__main__':
     X_test = pd.read_csv(X_test_name)
     y_test = pd.read_csv(y_test_name)
 
-    model = xgb.XGBRegressor()
-    model.fit(X_train, y_train)
 
-    preds = model.predict(X_test)
+    model = xgb.XGBRegressor()
+    params_grid = {'n_estimators': params['n_estimators'],
+                   'max_depth': params['max_depth'],
+                   'gamma': params['gamma'],
+                   'min_child_weight': params['min_child_weight'],
+                   }
+    grid_model = GridSearchCV(model, param_grid=params_grid, n_jobs=-1)
+    grid_model.fit(X_train, y_train)
+
+    preds = grid_model.best_estimator_.predict(X_test)
 
     baseline_model_derevo = load(baseline_model_path)
     baseline_preds = baseline_model_derevo.predict(X_test)
 
     print('Model name is: XGBoosting')
-    print('Model scoring: ', model.score(X_test, y_test))
+    print('Best params: ', grid_model.best_params_)
+    print('Model scoring: ', grid_model.best_estimator_.score(X_test, y_test))
     print('Baseline is ExtraTree')
     print('Baseline MAE: ', mae(y_test, baseline_preds))
     print('Model MAE:', mae(y_test, preds))
 
-    dump(model, output_model_joblib_path)
+    dump(grid_model.best_estimator_, output_model_joblib_path)
 
 

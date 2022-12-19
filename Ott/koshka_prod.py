@@ -33,7 +33,7 @@ if __name__ == '__main__':
     X_train = pd.read_csv(X_train_name)
     y_train = pd.read_csv(y_train_name)
 
-    model = MAPPER.get(args.model_name)()
+    model = MAPPER.get(args.model_name)(max_depth=12, n_estimators=80)
     model.fit(X_train, y_train)
 
     dump(model, output_model_joblib_path)

@@ -53,7 +53,7 @@ if __name__ =='__main__':
     y_test = pd.read_csv(y_test_name)
 
     tree_model = MODELS_MAPPER.get(args.model_name)()
-    tree_gridsearch = GridSearchCV(tree_model, params[args.model_name], refit=True, n_jobs=-1)
+    tree_gridsearch = GridSearchCV(tree_model, params['n_estimators'], refit=True, n_jobs=-1)
     if isinstance(tree_model, RandomForestRegressor) or isinstance(tree_model, ExtraTreesRegressor):
         y_train = np.ravel(y_train.values)
         y_test = np.ravel(y_test.values)

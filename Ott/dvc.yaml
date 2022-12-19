@@ -128,4 +128,31 @@ stages:
       - data/models/${Cat.model_name}_prod.joblib
     params:
       - Cat
+  Neyronich:
+    cmd: python neyronich.py -id data/prepared/ -od data/models/ -logd data/logs/ -bm data/models/ExtraTree.joblib
+    deps:
+      - neyronich.py
+      - data/prepared
+      - data/models/ExtraTree.joblib
+    outs:
+      - data/models/MyNN
+    params:
+      - Neyronich
+  Neyronich_invalid:
+    cmd: python neyronich_valid.py -id data/prepared/ -im data/models/MyNN -bm data/models/ExtraTree.joblib
+    deps:
+      - neyronich_valid.py
+      - data/prepared
+      - data/models/MyNN
+      - data/models/ExtraTree.joblib
+  Neyronich_prod:
+    cmd: python neyronich_prod.py -id data/prepared/ -od data/models/ -logd data/logs/
+    deps:
+      - neyronich_prod.py
+      - data/prepared
+    outs:
+      - data/models/MyNN_prod
+    params:
+      - Neyronich_prod
+
 

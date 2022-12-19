@@ -30,7 +30,7 @@ if __name__ == '__main__':
     X_train = pd.read_csv(X_train_name)
     y_train = pd.read_csv(y_train_name)
 
-    model = xgb.XGBRegressor()
+    model = xgb.XGBRegressor(max_depth = 9, gamma = 3, min_child_weight = 9, n_estimators=50)
     model.fit(X_train, y_train)
 
     dump(model, output_model_joblib_path)
