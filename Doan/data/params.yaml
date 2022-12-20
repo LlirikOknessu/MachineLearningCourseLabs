@@ -1,0 +1,4 @@
+data_preparation:
+  train_test_ratio: 0.7
+  train_val_ratio: 0.9
+  random_state: 42
