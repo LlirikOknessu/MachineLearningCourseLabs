@@ -115,7 +115,8 @@ if __name__ == '__main__':
 
     logdir = logs_path / "fit" / datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     logdir.mkdir(exist_ok=True, parents=True)
-    fit_summary_writer = tf.summary.create_file_writer(str(logdir))       
+    fit_summary_writer = tf.summary.create_file_writer(str(logdir))
+
     tf.summary.trace_on(graph=True, profiler=True)
                             
     for epoch in range(EPOCHS):
@@ -127,9 +128,9 @@ if __name__ == '__main__':
             tf.summary.scalar('accuracy', train_accuracy.result(), step=epoch)
         for (X_val, y_val) in val_ds:
             val_net(X_val, y_val, net, loss, val_loss, val_accuracy)
-        with train_summary_writer.as_default():
-            tf.summary.scalar('loss', train_loss.result(), step=epoch)
-            tf.summary.scalar('mse', train_accuracy.result(), step=epoch)
+        with val_summary_writer.as_default():
+            tf.summary.scalar('loss', val_loss.result(), step=epoch)
+            tf.summary.scalar('mse', val_accuracy.result(), step=epoch)
 
         template = 'Epoch {}, Loss: {}, Accuracy: {}, val Loss: {}, val MSE: {}'
         print (template.format(epoch+1,

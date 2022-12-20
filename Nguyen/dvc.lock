@@ -1149,16 +1149,16 @@ stages:
     cmd: python NN_full.py -id data/prepared -od data/models -ld data/logs
     deps:
     - path: NN_full.py
-      md5: 8ab29cbfae6cb8eea170be5a2041bf9c
-      size: 6396
+      md5: 1e04406d8138a8d6289510ef56380952
+      size: 6385
     - path: data/prepared
       md5: e5025d53c479210f5849ed5d92ad8653.dir
       size: 2272754
       nfiles: 8
     outs:
     - path: data/models/NeuNetProd
-      md5: 5a8d7daf5c399ca2c4401bf55e40e52d.dir
-      size: 794958
+      md5: 12073581a64b3f78ee4fbce3e24a2131.dir
+      size: 794959
       nfiles: 5
   neural_network_test:
     cmd: python NN_test.py -id data/prepared -im data/models/NeuNet -ld data/logs
