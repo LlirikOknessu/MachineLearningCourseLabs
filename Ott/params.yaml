@@ -1,0 +1,22 @@
+data_preparation:
+  train_test_ratio: 0.8
+  train_val_ratio: 0.9
+  random_state: 42
+linear_regression:
+  model_name: 'LinearRegression'
+decision_tree:
+  DecisionTree:
+    max_depth: [2, 10, 18, 26, 34, 42, 50, 58, 66, 74, 82, 90, 98]
+    splitter: ['best', 'random']
+    min_samples_split: [2 ,8, 14, 20, 26, 32, 38, 44]
+    min_samples_leaf: [2 ,8, 14, 20, 26, 32, 38, 44]
+  RandomForest:
+    n_estimators: [2, 6, 10, 14, 20, 25, 40]
+    max_depth: [2, 10, 18, 26, 34, 42, 50, 58, 66, 74]
+    min_samples_split: [2 ,8, 14, 20]
+    min_samples_leaf: [2 ,8, 14, 20]
+  ExtraTree:
+    n_estimators: [ 2, 6, 10, 14, 20, 25, 40 ]
+    max_depth: [ 2, 10, 18, 26, 34, 42, 50, 58, 66, 74 ]
+    min_samples_split: [ 2 ,8, 14, 20 ]
+    min_samples_leaf: [ 2 ,8, 14, 20 ]

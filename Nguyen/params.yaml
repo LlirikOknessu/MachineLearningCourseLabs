@@ -43,3 +43,4 @@ neural_network:
   buffer_size: [64, 128, 256]
   neurons: [128, 256, 512]
   learning_rate: [0.005, 0.01, 0.03]
+
