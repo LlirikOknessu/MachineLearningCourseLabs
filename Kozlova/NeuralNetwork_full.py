@@ -13,6 +13,7 @@ from tensorflow.keras import Model
 from pathlib import Path
 from sklearn.model_selection import ParameterGrid
 from joblib import dump, load
+from NeuralNetwork import SomeModel
 import pandas as pd
 
 def parser_args_for_sac():
@@ -25,24 +26,6 @@ def parser_args_for_sac():
                         required=False, help='path to linear regression prod version')
     return parser.parse_args()
 
-class SomeModel(Model):
-  def __init__(self, neurons_cnt):
-    super(SomeModel, self).__init__()
-    self.d_in = Dense(8, activation='sigmoid')
-    self.d_1 = Dense(neurons_cnt, activation='sigmoid')
-    self.d_2 = Dense(neurons_cnt, activation='sigmoid')
-    self.d_3 = Dense(neurons_cnt, activation='sigmoid')
-    self.d_4 = Dense(neurons_cnt, activation='sigmoid')
-    self.d_out = Dense(1)
-
-  def call(self, x):
-    x = self.d_in(x)
-    x = self.d_1(x)
-    x = self.d_2(x)
-    x = self.d_3(x)
-    x = self.d_4(x)
-
-    return self.d_out(x)
 
 @tf.function
 def train_step(input_vector, labels):
@@ -66,10 +49,6 @@ if __name__ == '__main__':
 
     input_dir = Path('./data/prepared')
     logs_path = Path('./data/logs')
-    if logs_path.exists():
-        shutil.rmtree(logs_path)
-    logs_path.mkdir(parents=True)
-
 
     X_train_name = input_dir / 'X_full.csv'
     y_train_name = input_dir / 'y_full.csv'
@@ -87,7 +66,7 @@ if __name__ == '__main__':
             (X_train, y_train)).shuffle(BUFFER_SIZE).batch(paramset['BATCH_SIZE'])
 
         loss_object = tf.keras.losses.MeanSquaredError()
-        optimizer = tf.keras.optimizers.SGD(learning_rate=paramset['LEARNING_RATE'])
+        optimizer = tf.keras.optimizers.Adam(learning_rate=paramset['LEARNING_RATE'])
 
         train_loss = tf.keras.metrics.Mean(name='train_loss')
         train_accuracy = tf.keras.metrics.MeanAbsoluteError(name='train_mae')
@@ -130,6 +109,12 @@ if __name__ == '__main__':
           train_loss.reset_states()
           train_accuracy.reset_states()
 
+        with fit_summary_writer.as_default():
+            tf.summary.trace_export(
+                name="my_func_trace",
+                step=0,
+                profiler_outdir=logdir)
+
     args = parser_args_for_sac()
     X_full = pd.read_csv(X_train_name)
     y_full = pd.read_csv(y_train_name)
@@ -139,10 +124,5 @@ if __name__ == '__main__':
 
     print("Baseline MAE: ", mean_absolute_error(y_full, y_pred_baseline))
 
-    with fit_summary_writer.as_default():
-        tf.summary.trace_export(
-            name="my_func_trace",
-            step=0,
-            profiler_outdir=logdir)
 
 model.save('data/models/NeuralNetwork_prob', overwrite=True)

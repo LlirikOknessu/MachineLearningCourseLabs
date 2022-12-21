@@ -27,6 +27,8 @@ if __name__ == '__main__':
     input_model = Path(args.input_model)
     baseline_model_path = Path(args.baseline_model)
 
+    logs_path = Path('./data/logs')
+
     X_val_name = input_dir / 'X_val.csv'
     y_val_name = input_dir / 'y_val.csv'
 

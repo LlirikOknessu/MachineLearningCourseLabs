@@ -15,22 +15,22 @@ import pandas as pd
 class SomeModel(Model):
   def __init__(self, neurons_cnt):
     super(SomeModel, self).__init__()
-    self.d_in = Dense(8, activation='sigmoid')
+    self.d_in = Dense(8, activation='relu')
     self.d_1 = Dense(neurons_cnt, activation='sigmoid')
-    self.d_2 = Dense(neurons_cnt, activation='sigmoid')
-    self.d_3 = Dense(neurons_cnt, activation='sigmoid')
-    self.d_4 = Dense(neurons_cnt, activation='sigmoid')
+    self.d_2 = Dense(neurons_cnt, activation='relu')
+    #self.d_3 = Dense(neurons_cnt, activation='relu')
+    #self.d_4 = Dense(neurons_cnt, activation='relu')
     self.d_out = Dense(1)
 
   def call(self, x):
     x = self.d_in(x)
     x = self.d_1(x)
     x = self.d_2(x)
-    x = self.d_3(x)
-    x = self.d_4(x)
-
+    #x = self.d_3(x)
+    #x = self.d_4(x)
     return self.d_out(x)
 
+@tf.function
 def train_step(input_vector, labels):
   with tf.GradientTape() as tape:
     # training=True is only needed if there are layers with different
@@ -43,6 +43,7 @@ def train_step(input_vector, labels):
   train_loss(loss)
   train_accuracy(labels, predictions)
 
+@tf.function
 def test_step(input_vector, labels):
     # training=False is only needed if there are layers with different
     # behavior during training versus inference (e.g. Dropout).
@@ -56,15 +57,12 @@ def test_step(input_vector, labels):
 if __name__ == '__main__':
     random.seed(35)
     BUFFER_SIZE = 128
-    EPOCHS = 50
+    EPOCHS = 100
     defaultMAE = 100
     bestParam = []
 
     input_dir = Path('./data/prepared')
     logs_path = Path('./data/logs')
-    if logs_path.exists():
-        shutil.rmtree(logs_path)
-    logs_path.mkdir(parents=True)
 
     with open('params.yaml', 'r') as f:
         params_all = yaml.safe_load(f)
@@ -76,6 +74,8 @@ if __name__ == '__main__':
     y_test_name = input_dir / 'y_test.csv'
 
     grid = ParameterGrid(params['NeuralNetwork'])
+
+    number = 0
 
     for paramset in grid:
         X_train = pd.read_csv(X_train_name)
@@ -152,12 +152,15 @@ if __name__ == '__main__':
           train_accuracy.reset_states()
           test_accuracy.reset_states()
 
-    with fit_summary_writer.as_default():
-        tf.summary.trace_export(
-            name="my_func_trace",
-            step=0,
-            profiler_outdir=logdir)
+        numberName = str(number)
+        with fit_summary_writer.as_default():
+            tf.summary.trace_export(
+                name="my_func_trace" + numberName,
+                step=0,
+                profiler_outdir=logdir)
+        number = number + 1
 
-print(bestParam)
+    print(bestParam)
+
 
 
