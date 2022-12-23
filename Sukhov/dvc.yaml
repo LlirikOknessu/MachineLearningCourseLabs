@@ -1,0 +1,138 @@
+# next para - pull request
+# 1 stage + 3 stages na next
+stages:
+  data_preparation:
+    cmd: python data_preparation.py -id data/raw -od data/prepared
+    deps:
+      - data_preparation.py
+      - data/raw
+    outs:
+      - data/prepared
+    params:
+      - data_preparation
+  linear_regression:
+    cmd: python linear_regression.py -id data/prepared -od data/models -mn ${linear_regression.model_name}
+    deps:
+      - linear_regression.py
+      - data/prepared
+    outs:
+      - data/models/${linear_regression.model_name}.csv
+      - data/models/${linear_regression.model_name}.joblib
+    params:
+      - linear_regression
+  linear_regression_validation:
+    cmd: python linear_regression_validation.py -id data/prepared/ -im data/models/${linear_regression.model_name}.joblib -mn ${linear_regression.model_name}
+    deps:
+      - linear_regression_validation.py
+      - data/prepared/
+      - data/models/${linear_regression.model_name}.joblib
+    params:
+      - linear_regression
+  linear_regression_prod_version:
+    cmd: python linear_regression_full.py -id data/prepared/ -od data/models/ -mn ${linear_regression.model_name}
+    deps:
+      - linear_regression_full.py
+      - data/prepared
+      - data/models/${linear_regression.model_name}.joblib
+    outs:
+      - data/models/${linear_regression.model_name}_prod.csv
+      - data/models/${linear_regression.model_name}_prod.joblib
+    params:
+      - linear_regression
+  decision_tree:
+    foreach: ${decision_tree}
+    do:
+      cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/${linear_regression.model_name}_prod.joblib -mn ${key} -p params.yaml
+      deps:
+        - decision_tree.py
+        - data/prepared
+        - data/models/${linear_regression.model_name}_prod.joblib
+      outs:
+        - data/models/${key}.joblib
+      params:
+        - decision_tree
+  decision_tree_validation:
+    foreach: ${decision_tree}
+    do:
+      cmd: python decision_tree_validation.py -id data/prepared/ -im data/models/${key}.joblib -bm data/models/${linear_regression.model_name}_prod.joblib -mn ${key}
+      deps:
+        - decision_tree_validation.py
+        - data/prepared/
+        - data/models/${key}.joblib
+        - data/models/${linear_regression.model_name}_prod.joblib
+      params:
+        - decision_tree
+  decision_tree_prod_version:
+    foreach: ${decision_tree}
+    do:
+      cmd: python decision_tree_full.py -id data/prepared/ -od data/models/ -mn ${key}
+      deps:
+        - decision_tree_full.py
+        - data/prepared
+        - data/models/${key}.joblib
+      outs:
+        - data/models/${key}_prod.joblib
+      params:
+        - decision_tree
+  boosting:
+    foreach: ${boosting}
+    do:
+      cmd: python boosting.py -id data/prepared -od data/models -bm data/models/${linear_regression.model_name}_prod.joblib -mn ${key} -p params.yaml
+      deps:
+        - boosting.py
+        - data/prepared
+        - data/models/${linear_regression.model_name}_prod.joblib
+      outs:
+        - data/models/${key}.joblib
+      params:
+        - boosting
+  boosting_validation:
+    foreach: ${boosting}
+    do:
+        cmd: python boosting_validation.py -id data/prepared/ -im data/models/${key}.joblib -bm data/models/${linear_regression.model_name}_prod.joblib -mn ${key}
+        deps:
+          - boosting_validation.py
+          - data/prepared/
+          - data/models/${key}.joblib
+          - data/models/${linear_regression.model_name}_prod.joblib
+        params:
+          - boosting
+  boosting_prod_version:
+    foreach: ${boosting}
+    do:
+        cmd: python boosting_full.py -id data/prepared/ -od data/models/ -mn ${key}
+        deps:
+          - boosting_full.py
+          - data/prepared
+          - data/models/${key}.joblib
+        outs:
+          - data/models/${key}_prod.joblib
+        params:
+          - boosting
+  NeuralNetwork:
+    cmd: python NeuralNetwork.py -id data/prepared/ -od data/models/ -logd data/logs/ -bm data/models/ExtraTree.joblib
+    deps:
+      - NeuralNetwork.py
+      - data/prepared
+      - data/models/ExtraTree.joblib
+    outs:
+      - data/models/NeuralNetwork
+    params:
+      - NeuralNetwork
+  NeuralNetwork_Validaion:
+    cmd: python NeuralNetwork_Validaion.py -id data/prepared/ -im data/models/NeuralNetwork -bm data/models/ExtraTree.joblib
+    deps:
+      - NeuralNetwork_Validaion.py
+      - data/prepared
+      - data/models/NeuralNetwork
+      - data/models/ExtraTree.joblib
+  NeuralNetwork_full:
+    cmd: python NeuralNetwork_full.py -id data/prepared/ -od data/models/ -logd data/logs/
+    deps:
+      - NeuralNetwork_full.py
+      - data/prepared
+    outs:
+      - data/models/NeuralNetwork_full
+    params:
+      - NeuralNetwork_full
+
