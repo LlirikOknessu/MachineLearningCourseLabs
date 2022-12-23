@@ -55,7 +55,7 @@ if __name__ == '__main__':
     reg = reg.fit(X_train, y_train)
 
     if isinstance(reg, tree.DecisionTreeRegressor):
-        fig = plt.figure(figsize=(16.54,11.69), dpi=300)
+        fig = plt.figure(figsize=(16.54, 11.69), dpi=300)
         _ = tree.plot_tree(reg,
                            feature_names=X_train.columns,
                            class_names=y_train_cols,
@@ -65,4 +65,7 @@ if __name__ == '__main__':
         fig.savefig(output_model_path)
     dump(reg, output_model_joblib_path)
 
+    predicted_values = np.squeeze(reg.predict(X_train))
+
     print(reg.score(X_train, y_train))
+    print("Model MAE: ", mean_absolute_error(y_train, predicted_values))

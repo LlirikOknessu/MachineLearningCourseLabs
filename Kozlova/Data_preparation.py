@@ -4,6 +4,7 @@ from pathlib import Path
 from sklearn import preprocessing
 import yaml
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 
 
@@ -110,6 +111,18 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df = df[df['Adult_Mortality'].notna()]
     df = df[df['Region'].notna()]
     df = to_categorical(df)
+
+    scaler = MinMaxScaler()
+    year = df['Year'].values.reshape(-1, 1)
+    year_scaled = scaler.fit_transform(year)
+    df['Year'] = year_scaled
+    #adultMortality = df['Adult_Mortality'].values.reshape(-1, 1)
+    #adultMortality_scaled = scaler.fit_transform(adultMortality)
+    #df['Adult_Mortality'] = adultMortality_scaled
+    life = df['Life_expectancy_'].values.reshape(-1, 1)
+    life_scaled = scaler.fit_transform(life)
+    df['Life_expectancy_'] = life_scaled
+
     return df
 
 

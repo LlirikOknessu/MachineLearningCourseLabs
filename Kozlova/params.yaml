@@ -29,6 +29,6 @@ CatBoosting:
   learning_rate: 0.45
   loss_function: 'RMSE'
 NeuralNetwork:
-  neurons_cnt: [2048]
-  BATCH_SIZE: [64]
-  LEARNING_RATE: [0.005]
+  neurons_cnt: [32, 64, 128]
+  BATCH_SIZE: [32, 64]
+  LEARNING_RATE: [0.01, 0.005]

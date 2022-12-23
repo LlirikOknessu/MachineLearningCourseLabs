@@ -9,6 +9,7 @@ import yaml
 import random
 import numpy as np
 from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import r2_score
 from tensorflow.keras import Model
 from pathlib import Path
 from sklearn.model_selection import ParameterGrid
@@ -16,6 +17,7 @@ from joblib import dump, load
 from NeuralNetwork import SomeModel
 import pandas as pd
 
+tf.config.run_functions_eagerly(False)
 def parser_args_for_sac():
     parser = argparse.ArgumentParser(description='Paths parser')
     parser.add_argument('--input_dir', '-id', type=str, default='data/prepared/',
@@ -54,7 +56,7 @@ if __name__ == '__main__':
     y_train_name = input_dir / 'y_full.csv'
 
     grid = ParameterGrid({"neurons_cnt": [64],
-                            "BATCH_SIZE": [64],
+                            "BATCH_SIZE": [32],
                             "LEARNING_RATE": [0.005]})
 
     for paramset in grid:
@@ -96,8 +98,6 @@ if __name__ == '__main__':
             tf.summary.histogram('Weights_in', model.d_in.get_weights()[0], step=epoch)
             tf.summary.histogram('Weights_1', model.d_1.get_weights()[0], step=epoch)
             tf.summary.histogram('Weights_2', model.d_2.get_weights()[0], step=epoch)
-            tf.summary.histogram('Weights_3', model.d_3.get_weights()[0], step=epoch)
-            tf.summary.histogram('Weights_4', model.d_4.get_weights()[0], step=epoch)
             tf.summary.histogram('Weights_out', model.d_out.get_weights()[0], step=epoch)
 
           template = 'Epoch {}, Loss: {}, MAE: {}'
@@ -115,14 +115,20 @@ if __name__ == '__main__':
                 step=0,
                 profiler_outdir=logdir)
 
+    model.save('data/models/NeuralNetwork_prob', overwrite=True)
+
     args = parser_args_for_sac()
     X_full = pd.read_csv(X_train_name)
     y_full = pd.read_csv(y_train_name)
 
+    predicted_values = np.squeeze(model.predict(X_full))
+
     baseline_model = load(Path(args.baseline_model))
     y_pred_baseline = np.squeeze(baseline_model.predict(X_full))
 
+    print("Accuracy: ", r2_score(y_full, predicted_values))
     print("Baseline MAE: ", mean_absolute_error(y_full, y_pred_baseline))
+    print("Model MAE: ", mean_absolute_error(y_full, predicted_values))
 
 
-model.save('data/models/NeuralNetwork_prob', overwrite=True)
+

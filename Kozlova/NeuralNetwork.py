@@ -1,9 +1,6 @@
 import tensorflow as tf
-from tensorflow import keras
 from tensorflow.keras.layers import Dense
-import tensorboard
 import datetime
-import shutil
 import yaml
 import random
 from tensorflow.keras import Model
@@ -11,7 +8,7 @@ from pathlib import Path
 from sklearn.model_selection import ParameterGrid
 import pandas as pd
 
-
+tf.config.run_functions_eagerly(True)
 class SomeModel(Model):
   def __init__(self, neurons_cnt):
     super(SomeModel, self).__init__()
@@ -37,27 +34,29 @@ def train_step(input_vector, labels):
     # behavior during training versus inference (e.g. Dropout).
     predictions = model(input_vector, training=True)
     loss = loss_object(labels, predictions)
+
   gradients = tape.gradient(loss, model.trainable_variables)
   optimizer.apply_gradients(zip(gradients, model.trainable_variables))
 
   train_loss(loss)
   train_accuracy(labels, predictions)
 
+
 @tf.function
 def test_step(input_vector, labels):
     # training=False is only needed if there are layers with different
     # behavior during training versus inference (e.g. Dropout).
     predictions = model(input_vector, training=False)
+
     t_loss = loss_object(labels, predictions)
 
     test_loss(t_loss)
     test_accuracy(labels, predictions)
 
-
 if __name__ == '__main__':
     random.seed(35)
     BUFFER_SIZE = 128
-    EPOCHS = 100
+    EPOCHS = 50
     defaultMAE = 100
     bestParam = []
 
@@ -114,6 +113,7 @@ if __name__ == '__main__':
         tf.summary.trace_on(graph=True, profiler=True)
 
         for epoch in range(EPOCHS):
+          #tf.config.run_functions_eagerly(False)
           # Reset the metrics at the start of the next epoch
           for (x_train, y_train) in train_ds:
             with fit_summary_writer.as_default():
@@ -159,6 +159,8 @@ if __name__ == '__main__':
                 step=0,
                 profiler_outdir=logdir)
         number = number + 1
+        tf.keras.backend.clear_session()
+        del model
 
     print(bestParam)
 
