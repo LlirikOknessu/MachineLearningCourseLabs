@@ -888,22 +888,22 @@ stages:
             - 0.003
             - 0.01
             - 0.1
-            - 0.5
+            - 0.3
             max_depth:
-            - 5
+            - 4
+            - 6
+            - 8
             - 10
-            - 15
           CatBoostRegressor:
             iterations:
             - 10
             - 100
-            - 1000
             learning_rate:
             - 0.0003
             - 0.003
             - 0.01
             - 0.1
-            - 0.5
+            - 0.3
             depth:
             - 4
             - 6
@@ -911,8 +911,8 @@ stages:
             - 10
     outs:
     - path: data/models/CatBoostRegressor.joblib
-      md5: ee2dc0d2319ca430a3bedd746b0a0082
-      size: 4186294
+      md5: 12f1500c3caa214e9d5a05ccb7e9a725
+      size: 432726
   boosting_prod_version@CatBoostRegressor:
     cmd: python boosting_full.py -id data/prepared/ -od data/models/ -mn CatBoostRegressor
     deps:
@@ -989,22 +989,22 @@ stages:
             - 0.003
             - 0.01
             - 0.1
-            - 0.5
+            - 0.3
             max_depth:
-            - 5
+            - 4
+            - 6
+            - 8
             - 10
-            - 15
           CatBoostRegressor:
             iterations:
             - 10
             - 100
-            - 1000
             learning_rate:
             - 0.0003
             - 0.003
             - 0.01
             - 0.1
-            - 0.5
+            - 0.3
             depth:
             - 4
             - 6
@@ -1012,8 +1012,8 @@ stages:
             - 10
     outs:
     - path: data/models/XGBoostRegressor.joblib
-      md5: bb97d414d288149b4332b967920ecc34
-      size: 2850862
+      md5: 4337ef70133997006184596e405849b8
+      size: 1226070
   boosting_prod_version@XGBoostRegressor:
     cmd: python boosting_full.py -id data/prepared/ -od data/models/ -mn XGBoostRegressor
     deps:
@@ -1021,8 +1021,8 @@ stages:
       md5: 091cf8dba5dd8186fecde13f3f622d23
       size: 2119
     - path: data/models/XGBoostRegressor.joblib
-      md5: bb97d414d288149b4332b967920ecc34
-      size: 2850862
+      md5: 4337ef70133997006184596e405849b8
+      size: 1226070
     - path: data/prepared
       md5: be4fde813e2f6ded182fea898516c614.dir
       size: 6232320
@@ -1039,22 +1039,22 @@ stages:
             - 0.003
             - 0.01
             - 0.1
-            - 0.5
+            - 0.3
             max_depth:
-            - 5
+            - 4
+            - 6
+            - 8
             - 10
-            - 15
           CatBoostRegressor:
             iterations:
             - 10
             - 100
-            - 1000
             learning_rate:
             - 0.0003
             - 0.003
             - 0.01
             - 0.1
-            - 0.5
+            - 0.3
             depth:
             - 4
             - 6
@@ -1072,8 +1072,8 @@ stages:
       md5: 0448a505e565a5bfb46b7c6fdb9df919
       size: 1882
     - path: data/models/CatBoostRegressor.joblib
-      md5: ee2dc0d2319ca430a3bedd746b0a0082
-      size: 4186294
+      md5: 12f1500c3caa214e9d5a05ccb7e9a725
+      size: 432726
     - path: data/models/LinearRegression_prod.joblib
       md5: 0acf48608727a17fba90efa615db635f
       size: 1071
@@ -1093,22 +1093,22 @@ stages:
             - 0.003
             - 0.01
             - 0.1
-            - 0.5
+            - 0.3
             max_depth:
-            - 5
+            - 4
+            - 6
+            - 8
             - 10
-            - 15
           CatBoostRegressor:
             iterations:
             - 10
             - 100
-            - 1000
             learning_rate:
             - 0.0003
             - 0.003
             - 0.01
             - 0.1
-            - 0.5
+            - 0.3
             depth:
             - 4
             - 6
@@ -1125,8 +1125,8 @@ stages:
       md5: 0acf48608727a17fba90efa615db635f
       size: 1071
     - path: data/models/XGBoostRegressor.joblib
-      md5: bb97d414d288149b4332b967920ecc34
-      size: 2850862
+      md5: 4337ef70133997006184596e405849b8
+      size: 1226070
     - path: data/prepared/
       md5: be4fde813e2f6ded182fea898516c614.dir
       size: 6232320
@@ -1143,22 +1143,22 @@ stages:
             - 0.003
             - 0.01
             - 0.1
-            - 0.5
+            - 0.3
             max_depth:
-            - 5
+            - 4
+            - 6
+            - 8
             - 10
-            - 15
           CatBoostRegressor:
             iterations:
             - 10
             - 100
-            - 1000
             learning_rate:
             - 0.0003
             - 0.003
             - 0.01
             - 0.1
-            - 0.5
+            - 0.3
             depth:
             - 4
             - 6

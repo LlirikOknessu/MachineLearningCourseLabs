@@ -23,9 +23,21 @@ decision_tree:
 boosting:
   XGBoostRegressor:
     booster: ['gbtree', 'dblinear']
-    learning_rate: [3e-4, 3e-3, 0.01, 0.1, 0.5]
-    max_depth: [5, 10, 15]
+    learning_rate: [3e-4, 3e-3, 0.01, 0.1, 0.3]
+    max_depth: [4,6,8,10]
   CatBoostRegressor:
-    iterations: [10,100,1000]
-    learning_rate: [3e-4, 3e-3, 0.01, 0.1, 0.5]
+    iterations: [10,100]
+    learning_rate: [3e-4, 3e-3, 0.01, 0.1, 0.3]
     depth: [4,6,8,10]
+NeuralNetwork:
+  n_of_neurons: [ 32, 64, 128]
+  batch_size: [ 32, 64, 128]
+  buffer_size: 128
+  learning_rate: [ 0.01, 0.1, 0.5]
+  epochs: 25
+NeuralNetwork_full:
+  n_of_neurons: 64
+  batch_size: 64
+  learning_rate: 0.01
+  epochs: 100
+  buffer_size: 128

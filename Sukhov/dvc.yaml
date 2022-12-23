@@ -109,4 +109,30 @@ stages:
           - data/models/${key}_prod.joblib
         params:
           - boosting
+  NeuralNetwork:
+    cmd: python NeuralNetwork.py -id data/prepared/ -od data/models/ -logd data/logs/ -bm data/models/ExtraTree.joblib
+    deps:
+      - NeuralNetwork.py
+      - data/prepared
+      - data/models/ExtraTree.joblib
+    outs:
+      - data/models/NeuralNetwork
+    params:
+      - NeuralNetwork
+  NeuralNetwork_Validaion:
+    cmd: python NeuralNetwork_Validaion.py -id data/prepared/ -im data/models/NeuralNetwork -bm data/models/ExtraTree.joblib
+    deps:
+      - NeuralNetwork_Validaion.py
+      - data/prepared
+      - data/models/NeuralNetwork
+      - data/models/ExtraTree.joblib
+  NeuralNetwork_full:
+    cmd: python NeuralNetwork_full.py -id data/prepared/ -od data/models/ -logd data/logs/
+    deps:
+      - NeuralNetwork_full.py
+      - data/prepared
+    outs:
+      - data/models/NeuralNetwork_full
+    params:
+      - NeuralNetwork_full
 
