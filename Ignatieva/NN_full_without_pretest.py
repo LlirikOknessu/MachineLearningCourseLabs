@@ -1,10 +1,11 @@
 import tensorflow as tf
 from tensorflow.keras.layers import Dense
+import tensorboard
 import datetime
 import shutil
 import argparse
 import yaml
-
+from NN_without_pretest import bestParam, SomeModel
 from tensorflow.keras import Model
 from sklearn.model_selection import ParameterGrid
 from pathlib import Path
@@ -20,21 +21,9 @@ def parser_args_for_sac():
                       required=False, help='path to save prepared data')
   parser.add_argument('--params', '-p', type=str, default='params.yaml', required=False,
                       help='file with dvc stage params')
-  parser.add_argument('--model_name', '-mn', type=str, default='NN', required=False,
-                      help='file with dvc stage params')
+  parser.add_argument('--input_model', '-im', type=str, default='data/models/NN_without_pretest',
+                      required=False, help='path with saved model')
   return parser.parse_args()
-
-class SomeModel(Model):
-  def __init__(self, neurons_cnt):
-      super(SomeModel, self).__init__()
-      self.d_in = Dense(4, activation='relu')
-      self.d1 = Dense(neurons_cnt, activation='sigmoid')
-      self.d_out = Dense(1)
-
-  def call(self, x):
-      x = self.d_in(x)
-      x = self.d1(x)
-      return self.d_out(x)
 
 @tf.function
 def train_step(input_vector, labels):
@@ -46,25 +35,13 @@ def train_step(input_vector, labels):
             train_loss(loss)
             train_accuracy(labels, predictions)
 
-@tf.function
-def test_step(input_vector, labels):
-            predictions = model(input_vector, training=False)
-            t_loss = loss_object(labels, predictions)
-            test_loss(t_loss)
-            test_accuracy(labels, predictions)
-
 
 if __name__ == '__main__':
     buffer_size = 64
     epochs = 300
     defaultMAE = 100
-    bestParam = []
 
     args = parser_args_for_sac()
-    with open(args.params, 'r') as f:
-        params_all = yaml.safe_load(f)
-    params = params_all['neural_net']
-    grid = ParameterGrid(params_all['neural_net'])
 
     input_dir = Path(args.input_dir)
     logs_path = Path(args.logs_path)
@@ -72,17 +49,12 @@ if __name__ == '__main__':
         shutil.rmtree(logs_path)
     logs_path.mkdir(parents=True)
 
-    X_train_name = input_dir / 'X_train_2.csv'
-    y_train_name = input_dir / 'y_train.csv'
-    X_test_name = input_dir / 'X_test_2.csv'
-    y_test_name = input_dir / 'y_test.csv'
-
+    X_full_name = input_dir / 'X_full_2.csv'
+    y_full_name = input_dir / 'y_full.csv'
 
     for param in grid:
-        X_train = pd.read_csv(X_train_name)
-        y_train = pd.read_csv(y_train_name)
-        X_test = pd.read_csv(X_test_name)
-        y_test = pd.read_csv(y_test_name)
+        X_train = pd.read_csv(X_full_name)
+        y_train = pd.read_csv(y_full_name)
 
         train_ds = tf.data.Dataset.from_tensor_slices(
             (X_train, y_train)).shuffle(buffer_size).batch(param['batch_size'])
