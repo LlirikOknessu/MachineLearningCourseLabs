@@ -34,5 +34,5 @@ catboost:
   subsample: [0.7, 0.8, 0.9, 1]
 neural_net:
   neurons_cnt: [ 2, 4, 8 ]
-  batch_size: [ 8, 16, 32 ]
+  batch_size: [ 4, 8, 16 ]
   learning_rate: [ 0.01, 0.025, 0.05 ]

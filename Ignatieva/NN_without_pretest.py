@@ -11,6 +11,7 @@ from sklearn.model_selection import ParameterGrid
 from pathlib import Path
 import pandas as pd
 
+tf.config.run_functions_eagerly(True)
 
 def parser_args_for_sac():
   parser = argparse.ArgumentParser(description='Paths parser')
@@ -23,6 +24,23 @@ def parser_args_for_sac():
   parser.add_argument('--model_name', '-mn', type=str, default='NN', required=False,
                       help='file with dvc stage params')
   return parser.parse_args()
+
+@tf.function
+def train_step(input_vector, labels):
+            with tf.GradientTape() as tape:
+                predictions = model(input_vector, training=True)
+                loss = loss_object(labels, predictions)
+            gradients = tape.gradient(loss, model.trainable_variables)
+            optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+            train_loss(loss)
+            train_accuracy(labels, predictions)
+
+@tf.function
+def test_step(input_vector, labels):
+            predictions = model(input_vector, training=False)
+            t_loss = loss_object(labels, predictions)
+            test_loss(t_loss)
+            test_accuracy(labels, predictions)
 
 
 if __name__ == '__main__':
@@ -81,22 +99,6 @@ if __name__ == '__main__':
         test_loss = tf.keras.metrics.Mean(name='test_loss')
         test_accuracy = tf.keras.metrics.MeanAbsoluteError(name='test_mae')
 
-        @tf.function
-        def train_step(input_vector, labels):
-            with tf.GradientTape() as tape:
-                predictions = model(input_vector, training=True)
-                loss = loss_object(labels, predictions)
-            gradients = tape.gradient(loss, model.trainable_variables)
-            optimizer.apply_gradients(zip(gradients, model.trainable_variables))
-            train_loss(loss)
-            train_accuracy(labels, predictions)
-
-        @tf.function
-        def test_step(input_vector, labels):
-            predictions = model(input_vector, training=False)
-            t_loss = loss_object(labels, predictions)
-            test_loss(t_loss)
-            test_accuracy(labels, predictions)
 
         current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         train_log_dir = logs_path / 'gradient_tape' / current_time / 'train'
@@ -143,7 +145,7 @@ if __name__ == '__main__':
                 if buff < defaultMAE:
                     defaultMAE = buff
                     bestParam = [param['neurons_cnt'], param['batch_size'], param['learning_rate']]
-                    model.save('data/models/NN', overwrite=True)
+                    model.save('data/models/NN_without_pretest', overwrite=True)
 
             # Reset metrics every epoch
             train_loss.reset_states()
