@@ -1,9 +1,7 @@
 import tensorflow as tf
 import tensorboard
 import datetime
-import shutil
 import argparse
-import yaml
 from NN_without_pretest import SomeModel
 from pathlib import Path
 import pandas as pd
@@ -18,7 +16,7 @@ def parser_args_for_sac():
                       required=False, help='path to save prepared data')
   parser.add_argument('--params', '-p', type=str, default='params.yaml', required=False,
                       help='file with dvc stage params')
-  parser.add_argument('--input_model', '-im', type=str, default='data/models/NN_without_pretest',
+  parser.add_argument('--input_model', '-im', type=str, default='data/models/NN',
                       required=False, help='path with saved model')
   return parser.parse_args()
 
@@ -39,9 +37,9 @@ if __name__ == '__main__':
     defaultMAE = 100
 
     #bestParams
-    neurons_cnt = 64
-    batch_size = 32
-    learning_rate = 0.005
+    neurons_cnt = 256
+    batch_size = 64
+    learning_rate = 0.001
 
     args = parser_args_for_sac()
 
@@ -51,7 +49,7 @@ if __name__ == '__main__':
         #shutil.rmtree(logs_path)
     #logs_path.mkdir(parents=True)
 
-    X_full_name = input_dir / 'X_full_2.csv'
+    X_full_name = input_dir / 'X_full.csv'
     y_full_name = input_dir / 'y_full.csv'
 
     X_full = pd.read_csv(X_full_name)
@@ -104,7 +102,7 @@ if __name__ == '__main__':
             buff = train_accuracy.result().numpy()
             if buff < defaultMAE:
                 defaultMAE = buff
-                model.save('data/models/NN_without_pretest_prod', overwrite=True)
+                model.save('data/models/NN_prod', overwrite=True)
 
         # Reset metrics every epoch
         train_loss.reset_states()

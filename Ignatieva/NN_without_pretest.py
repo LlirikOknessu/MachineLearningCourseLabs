@@ -63,8 +63,8 @@ if __name__ == '__main__':
     args = parser_args_for_sac()
     with open(args.params, 'r') as f:
         params_all = yaml.safe_load(f)
-    params = params_all['neural_net']
-    grid = ParameterGrid(params_all['neural_net'])
+    params = params_all['neural_net_without_pretest']
+    grid = ParameterGrid(params_all['neural_net_without_pretest'])
 
     input_dir = Path(args.input_dir)
     logs_path = Path(args.logs_path)

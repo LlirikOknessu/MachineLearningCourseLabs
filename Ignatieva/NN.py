@@ -10,6 +10,7 @@ from sklearn.model_selection import ParameterGrid
 from pathlib import Path
 import pandas as pd
 
+tf.config.run_functions_eagerly(True)
 
 def parser_args_for_sac():
   parser = argparse.ArgumentParser(description='Paths parser')
@@ -23,9 +24,38 @@ def parser_args_for_sac():
                       help='file with dvc stage params')
   return parser.parse_args()
 
+class SomeModel(Model):
+  def __init__(self, neurons_cnt):
+      super(SomeModel, self).__init__()
+      self.d_in = Dense(5, activation='relu')
+      self.d1 = Dense(neurons_cnt, activation='sigmoid')
+      self.d_out = Dense(1)
+
+  def call(self, x):
+      x = self.d_in(x)
+      x = self.d1(x)
+      return self.d_out(x)
+
+@tf.function
+def train_step(input_vector, labels):
+            with tf.GradientTape() as tape:
+                predictions = model(input_vector, training=True)
+                loss = loss_object(labels, predictions)
+            gradients = tape.gradient(loss, model.trainable_variables)
+            optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+            train_loss(loss)
+            train_accuracy(labels, predictions)
+
+@tf.function
+def test_step(input_vector, labels):
+            predictions = model(input_vector, training=False)
+            t_loss = loss_object(labels, predictions)
+            test_loss(t_loss)
+            test_accuracy(labels, predictions)
+
 
 if __name__ == '__main__':
-    buffer_size = 128
+    buffer_size = 64
     epochs = 100
     defaultMAE = 100
     bestParam = []
@@ -47,55 +77,28 @@ if __name__ == '__main__':
     X_test_name = input_dir / 'X_test.csv'
     y_test_name = input_dir / 'y_test.csv'
 
-    X_train = pd.read_csv(X_train_name)
-    y_train = pd.read_csv(y_train_name)
-    X_test = pd.read_csv(X_test_name)
-    y_test = pd.read_csv(y_test_name)
 
     for param in grid:
+        X_train = pd.read_csv(X_train_name)
+        y_train = pd.read_csv(y_train_name)
+        X_test = pd.read_csv(X_test_name)
+        y_test = pd.read_csv(y_test_name)
+
         train_ds = tf.data.Dataset.from_tensor_slices(
             (X_train, y_train)).shuffle(buffer_size).batch(param['batch_size'])
 
         test_ds = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(param['batch_size'])
 
-        class SomeModel(Model):
-            def __init__(self, neurons_cnt=param['neurons_cnt']):
-                super(SomeModel, self).__init__()
-                self.d_in = Dense(8, activation='sigmoid')
-                self.d1 = Dense(neurons_cnt, activation='relu')
-                self.d_out = Dense(1)
-
-            def call(self, x):
-                x = self.d_in(x)
-                return self.d_out(x)
-
-        model = SomeModel()
+        model = SomeModel(neurons_cnt=param['neurons_cnt'])
 
         loss_object = tf.keras.losses.MeanSquaredError()
         optimizer = tf.keras.optimizers.SGD(learning_rate=param['learning_rate'])
-        getattr(model, 'd1')
 
         train_loss = tf.keras.metrics.Mean(name='train_loss')
         train_accuracy = tf.keras.metrics.MeanAbsoluteError(name='train_mae')
         test_loss = tf.keras.metrics.Mean(name='test_loss')
         test_accuracy = tf.keras.metrics.MeanAbsoluteError(name='test_mae')
 
-        @tf.function
-        def train_step(input_vector, labels):
-            with tf.GradientTape() as tape:
-                predictions = model(input_vector, training=True)
-                loss = loss_object(labels, predictions)
-            gradients = tape.gradient(loss, model.trainable_variables)
-            optimizer.apply_gradients(zip(gradients, model.trainable_variables))
-            train_loss(loss)
-            train_accuracy(labels, predictions)
-
-        @tf.function
-        def test_step(input_vector, labels):
-            predictions = model(input_vector, training=False)
-            t_loss = loss_object(labels, predictions)
-            test_loss(t_loss)
-            test_accuracy(labels, predictions)
 
         current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         train_log_dir = logs_path / 'gradient_tape' / current_time / 'train'

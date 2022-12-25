@@ -126,3 +126,57 @@ stages:
       - data/models/${catboost.model_name}_prod.joblib
     params:
       - catboost
+  neural_network:
+    cmd: python NN.py -id data/prepared -od data/models/
+    deps:
+      - NN.py
+      - data/prepared
+    outs:
+      - data/models/NN
+    params:
+      - neural_net
+  neural_network_validation:
+    cmd: python NN_val.py -id data/prepared/ -im data/models/
+    deps:
+      - NN_val.py
+      - data/prepared/
+      - data/models/NN
+    params:
+      - neural_net
+  neural_network_prod_version:
+    cmd: python NN_full.py -id data/prepared/ -od data/models/
+    deps:
+      - NN_full.py
+      - data/prepared
+      - data/models/NN
+    outs:
+      - data/models/NN_prod
+    params:
+      - neural_net
+  neural_network_without_pretest:
+    cmd: python NN_without_pretest.py -id data/prepared -od data/models/
+    deps:
+      - NN.py
+      - data/prepared
+    outs:
+      - data/models/NN_without_pretest
+    params:
+      - neural_net_without_pretest
+  neural_network_validation_without_pretest:
+    cmd: python NN_val_without_pretest.py -id data/prepared/ -im data/models/
+    deps:
+      - NN_val.py
+      - data/prepared/
+      - data/models/NN_without_pretest
+    params:
+      - neural_net_without_pretest
+  neural_network_prod_version_without_pretest:
+    cmd: python NN_full_without_pretest.py -id data/prepared/ -od data/models/
+    deps:
+      - NN_full.py
+      - data/prepared
+      - data/models/NN_without_pretest
+    outs:
+      - data/models/NN_without_pretest_prod
+    params:
+      - neural_net_without_pretest

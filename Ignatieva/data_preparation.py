@@ -77,3 +77,18 @@ if __name__ == '__main__':
         y_test.to_csv(y_test_name, index=False)
         X_val.to_csv(X_val_name, index=False)
         y_val.to_csv(y_val_name, index=False)
+
+        X_test_2 = X_test.drop("pretest", axis=1)
+        X_train_2 = X_train.drop("pretest", axis=1)
+        X_val_2 = X_val.drop("pretest", axis=1)
+        X_full_2 = X.drop("pretest", axis=1)
+
+        X_full_name_2 = output_dir / 'X_full_2.csv'
+        X_train_name_2 = output_dir / 'X_train_2.csv'
+        X_test_name_2 = output_dir / 'X_test_2.csv'
+        X_val_name_2 = output_dir / 'X_val_2.csv'
+
+        X_full_2.to_csv(X_full_name_2, index=False)
+        X_train_2.to_csv(X_train_name_2, index=False)
+        X_test_2.to_csv(X_test_name_2, index=False)
+        X_val_2.to_csv(X_val_name_2, index=False)
