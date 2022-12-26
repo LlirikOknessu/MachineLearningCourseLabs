@@ -15,13 +15,12 @@ BATCH_SIZE = 64
 def parser_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--input_dir', '-id', type=str, default='data/prepared', help="path to input data directory")
-    parser.add_argument('--input_model', '-im', type=str, default='data/models/NeuNet', help="path to input model directory")
+    parser.add_argument('--input_model', '-im', type=str, default='data/models', help="path to input model directory")
     parser.add_argument('--logs_dir', '-ld', type=str, default='data/logs', help="path to logs directory")
     parser.add_argument('--baseline_model', '-bm', type=str, default='data/models/LinearRegression_prod.joblib', help='path to linear regression prod version')
     return parser.parse_args()
 
 if __name__ == '__main__':
-    random.seed(42)
     args = parser_args()
     in_dir = Path(args.input_dir)
     in_model = args.input_model

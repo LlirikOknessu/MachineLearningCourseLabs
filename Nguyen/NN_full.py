@@ -19,7 +19,7 @@ NEURONS = 128
 LEARNING_RATE = 0.001
 EPOCHS = 50
 
-# tf.config.run_functions_eagerly(True)
+tf.config.run_functions_eagerly(True)
 
 def parser_args():
     parser = argparse.ArgumentParser()
@@ -34,12 +34,28 @@ class NeuNet(Model):
         self.in_layer = Dense(10, activation='relu')
         self.hidden_1 = Dense(neurons, activation='relu')
         self.hidden_2 = Dense(neurons, activation='relu')
+        self.hidden_3 = Dense(neurons, activation='relu')
+        self.hidden_4 = Dense(neurons, activation='relu')
+        self.hidden_5 = Dense(neurons, activation='relu')
+        self.hidden_6 = Dense(neurons, activation='relu')
+        self.hidden_7 = Dense(neurons, activation='relu')
+        self.hidden_8 = Dense(neurons, activation='relu')
+        self.hidden_9 = Dense(neurons, activation='relu')
+        self.hidden_10 = Dense(neurons, activation='relu')
         self.out_layer = Dense(1, activation='relu')
 
     def call(self, inputs):
         x = self.in_layer(inputs)
         x = self.hidden_1(x)
         x = self.hidden_2(x)
+        x = self.hidden_3(x)
+        x = self.hidden_4(x)
+        x = self.hidden_5(x)
+        x = self.hidden_6(x)
+        x = self.hidden_7(x)
+        x = self.hidden_8(x)
+        x = self.hidden_9(x)
+        x = self.hidden_10(x)
         outputs = self.out_layer(x)
         return outputs
 
@@ -55,7 +71,6 @@ def train_net(data: pd.DataFrame, labels: pd.DataFrame, net: NeuNet, optimizer: 
 
 
 if __name__ == '__main__':
-    random.seed(42)
     args = parser_args()   
     
     in_dir = Path(args.input_dir)
@@ -108,6 +123,30 @@ if __name__ == '__main__':
             
             tf.summary.histogram('weights_hidden_2', net.in_layer.weights[0], step=epoch)
             tf.summary.histogram('biases_hidden_2', net.in_layer.weights[1], step=epoch)
+
+            tf.summary.histogram('weights_hidden_3', net.in_layer.weights[0], step=epoch)
+            tf.summary.histogram('biases_hidden_3', net.in_layer.weights[1], step=epoch)
+
+            tf.summary.histogram('weights_hidden_4', net.in_layer.weights[0], step=epoch)
+            tf.summary.histogram('biases_hidden_4', net.in_layer.weights[1], step=epoch)
+
+            tf.summary.histogram('weights_hidden_5', net.in_layer.weights[0], step=epoch)
+            tf.summary.histogram('biases_hidden_5', net.in_layer.weights[1], step=epoch)
+
+            tf.summary.histogram('weights_hidden_6', net.in_layer.weights[0], step=epoch)
+            tf.summary.histogram('biases_hidden_6', net.in_layer.weights[1], step=epoch)
+
+            tf.summary.histogram('weights_hidden_7', net.in_layer.weights[0], step=epoch)
+            tf.summary.histogram('biases_hidden_7', net.in_layer.weights[1], step=epoch)
+
+            tf.summary.histogram('weights_hidden_8', net.in_layer.weights[0], step=epoch)
+            tf.summary.histogram('biases_hidden_8', net.in_layer.weights[1], step=epoch)
+
+            tf.summary.histogram('weights_hidden_9', net.in_layer.weights[0], step=epoch)
+            tf.summary.histogram('biases_hidden_9', net.in_layer.weights[1], step=epoch)
+
+            tf.summary.histogram('weights_hidden_10', net.in_layer.weights[0], step=epoch)
+            tf.summary.histogram('biases_hidden_10', net.in_layer.weights[1], step=epoch)
 
             tf.summary.histogram('weights_out_layer', net.in_layer.weights[0], step=epoch)
             tf.summary.histogram('biases_out_layer', net.in_layer.weights[1], step=epoch)
