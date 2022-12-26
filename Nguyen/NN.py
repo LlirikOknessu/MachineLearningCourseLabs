@@ -14,7 +14,7 @@ from sklearn.metrics import mean_squared_error
 import random
 import math
 
-tf.config.run_functions_eagerly(True)
+# tf.config.run_functions_eagerly(True)
 
 def parser_args():
     parser = argparse.ArgumentParser()
@@ -28,36 +28,20 @@ def parser_args():
 class NeuNet(Model):
     def __init__(self, neurons=128):
         super(NeuNet, self).__init__()        
-        self.in_layer = Dense(10, activation='relu')
-        self.hidden_1 = Dense(neurons, activation='relu')
-        self.hidden_2 = Dense(neurons, activation='relu')
-        self.hidden_3 = Dense(neurons, activation='relu')
-        self.hidden_4 = Dense(neurons, activation='relu')
-        self.hidden_5 = Dense(neurons, activation='relu')
-        self.hidden_6 = Dense(neurons, activation='relu')
-        self.hidden_7 = Dense(neurons, activation='relu')
-        self.hidden_8 = Dense(neurons, activation='relu')
-        self.hidden_9 = Dense(neurons, activation='relu')
-        self.hidden_10 = Dense(neurons, activation='relu')
-        self.out_layer = Dense(1, activation='relu')
+        self.in_layer = Dense(10, activation='relu', kernel_initializer='random_normal', bias_initializer='zeros')
+        self.hidden_1 = Dense(neurons, activation='relu', kernel_initializer='random_normal', bias_initializer='zeros')
+        self.hidden_2 = Dense(neurons, activation='relu', kernel_initializer='random_normal', bias_initializer='zeros')
+        self.out_layer = Dense(1, activation='relu', kernel_initializer='random_normal', bias_initializer='zeros')
 
     def call(self, inputs):
         x = self.in_layer(inputs)
         x = self.hidden_1(x)
         x = self.hidden_2(x)
-        x = self.hidden_3(x)
-        x = self.hidden_4(x)
-        x = self.hidden_5(x)
-        x = self.hidden_6(x)
-        x = self.hidden_7(x)
-        x = self.hidden_8(x)
-        x = self.hidden_9(x)
-        x = self.hidden_10(x)
         outputs = self.out_layer(x)
         return outputs
 
 
-@tf.function
+# @tf.function
 def train_net(data: pd.DataFrame, labels: pd.DataFrame, net: NeuNet, optimizer: tf.keras.optimizers, train_loss, train_accuracy):
     with tf.GradientTape() as tape:
         predictions = net(data)
@@ -66,6 +50,19 @@ def train_net(data: pd.DataFrame, labels: pd.DataFrame, net: NeuNet, optimizer: 
     optimizer.apply_gradients(zip(gradients, net.trainable_variables))
     train_loss(loss)
     train_accuracy(labels, predictions)
+
+# def apply_train():
+#     @tf.function
+#     def train_net(data: pd.DataFrame, labels: pd.DataFrame, net: NeuNet, optimizer: tf.keras.optimizers, train_loss, train_accuracy):
+#         with tf.GradientTape() as tape:
+#             predictions = net(data)
+#             loss = loss_object(labels, predictions)
+#         gradients = tape.gradient(loss, net.trainable_variables)
+#         optimizer.apply_gradients(zip(gradients, net.trainable_variables))
+#         # train_loss(loss)
+#         # train_accuracy(labels, predictions)
+#         return loss, predictions
+#     return train_net
 
 @tf.function
 def val_net(data: pd.DataFrame, labels: pd.DataFrame, net: NeuNet, val_loss, val_accuracy):
@@ -76,6 +73,7 @@ def val_net(data: pd.DataFrame, labels: pd.DataFrame, net: NeuNet, val_loss, val
 
 
 if __name__ == '__main__':
+    random.seed(42)
     args = parser_args()
     with open(args.params, 'r') as f:
         params_all = yaml.safe_load(f)
@@ -154,6 +152,11 @@ if __name__ == '__main__':
                         for (X_train, y_train) in train_ds:
                             with fit_summary_writer.as_default():
                                 train_net(X_train, y_train, net, optimizer, train_loss, train_accuracy)
+
+                                # train = apply_train()
+                                # loss, pred = train(X_train, y_train, net, optimizer, train_loss, train_accuracy)
+                                # train_loss(loss)
+                                # train_accuracy(y_train, pred)
 
                         with train_summary_writer.as_default():
                             tf.summary.scalar('loss', train_loss.result(), step=epoch)
