@@ -35,7 +35,7 @@ def train_step(input_vector, labels):
 
 if __name__ == '__main__':
     buffer_size = 64
-    epochs = 500
+    epochs = 400
     defaultMAE = 100
 
     #bestParams
