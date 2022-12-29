@@ -1020,12 +1020,12 @@ stages:
           - 32
           buffer_size: 512
           learning_rate:
-          - 0.1
-          epochs: 10
+          - 0.001
+          epochs: 100
     outs:
     - path: data/models/NN
-      md5: 9a6c3fd58f0f84017f6d6633fe442236.dir
-      size: 74028
+      md5: d05d7864306baade1089c341845d406f.dir
+      size: 86028
       nfiles: 5
   NN_validation:
     cmd: python NN_val.py -id data/prepared/ -im data/models/NN -bm data/models/LinearRegression.joblib
@@ -1037,8 +1037,8 @@ stages:
       md5: ab18d06e4c4c3ce1aaaea44fc5139401
       size: 952
     - path: data/models/NN
-      md5: 9a6c3fd58f0f84017f6d6633fe442236.dir
-      size: 74028
+      md5: d05d7864306baade1089c341845d406f.dir
+      size: 86028
       nfiles: 5
     - path: data/prepared
       md5: 23362aa64ff08a220bed6988f57aea35.dir
