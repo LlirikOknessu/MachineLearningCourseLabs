@@ -126,5 +126,30 @@ stages:
         - data/models/CatBoosting_model.joblib
     outs:
         - data/models/CatBoosting_model_prod.joblib
-
+  NN:
+    cmd: python TESTNN.py -id data/prepared/ -od data/models/ -logd data/logs/ -bm data/models/LinearRegression.joblib
+    deps:
+      - NN.py
+      - data/prepared
+      - data/models/LinearRegression.joblib
+    outs:
+      - data/models/NN
+    params:
+      - NN
+  NN_validation:
+    cmd: python NN_val.py -id data/prepared/ -im data/models/NN -bm data/models/LinearRegression.joblib
+    deps:
+      - NN_val.py
+      - data/prepared
+      - data/models/NN
+      - data/models/LinearRegression.joblib
+  NN_prod:
+    cmd: python NN_full.py -id data/prepared/ -od data/models/ -logd data/logs/
+    deps:
+      - NN_full.py
+      - data/prepared
+    outs:
+      - data/models/NN_prod
+    params:
+      - NN_full
 

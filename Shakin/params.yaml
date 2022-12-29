@@ -28,6 +28,18 @@ XG_boosting:
   min_child_weight: [1, 3, 5 ]
 CatBoosting:
   n_estimators: [50, 100, 150, 200]
-#  max_depth: [2, 3, 4]
-#  learning_rate: [ 0.05, 0.1 ]
+  max_depth: [2, 3, 4, default = 6]
+  learning_rate: [ 0.05, 0.1, default = 0.5 ]
+NN:
+  batch_size: [256]
+  n_of_neurons: [8, 16, 32]
+  buffer_size: 512
+  learning_rate: [0.001]
+  epochs: 100
+NN_full:
+  n_of_neurons: 64
+  batch_size: 256
+  learning_rate: 0.01
+  epochs: 10
+  buffer_size: 512
 

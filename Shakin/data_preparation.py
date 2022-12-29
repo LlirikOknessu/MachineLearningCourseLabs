@@ -33,7 +33,7 @@ if __name__ == '__main__':
         zeros_df = pd.DataFrame({'Null Percentage (%)': zeros_percentages})
         dropped_cols = [col for col in zeros_df.index if zeros_df.loc[col][0] > 50]
         full_data.drop(columns=dropped_cols, inplace=True)
-        full_data.drop(columns=['MIN', 'MAX', 'MEA', 'Precip', 'MaxTemp'], inplace=True)
+        full_data.drop(columns=['MIN', 'MAX', 'MEA', 'Precip', 'MaxTemp', 'MinTemp'], inplace=True)
         full_data['Snowfall'].replace(to_replace='#VALUE!', value=0, inplace=True)
         full_data['Snowfall'] = full_data['Snowfall'].fillna(0)
         full_data['Snowfall'] = full_data['Snowfall'].astype(float)
