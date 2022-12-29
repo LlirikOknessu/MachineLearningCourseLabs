@@ -10,6 +10,7 @@ import math
 from joblib import dump
 import matplotlib.pyplot as plt
 from sklearn.tree import export_graphviz
+import random
 
 TREES_MODELS_MAPPER = {'DecisionTree': tree.DecisionTreeRegressor,
                        'RandomForest': RandomForestRegressor,
@@ -34,6 +35,7 @@ def parser_args_for_sac():
 
 
 if __name__ == '__main__':
+    random.seed(42)
     args = parser_args_for_sac()
 
     input_dir = Path(args.input_dir)

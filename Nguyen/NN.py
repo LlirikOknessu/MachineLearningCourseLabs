@@ -160,7 +160,7 @@ if __name__ == '__main__':
 
                         with train_summary_writer.as_default():
                             tf.summary.scalar('loss', train_loss.result(), step=epoch)
-                            tf.summary.scalar('accuracy', train_accuracy.result(), step=epoch)
+                            tf.summary.scalar('mse', train_accuracy.result(), step=epoch)
 
                         for (X_val, y_val) in val_ds:
                             val_net(X_val, y_val, net, val_loss, val_accuracy)

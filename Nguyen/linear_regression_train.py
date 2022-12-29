@@ -12,6 +12,7 @@ from joblib import dump
 import math
 from sklearn.model_selection import GridSearchCV
 from sklearn import metrics
+import random
 
 def parser_args():
     parser = argparse.ArgumentParser()
@@ -73,6 +74,7 @@ def tuning(model: str, data: pd.DataFrame, labels: pd.DataFrame, alpha_start: fl
         return
 
 if __name__ == '__main__':
+    random.seed(42)
     args = parser_args()
     with open(args.params, 'r') as f:
         params_full = yaml.safe_load(f)

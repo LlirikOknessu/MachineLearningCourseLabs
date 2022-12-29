@@ -5,6 +5,7 @@ import numpy as np
 from joblib import dump, load
 from sklearn.metrics import mean_squared_error
 import math
+import random
 
 def parser_args():
     parser = argparse.ArgumentParser()
@@ -14,6 +15,7 @@ def parser_args():
     return parser.parse_args()
 
 if __name__ == '__main__':
+    random.seed(42)
     args = parser_args()
     in_dir = Path(args.input_dir)
     in_model = Path(args.input_model)

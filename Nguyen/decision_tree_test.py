@@ -7,6 +7,7 @@ from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor
 from sklearn.metrics import mean_squared_error
 from joblib import load
 import math
+import random
 
 
 def parser_args_for_sac():
@@ -23,6 +24,7 @@ def parser_args_for_sac():
 
 
 if __name__ == '__main__':
+    random.seed(42)
     args = parser_args_for_sac()
 
     input_dir = Path(args.input_dir)

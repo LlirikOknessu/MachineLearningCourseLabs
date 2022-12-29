@@ -10,6 +10,7 @@ from sklearn.metrics import mean_squared_error
 from joblib import load
 import math
 import matplotlib.pyplot as plt
+import random
 
 def parser_args():
     parser = argparse.ArgumentParser()
@@ -24,6 +25,7 @@ def import_data(name: str, in_dir: Path):
     return df
 
 if __name__ == '__main__':
+    random.seed(42)
     args = parser_args()
     in_dir = Path(args.input_dir)
     in_model = Path(args.input_model)
