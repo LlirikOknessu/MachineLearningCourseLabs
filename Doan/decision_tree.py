@@ -22,7 +22,7 @@ def parser_args_for_sac():
                         required=False, help='path to save prepared data')
     parser.add_argument('--baseline_model', '-bm', type=str, default='data/models/LinearRegression_prod.joblib',
                         required=False, help='path to linear regression prod version')
-    parser.add_argument('--model_name', '-mn', type=str, default='DecisionTree',
+    parser.add_argument('--model_name', '-mn', type=str, default='RandomForest',
                         required=False, help='file with dvc stage params')
     parser.add_argument('--params', '-p', type=str, default='params.yaml',
                         required=False, help='file with dvc stage params')

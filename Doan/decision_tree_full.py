@@ -11,8 +11,8 @@ TREES_MODELS_MAPPER = {'DecisionTree': tree.DecisionTreeRegressor,
                        'RandomForest': RandomForestRegressor,
                        'ExtraTree': ExtraTreesRegressor}
 
-TREES_MODELS_BEST_PARAMETERS = {'DecisionTree': {'max_depth': 6, 'min_samples_leaf': 3, 'min_samples_split': 4, 'splitter': 'best'},
-                                'RandomForest': {'max_depth': 6, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 15},
+TREES_MODELS_BEST_PARAMETERS = {'DecisionTree': {'max_depth': 6, 'min_samples_leaf': 3, 'min_samples_split': 2, 'splitter': 'best'},
+                                'RandomForest': {'max_depth': 6, 'min_samples_leaf': 1, 'min_samples_split': 7, 'n_estimators': 10},
                                 'ExtraTree': {'max_depth': 7, 'min_samples_leaf': 1, 'min_samples_split': 4, 'n_estimators': 15}}
 
 def parser_args_for_sac():
@@ -21,7 +21,7 @@ def parser_args_for_sac():
                         required=False, help='path to input data directory')
     parser.add_argument('--output_dir', '-od', type=str, default='data/models/',
                         required=False, help='path to save prepared data')
-    parser.add_argument('--model_name', '-mn', type=str, default='DecisionTree',
+    parser.add_argument('--model_name', '-mn', type=str, default='RandomForest',
                         required=False, help='file with dvc stage params')
     return parser.parse_args()
 
