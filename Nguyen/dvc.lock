@@ -1,0 +1,1256 @@
+schema: '2.0'
+stages:
+  data_preparation:
+    cmd: python data_preparation.py -id data/raw -od data/prepared
+    deps:
+    - path: data/raw
+      md5: eb76e3efb16fd84d914a394b0c810cbb.dir
+      size: 2304061
+      nfiles: 4
+    - path: data_preparation.py
+      md5: 7f726c5f845c43419e854965fb819fac
+      size: 5752
+    params:
+      params.yaml:
+        data_preparation:
+          train_ratio: 0.7
+          validation_test_ratio: 0.5
+          random_state: 42
+    outs:
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+  regression_train:
+    cmd: python linear_regression_train.py -id data/prepared -od data/models -mn ElasticNet
+    deps:
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: linear_regression_train.py
+      md5: b41be1e4fad59837ecdbf18a3e0b54e8
+      size: 5247
+    params:
+      params.yaml:
+        regression:
+          model_name: ElasticNet
+          tuning: 0
+          alpha_start_value: 0.0001
+          alpha_sweep_step: 0.0001
+          alpha_end_value: 0.001
+          l1_ratio_start_value: 0.01
+          l1_ratio_sweep_step: 0.01
+          l1_ratio_end_value: 0.1
+          alpha: 0.0001
+          l1_ratio: 0.09
+    outs:
+    - path: data/models/ElasticNet.csv
+      md5: f315c03827bc0c27784b1eb8823c050a
+      size: 44
+    - path: data/models/ElasticNet.joblib
+      md5: 6cbdd48085a050d862156157cab622b5
+      size: 1199
+  regression_validation:
+    cmd: python linear_regression_validation.py -id data/prepared -im data/models
+    deps:
+    - path: data/models
+      md5: 111b0273b5e1c07dde4d6b60cd35fa1b.dir
+      size: 5367
+      nfiles: 9
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: linear_regression_validation.py
+      md5: 4cda726c0979352eb79de37b0db19be8
+      size: 2125
+    params:
+      params.yaml:
+        regression:
+          model_name: ElasticNet
+          tuning: 1
+          alpha_start_value: 0.0001
+          alpha_sweep_step: 0.0001
+          alpha_end_value: 0.001
+          l1_ratio_start_value: 0.01
+          l1_ratio_sweep_step: 0.01
+          l1_ratio_end_value: 0.1
+          alpha: 0.0001
+          l1_ratio: 0.09
+  regression_test:
+    cmd: python linear_regression_test.py -id data/prepared -im data/models/ElasticNet.joblib
+      -mn ElasticNet
+    deps:
+    - path: data/models/ElasticNet.joblib
+      md5: 6cbdd48085a050d862156157cab622b5
+      size: 1199
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: linear_regression_test.py
+      md5: e63f019f58c36e55db89f417bfd441bf
+      size: 2099
+    params:
+      params.yaml:
+        regression:
+          model_name: ElasticNet
+          tuning: 1
+          alpha_start_value: 0.0001
+          alpha_sweep_step: 0.0001
+          alpha_end_value: 0.001
+          l1_ratio_start_value: 0.01
+          l1_ratio_sweep_step: 0.01
+          l1_ratio_end_value: 0.1
+          alpha: 0.0001
+          l1_ratio: 0.09
+  regression_prod:
+    cmd: python linear_regression_full.py -id data/prepared -od data/models -mn ElasticNet
+    deps:
+    - path: data/models/ElasticNet.joblib
+      md5: 6cbdd48085a050d862156157cab622b5
+      size: 1199
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: linear_regression_full.py
+      md5: 0d841ca847c9f5e0872deb97573fba29
+      size: 2532
+    params:
+      params.yaml:
+        regression:
+          model_name: ElasticNet
+          tuning: 1
+          alpha_start_value: 0.0001
+          alpha_sweep_step: 0.0001
+          alpha_end_value: 0.001
+          l1_ratio_start_value: 0.01
+          l1_ratio_sweep_step: 0.01
+          l1_ratio_end_value: 0.1
+          alpha: 0.0001
+          l1_ratio: 0.09
+    outs:
+    - path: data/models/ElasticNet_prod.csv
+      md5: a557d170d3809e9fab8964ed93cb5c77
+      size: 44
+    - path: data/models/ElasticNet_prod.joblib
+      md5: 641df8739abd78570d879d5962f56376
+      size: 1199
+  decision_tree@DecisionTree:
+    cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/Lasso_prod.joblib
+      -mn DecisionTree -p params.yaml
+    deps:
+    - path: data/models/Lasso_prod.joblib
+      md5: d019dfe196a18dcdc9279b849f36ba62
+      size: 1199
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: decision_tree.py
+      md5: ab0130b1ec2b43ea9ff8fcd5aa9bffba
+      size: 3340
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 6
+            - 7
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 10
+            - 15
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 18
+            - 48
+    outs:
+    - path: data/models/DecisionTree.joblib
+      md5: e1a535822dd2e891162b69c9e6868f28
+      size: 139231
+  decision_tree@ExtraTree:
+    cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/Lasso_prod.joblib
+      -mn ExtraTree -p params.yaml
+    deps:
+    - path: data/models/Lasso_prod.joblib
+      md5: d019dfe196a18dcdc9279b849f36ba62
+      size: 1199
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: decision_tree.py
+      md5: ab0130b1ec2b43ea9ff8fcd5aa9bffba
+      size: 3340
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 6
+            - 7
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 10
+            - 15
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 18
+            - 48
+    outs:
+    - path: data/models/ExtraTree.joblib
+      md5: 2b58217dc7a9bbba1ab57b821fa117d3
+      size: 7221231
+  decision_tree@RandomForest:
+    cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/Lasso_prod.joblib
+      -mn RandomForest -p params.yaml
+    deps:
+    - path: data/models/Lasso_prod.joblib
+      md5: d019dfe196a18dcdc9279b849f36ba62
+      size: 1199
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: decision_tree.py
+      md5: ab0130b1ec2b43ea9ff8fcd5aa9bffba
+      size: 3340
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 6
+            - 7
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 10
+            - 15
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 18
+            - 48
+    outs:
+    - path: data/models/RandomForest.joblib
+      md5: 92ff16f96be41e191f1fcfe339afb275
+      size: 3238367
+  decision_tree_test@DecisionTree:
+    cmd: python decision_tree_test.py -id data/prepared/ -im data/models/DecisionTree.joblib
+      -bm data/models/Lasso_prod.joblib -mn DecisionTree
+    deps:
+    - path: data/models/DecisionTree.joblib
+      md5: e1a535822dd2e891162b69c9e6868f28
+      size: 139231
+    - path: data/models/Lasso_prod.joblib
+      md5: d019dfe196a18dcdc9279b849f36ba62
+      size: 1199
+    - path: data/prepared/
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: decision_tree_test.py
+      md5: d707646512c3507f598e76018038539e
+      size: 1889
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 6
+            - 7
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 10
+            - 15
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 18
+            - 48
+  decision_tree_test@ExtraTree:
+    cmd: python decision_tree_test.py -id data/prepared/ -im data/models/ExtraTree.joblib
+      -bm data/models/Lasso_prod.joblib -mn ExtraTree
+    deps:
+    - path: data/models/ExtraTree.joblib
+      md5: 2b58217dc7a9bbba1ab57b821fa117d3
+      size: 7221231
+    - path: data/models/Lasso_prod.joblib
+      md5: d019dfe196a18dcdc9279b849f36ba62
+      size: 1199
+    - path: data/prepared/
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: decision_tree_test.py
+      md5: d707646512c3507f598e76018038539e
+      size: 1889
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 6
+            - 7
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 10
+            - 15
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 18
+            - 48
+  decision_tree_test@RandomForest:
+    cmd: python decision_tree_test.py -id data/prepared/ -im data/models/RandomForest.joblib
+      -bm data/models/Lasso_prod.joblib -mn RandomForest
+    deps:
+    - path: data/models/Lasso_prod.joblib
+      md5: d019dfe196a18dcdc9279b849f36ba62
+      size: 1199
+    - path: data/models/RandomForest.joblib
+      md5: 92ff16f96be41e191f1fcfe339afb275
+      size: 3238367
+    - path: data/prepared/
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: decision_tree_test.py
+      md5: d707646512c3507f598e76018038539e
+      size: 1889
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 6
+            - 7
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 10
+            - 15
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 18
+            - 48
+  decision_tree_prod@DecisionTree:
+    cmd: python decision_tree_full.py -id data/prepared/ -od data/models/ -mn DecisionTree
+    deps:
+    - path: data/models/DecisionTree.joblib
+      md5: e1a535822dd2e891162b69c9e6868f28
+      size: 139231
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: decision_tree_full.py
+      md5: 1ae66c4129d750408eddf9c1dda17572
+      size: 3083
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 6
+            - 7
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 10
+            - 15
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 18
+            - 48
+    outs:
+    - path: data/models/DecisionTree_prod.joblib
+      md5: 6dab52138dc2f2338160e9db6b9cea04
+      size: 146097
+  decision_tree_prod@ExtraTree:
+    cmd: python decision_tree_full.py -id data/prepared/ -od data/models/ -mn ExtraTree
+    deps:
+    - path: data/models/ExtraTree.joblib
+      md5: 2b58217dc7a9bbba1ab57b821fa117d3
+      size: 7221231
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: decision_tree_full.py
+      md5: 1ae66c4129d750408eddf9c1dda17572
+      size: 3083
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 6
+            - 7
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 10
+            - 15
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 18
+            - 48
+    outs:
+    - path: data/models/ExtraTree_prod.joblib
+      md5: 3aa41d02709dd05137ca8f29befc965c
+      size: 8402849
+  decision_tree_prod@RandomForest:
+    cmd: python decision_tree_full.py -id data/prepared/ -od data/models/ -mn RandomForest
+    deps:
+    - path: data/models/RandomForest.joblib
+      md5: 92ff16f96be41e191f1fcfe339afb275
+      size: 3238367
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: decision_tree_full.py
+      md5: 1ae66c4129d750408eddf9c1dda17572
+      size: 3083
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 6
+            - 7
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 2
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+            max_depth:
+            - 2
+            - 4
+            - 6
+            - 7
+            - 10
+            - 15
+            min_samples_split:
+            - 2
+            - 3
+            - 4
+            - 10
+            - 15
+            min_samples_leaf:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 18
+            - 48
+    outs:
+    - path: data/models/RandomForest_prod.joblib
+      md5: 4211e83da9d86b59d2d170324cff5e8f
+      size: 4069025
+  xgboost:
+    cmd: python xgboost_train.py -id data/prepared -od data/models -bm data/models/Lasso_prod.joblib
+      -p params.yaml
+    deps:
+    - path: data/models/Lasso_prod.joblib
+      md5: d019dfe196a18dcdc9279b849f36ba62
+      size: 1199
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: xgboost_train.py
+      md5: 35583592b3241666492cbfbb28e50eb9
+      size: 2247
+    params:
+      params.yaml:
+        xgboost:
+          n_estimators:
+          - 1
+          - 2
+          - 5
+          - 10
+          - 15
+          - 20
+          - 25
+          - 30
+          - 40
+          - 50
+          max_depth:
+          - 2
+          - 4
+          - 6
+          - 7
+          - 10
+          - 15
+          eta:
+          - 0.8
+          - 0.3
+          - 0.1
+          - 0.05
+          - 0.01
+          subsample:
+          - 0.6
+          - 0.7
+          - 0.8
+          - 0.9
+          - 1.0
+    outs:
+    - path: data/models/xgboost.joblib
+      md5: c7689a6748213cc92abd26e621915db4
+      size: 529798
+  xgboost_test:
+    cmd: python xgboost_test.py -id data/prepared -im data/models/xgboost.joblib -bm
+      data/models/Lasso_prod.joblib
+    deps:
+    - path: data/models/Lasso_prod.joblib
+      md5: d019dfe196a18dcdc9279b849f36ba62
+      size: 1199
+    - path: data/models/xgboost.joblib
+      md5: c7689a6748213cc92abd26e621915db4
+      size: 529798
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: xgboost_test.py
+      md5: d3b27e986a662eb4713620a682fc1001
+      size: 1459
+  xgboost_prod:
+    cmd: python xgboost_full.py -id data/prepared -od data/models
+    deps:
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    - path: xgboost_full.py
+      md5: 8b6b0dd1c4b9ec7f346cae80f4fcf865
+      size: 1454
+    outs:
+    - path: data/models/xgboost_prod.joblib
+      md5: 2ccc3eb6a904413ce0cbe9277042bb76
+      size: 266557
+  neural_network:
+    cmd: python NN.py -id data/prepared -od data/models -ld data/logs -bm data/models/Lasso_prod.joblib
+      -p params.yaml
+    deps:
+    - path: NN.py
+      md5: 71bb93b554b3b1f5c6dcc38a2173f445
+      size: 9497
+    - path: data/models/Lasso_prod.joblib
+      md5: d019dfe196a18dcdc9279b849f36ba62
+      size: 1199
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    params:
+      params.yaml:
+        neural_network:
+          batch_size:
+          - 32
+          - 64
+          - 128
+          buffer_size:
+          - 32
+          - 64
+          - 128
+          neurons:
+          - 128
+          - 256
+          - 512
+          learning_rate:
+          - 0.001
+          - 0.003
+          - 0.005
+    outs:
+    - path: data/logs
+      md5: f56dd4c742d86d4fcdc89dd8b5abcbe2.dir
+      size: 1068257227
+      nfiles: 405
+    - path: data/models/NeuNet
+      md5: 86edc4fe01e4e1a5ce3b9b6ea12372ce.dir
+      size: 147108
+      nfiles: 5
+  neural_network_prod:
+    cmd: python NN_full.py -id data/prepared -od data/models -ld data/logs_prod
+    deps:
+    - path: NN_full.py
+      md5: 9c3de193afa9b281f890d79abe66ecd4
+      size: 5432
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    outs:
+    - path: data/models/NeuNetProd
+      md5: add79eafd578f5d786d66f081d2a3e2f.dir
+      size: 146940
+      nfiles: 5
+  neural_network_test:
+    cmd: python NN_test.py -id data/prepared -im data/models/NeuNet -ld data/logs
+      -bm data/models/Lasso_prod.joblib
+    deps:
+    - path: NN_test.py
+      md5: e9159771d15e4548ac272ff3addf5511
+      size: 1853
+    - path: data/models/Lasso_prod.joblib
+      md5: d019dfe196a18dcdc9279b849f36ba62
+      size: 1199
+    - path: data/models/NeuNet
+      md5: 86edc4fe01e4e1a5ce3b9b6ea12372ce.dir
+      size: 147108
+      nfiles: 5
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+  catboost:
+    cmd: python catboost_train.py -id data/prepared -od data/models -bm data/models/Lasso_prod.joblib
+      -p params.yaml
+    deps:
+    - path: catboost_train.py
+      md5: 6ff201820b1f51026a7147328955d15b
+      size: 2515
+    - path: data/models/Lasso_prod.joblib
+      md5: d019dfe196a18dcdc9279b849f36ba62
+      size: 1199
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    params:
+      params.yaml:
+        catboost:
+          iterations:
+          - 1
+          - 2
+          - 5
+          - 10
+          - 15
+          - 20
+          - 25
+          - 30
+          depth:
+          - 2
+          - 4
+          - 6
+          - 7
+          - 10
+          - 15
+          learning_rate:
+          - 0.8
+          - 0.3
+          - 0.1
+          - 0.05
+          - 0.01
+    outs:
+    - path: data/models/catboost.joblib
+      md5: 3f63ec7be5b0ed4b732e4cb9571a5a2f
+      size: 70903
+  catboost_test:
+    cmd: python catboost_test.py -id data/prepared -im data/models/catboost.joblib
+      -bm data/models/Lasso_prod.joblib
+    deps:
+    - path: catboost_test.py
+      md5: d3b27e986a662eb4713620a682fc1001
+      size: 1459
+    - path: data/models/Lasso_prod.joblib
+      md5: d019dfe196a18dcdc9279b849f36ba62
+      size: 1199
+    - path: data/models/catboost.joblib
+      md5: 3f63ec7be5b0ed4b732e4cb9571a5a2f
+      size: 70903
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+  catboost_prod:
+    cmd: python catboost_full.py -id data/prepared -od data/models
+    deps:
+    - path: catboost_full.py
+      md5: 2b9cbec6effd323e2271829291d62f46
+      size: 1397
+    - path: data/prepared
+      md5: e5025d53c479210f5849ed5d92ad8653.dir
+      size: 2272754
+      nfiles: 8
+    outs:
+    - path: data/models/catboost_prod.joblib
+      md5: 74d4fc018e1e15b421051672df7fa731
+      size: 70943
