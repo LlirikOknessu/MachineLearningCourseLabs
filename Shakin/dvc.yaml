@@ -129,7 +129,7 @@ stages:
   NN:
     cmd: python TESTNN.py -id data/prepared/ -od data/models/ -logd data/logs/ -bm data/models/LinearRegression.joblib
     deps:
-      - NN.py
+      - TESTNN.py
       - data/prepared
       - data/models/LinearRegression.joblib
     outs:
