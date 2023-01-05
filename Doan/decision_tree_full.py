@@ -3,16 +3,17 @@ import argparse
 from pathlib import Path
 import numpy as np
 from sklearn import tree
+from sklearn.metrics import mean_absolute_error
 from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor
-from joblib import dump
+from joblib import dump, load
 import matplotlib.pyplot as plt
 
 TREES_MODELS_MAPPER = {'DecisionTree': tree.DecisionTreeRegressor,
                        'RandomForest': RandomForestRegressor,
                        'ExtraTree': ExtraTreesRegressor}
 
-TREES_MODELS_BEST_PARAMETERS = {'DecisionTree': {'max_depth': 6, 'min_samples_leaf': 3, 'min_samples_split': 2, 'splitter': 'best'},
-                                'RandomForest': {'max_depth': 6, 'min_samples_leaf': 1, 'min_samples_split': 7, 'n_estimators': 10},
+TREES_MODELS_BEST_PARAMETERS = {'DecisionTree': {'max_depth': 6, 'min_samples_leaf': 3, 'min_samples_split': 3, 'splitter': 'best'},
+                                'RandomForest': {'max_depth': 7, 'min_samples_leaf': 1, 'min_samples_split': 6, 'n_estimators': 15},
                                 'ExtraTree': {'max_depth': 7, 'min_samples_leaf': 1, 'min_samples_split': 4, 'n_estimators': 15}}
 
 def parser_args_for_sac():
@@ -21,8 +22,10 @@ def parser_args_for_sac():
                         required=False, help='path to input data directory')
     parser.add_argument('--output_dir', '-od', type=str, default='data/models/',
                         required=False, help='path to save prepared data')
-    parser.add_argument('--model_name', '-mn', type=str, default='RandomForest',
+    parser.add_argument('--model_name', '-mn', type=str, default='ExtraTree',
                         required=False, help='file with dvc stage params')
+    parser.add_argument('--baseline_model', '-bm', type=str, default='data/models/LinearRegression_prod.joblib',
+                        required=False, help='path to linear regression prod version')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -56,3 +59,11 @@ if __name__ == '__main__':
                            filled=True)
         fig.savefig(output_model_path)
     dump(reg, output_model_joblib_path)
+
+    predicted_values = np.squeeze(reg.predict(X_train))
+    baseline_model_path = Path(args.baseline_model)
+    baseline_model = load(baseline_model_path)
+    y_pred_baseline = np.squeeze(baseline_model.predict(X_train))
+    print(reg.score(X_train, y_train))
+    print("Baseline MAE: ", mean_absolute_error(y_train, y_pred_baseline))
+    print("Model MAE: ", mean_absolute_error(y_train, predicted_values))
