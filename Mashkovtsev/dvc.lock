@@ -1,0 +1,792 @@
+schema: '2.0'
+stages:
+  data_preparation:
+    cmd: python data_preparation.py -id data/raw -od data/prepared
+    deps:
+    - path: data/raw
+      md5: 20f9d5855d59ee2a7655a02b5da6a95f.dir
+      size: 1329730
+      nfiles: 3
+    - path: data_preparation.py
+      md5: eecbe9f174256c5ff7c7961cf3bbcfcc
+      size: 3183
+    params:
+      params.yaml:
+        data_preparation:
+          train_test_ratio: 0.8
+          train_val_ratio: 0.9
+          random_state: 42
+    outs:
+    - path: data/prepared
+      md5: fb9c4e77416513749081ecbf34117f09.dir
+      size: 19072
+      nfiles: 8
+  linear_regression:
+    cmd: python linear_regression.py -id data/prepared -od data/models -mn LinearRegression
+    deps:
+    - path: data/prepared
+      md5: fb9c4e77416513749081ecbf34117f09.dir
+      size: 19072
+      nfiles: 8
+    - path: linear_regression.py
+      md5: 265c0fd4682f3055f5f812a9cc80d7e1
+      size: 2383
+    params:
+      params.yaml:
+        linear_regression:
+          model_name: LinearRegression
+    outs:
+    - path: data/models/LinearRegression.csv
+      md5: 86b3f93274fe62a47c1ccd899b1748e5
+      size: 206
+    - path: data/models/LinearRegression.joblib
+      md5: 39ef78b663536e4d8e3308057c0487d3
+      size: 1119
+  linear_regression_prod_version:
+    cmd: python linear_regression_full.py -id data/prepared/ -od data/models/ -mn
+      LinearRegression
+    deps:
+    - path: data/models/LinearRegression.joblib
+      md5: 39ef78b663536e4d8e3308057c0487d3
+      size: 1119
+    - path: data/prepared
+      md5: fb9c4e77416513749081ecbf34117f09.dir
+      size: 19072
+      nfiles: 8
+    - path: linear_regression_full.py
+      md5: 0897f9aaadf294ded32c70b9d0af46b4
+      size: 2285
+    params:
+      params.yaml:
+        linear_regression:
+          model_name: LinearRegression
+    outs:
+    - path: data/models/LinearRegression_prod.csv
+      md5: d1addc0beb6614b822b5c1ae7dc30ea2
+      size: 204
+    - path: data/models/LinearRegression_prod.joblib
+      md5: 676de848f8fc2bc7874208f0accc1973
+      size: 1119
+  decision_tree@DecisionTree:
+    cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/LinearRegression_prod.joblib
+      -mn DecisionTree -p params.yaml
+    deps:
+    - path: data/models/LinearRegression_prod.joblib
+      md5: 676de848f8fc2bc7874208f0accc1973
+      size: 1119
+    - path: data/prepared
+      md5: fb9c4e77416513749081ecbf34117f09.dir
+      size: 19072
+      nfiles: 8
+    - path: decision_tree.py
+      md5: f10b4ff022a862e71e815012d4dc4c53
+      size: 3259
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 4
+            - 6
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+    outs:
+    - path: data/models/DecisionTree.joblib
+      md5: 1e3bc64c8de824b423f5de3901decaa3
+      size: 26831
+  decision_tree_validation@DecisionTree:
+    cmd: python decision_tree_validation.py -id data/prepared/ -im data/models/DecisionTree.joblib
+      -bm data/models/LinearRegression_prod.joblib -mn DecisionTree
+    deps:
+    - path: data/models/DecisionTree.joblib
+      md5: 1e3bc64c8de824b423f5de3901decaa3
+      size: 26831
+    - path: data/models/LinearRegression_prod.joblib
+      md5: 676de848f8fc2bc7874208f0accc1973
+      size: 1119
+    - path: data/prepared/
+      md5: fb9c4e77416513749081ecbf34117f09.dir
+      size: 19072
+      nfiles: 8
+    - path: decision_tree_validation.py
+      md5: 5a2f7480297a8006450602a0694f13a0
+      size: 2001
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 4
+            - 6
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+  decision_tree@ExtraTree:
+    cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/LinearRegression_prod.joblib
+      -mn ExtraTree -p params.yaml
+    deps:
+    - path: data/models/LinearRegression_prod.joblib
+      md5: 676de848f8fc2bc7874208f0accc1973
+      size: 1119
+    - path: data/prepared
+      md5: fb9c4e77416513749081ecbf34117f09.dir
+      size: 19072
+      nfiles: 8
+    - path: decision_tree.py
+      md5: f10b4ff022a862e71e815012d4dc4c53
+      size: 3259
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 4
+            - 6
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+    outs:
+    - path: data/models/ExtraTree.joblib
+      md5: 81a43b2b8a0fe11cd044060d97bdddc2
+      size: 77455
+  decision_tree_prod_version@ExtraTree:
+    cmd: python decision_tree_full.py -id data/prepared/ -od data/models/ -mn ExtraTree
+    deps:
+    - path: data/models/ExtraTree.joblib
+      md5: 81a43b2b8a0fe11cd044060d97bdddc2
+      size: 77455
+    - path: data/prepared
+      md5: fb9c4e77416513749081ecbf34117f09.dir
+      size: 19072
+      nfiles: 8
+    - path: decision_tree_full.py
+      md5: 37170c1cceee9c5023f305226cb9a36e
+      size: 2757
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 4
+            - 6
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+    outs:
+    - path: data/models/ExtraTree_prod.joblib
+      md5: 6135442ebbc66d1ed480379bcb58877b
+      size: 69633
+  decision_tree@RandomForest:
+    cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/LinearRegression_prod.joblib
+      -mn RandomForest -p params.yaml
+    deps:
+    - path: data/models/LinearRegression_prod.joblib
+      md5: 676de848f8fc2bc7874208f0accc1973
+      size: 1119
+    - path: data/prepared
+      md5: fb9c4e77416513749081ecbf34117f09.dir
+      size: 19072
+      nfiles: 8
+    - path: decision_tree.py
+      md5: f10b4ff022a862e71e815012d4dc4c53
+      size: 3259
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 4
+            - 6
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+    outs:
+    - path: data/models/RandomForest.joblib
+      md5: a736783a050a1c339b1f46864be35ddd
+      size: 128623
+  decision_tree_validation@RandomForest:
+    cmd: python decision_tree_validation.py -id data/prepared/ -im data/models/RandomForest.joblib
+      -bm data/models/LinearRegression_prod.joblib -mn RandomForest
+    deps:
+    - path: data/models/LinearRegression_prod.joblib
+      md5: 676de848f8fc2bc7874208f0accc1973
+      size: 1119
+    - path: data/models/RandomForest.joblib
+      md5: a736783a050a1c339b1f46864be35ddd
+      size: 128623
+    - path: data/prepared/
+      md5: fb9c4e77416513749081ecbf34117f09.dir
+      size: 19072
+      nfiles: 8
+    - path: decision_tree_validation.py
+      md5: 5a2f7480297a8006450602a0694f13a0
+      size: 2001
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 4
+            - 6
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+  decision_tree_validation@ExtraTree:
+    cmd: python decision_tree_validation.py -id data/prepared/ -im data/models/ExtraTree.joblib
+      -bm data/models/LinearRegression_prod.joblib -mn ExtraTree
+    deps:
+    - path: data/models/ExtraTree.joblib
+      md5: 81a43b2b8a0fe11cd044060d97bdddc2
+      size: 77455
+    - path: data/models/LinearRegression_prod.joblib
+      md5: 676de848f8fc2bc7874208f0accc1973
+      size: 1119
+    - path: data/prepared/
+      md5: fb9c4e77416513749081ecbf34117f09.dir
+      size: 19072
+      nfiles: 8
+    - path: decision_tree_validation.py
+      md5: 5a2f7480297a8006450602a0694f13a0
+      size: 2001
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 4
+            - 6
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+  decision_tree_prod_version@DecisionTree:
+    cmd: python decision_tree_full.py -id data/prepared/ -od data/models/ -mn DecisionTree
+    deps:
+    - path: data/models/DecisionTree.joblib
+      md5: 1e3bc64c8de824b423f5de3901decaa3
+      size: 26831
+    - path: data/prepared
+      md5: fb9c4e77416513749081ecbf34117f09.dir
+      size: 19072
+      nfiles: 8
+    - path: decision_tree_full.py
+      md5: 37170c1cceee9c5023f305226cb9a36e
+      size: 2757
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 4
+            - 6
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+    outs:
+    - path: data/models/DecisionTree_prod.joblib
+      md5: d141f53036f51c0d1ab707c3abfc2849
+      size: 31505
+  linear_regression_validation:
+    cmd: python linear_regression_validation.py -id data/prepared/ -im data/models/LinearRegression.joblib
+      -mn LinearRegression
+    deps:
+    - path: data/models/LinearRegression.joblib
+      md5: 39ef78b663536e4d8e3308057c0487d3
+      size: 1119
+    - path: data/prepared/
+      md5: fb9c4e77416513749081ecbf34117f09.dir
+      size: 19072
+      nfiles: 8
+    - path: linear_regression_validation.py
+      md5: b129daf9a5cf53a74f7a1daa63c7a817
+      size: 1421
+    params:
+      params.yaml:
+        linear_regression:
+          model_name: LinearRegression
+  decision_tree_prod_version@RandomForest:
+    cmd: python decision_tree_full.py -id data/prepared/ -od data/models/ -mn RandomForest
+    deps:
+    - path: data/models/RandomForest.joblib
+      md5: a736783a050a1c339b1f46864be35ddd
+      size: 128623
+    - path: data/prepared
+      md5: fb9c4e77416513749081ecbf34117f09.dir
+      size: 19072
+      nfiles: 8
+    - path: decision_tree_full.py
+      md5: 37170c1cceee9c5023f305226cb9a36e
+      size: 2757
+    params:
+      params.yaml:
+        decision_tree:
+          DecisionTree:
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            splitter:
+            - best
+            - random
+            min_samples_split:
+            - 2
+            - 4
+            - 6
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          RandomForest:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+          ExtraTree:
+            n_estimators:
+            - 1
+            - 3
+            - 5
+            - 10
+            max_depth:
+            - 3
+            - 5
+            - 8
+            - 12
+            min_samples_split:
+            - 1
+            - 2
+            - 4
+            - 8
+            min_samples_leaf:
+            - 1
+            - 2
+            - 4
+    outs:
+    - path: data/models/RandomForest_prod.joblib
+      md5: 7682848993a2ecc3697d0950231ef1e8
+      size: 52721
