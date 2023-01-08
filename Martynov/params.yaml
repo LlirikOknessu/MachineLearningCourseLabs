@@ -1,0 +1,23 @@
+data_preparation:
+  train_test_ratio: 0.8
+  train_val_ratio: 0.9
+  random_state: 42
+  path: 'data/raw/Summary_of_Weather.csv'
+linear_regression:
+  model_name: 'LinearRegression'
+decision_tree:
+  DecisionTree:
+    max_depth: [ 2, 6, 12]
+    splitter: [ 'best', 'random' ]
+    min_samples_split: [ 2, 4]
+    min_samples_leaf: [ 1, 2]
+  RandomForest:
+    n_estimators: [1, 2, 5]
+    max_depth: [ 2, 6, 12]
+    min_samples_split: [ 1, 2, 4, 8]
+    min_samples_leaf: [ 1, 2, 4 ]
+  ExtraTree:
+    n_estimators: [1, 2, 5]
+    max_depth: [ 2, 6, 12]
+    min_samples_split: [ 1, 2, 4, 8]
+    min_samples_leaf: [ 1, 2, 4 ]
