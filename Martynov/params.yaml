@@ -2,6 +2,7 @@ data_preparation:
   train_test_ratio: 0.8
   train_val_ratio: 0.9
   random_state: 42
+  path: 'data/raw/Summary_of_Weather.csv'
 linear_regression:
   model_name: 'LinearRegression'
 decision_tree:

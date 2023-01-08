@@ -1,5 +1,5 @@
-import pandas as pd
 import argparse
+import pandas as pd
 from pathlib import Path
 import yaml
 from sklearn.model_selection import train_test_split
@@ -24,13 +24,13 @@ if __name__ == '__main__':
 
     output_dir.mkdir(exist_ok=True, parents=True)
 
-    full_data = pd.read_csv('data/raw/Summary_of_Weather.csv')
+    full_data = pd.read_csv(params['path'])
 
     full_data['Snowfall'].replace(to_replace='#VALUE!', value=0, inplace=True)
     full_data['Snowfall'] = full_data['Snowfall'].fillna(0).astype(float)
     full_data['Precip'] = full_data['Precip'].fillna(method='bfill').replace('T', 0).astype(float)
 
-    X, y = full_data['YR']+full_data['MO']+full_data['DA']+full_data['MinTemp']+full_data['MaxTemp']+full_data['Snowfall']+full_data['Precip'], full_data['MeanTemp']
+    X, y = full_data['YR']+full_data['MO']+full_data['DA']+full_data['Snowfall']+full_data['Precip'], full_data['MeanTemp']
     X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                         train_size=params.get('train_test_ratio'),
                                                         random_state=params.get('random_state'))
