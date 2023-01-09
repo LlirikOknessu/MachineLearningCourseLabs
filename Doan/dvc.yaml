@@ -21,11 +21,11 @@ stages:
       - linear_regression
 
   linear_regression_validation:
-    cmd: python linear_regression_validation.py -id data/prepared/ -im data/models/ -mn ${linear_regression.model_name}
+    cmd: python linear_regression_validation.py -id data/prepared/ -im data/models/${linear_regression.model_name}.joblib -mn ${linear_regression.model_name}
     deps:
       - linear_regression_validation.py
       - data/prepared/
-      - data/models/
+      - data/models/${linear_regression.model_name}.joblib
     params:
       - linear_regression
 
@@ -44,7 +44,7 @@ stages:
   decision_tree:
     foreach: ${decision_tree}
     do:
-      cmd: python decision_tree.py -id data/prepared/ -od data/models/ -bm data/models/${linear_regression.model_name}_prod.joblib -mn ${key} -p params.yaml
+      cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/${linear_regression.model_name}_prod.joblib -mn ${key} -p params.yaml
       deps:
         - decision_tree.py
         - data/prepared
@@ -57,7 +57,7 @@ stages:
   decision_tree_validation:
     foreach: ${decision_tree}
     do:
-      cmd: python decision_tree_validation.py -id data/prepared/ -im data/models/${linear_regression.model_name}_prod.joblib -mn ${key}
+      cmd: python decision_tree_validation.py -id data/prepared/ -im data/models/${key}.joblib -bm data/models/${linear_regression.model_name}_prod.joblib -mn ${key}
       deps:
         - decision_tree_validation.py
         - data/prepared/
@@ -69,7 +69,7 @@ stages:
   decision_tree_prod_version:
     foreach: ${decision_tree}
     do:
-      cmd: python decision_tree_full.py -id data/prepared/ -od data/models/ -mn${key}
+      cmd: python decision_tree_full.py -id data/prepared/ -od data/models/ -mn ${key}
       deps:
         - decision_tree_full.py
         - data/prepared
@@ -78,4 +78,3 @@ stages:
         - data/models/${key}_prod.joblib
       params:
         - decision_tree
-
