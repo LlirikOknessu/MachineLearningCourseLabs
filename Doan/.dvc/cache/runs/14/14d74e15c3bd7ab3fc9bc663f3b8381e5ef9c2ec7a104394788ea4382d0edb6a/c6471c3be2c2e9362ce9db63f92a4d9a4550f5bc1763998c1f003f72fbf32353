@@ -1,0 +1,14 @@
+cmd: python NeuralNetwork_full.py -id data/prepared/ -od data/models/ -ld data/logs/
+deps:
+- path: NeuralNetwork_full.py
+  md5: 9b2f0a7bfafa39d0a18c65b6dc39052b
+  size: 5258
+- path: data/prepared
+  md5: 26dde4a2768a8a09223b74e4be1c9d50.dir
+  size: 73140
+  nfiles: 8
+outs:
+- path: data/models/NeuralNetwork_prod
+  md5: 664d775060f756168220cd6e65dd7da7.dir
+  size: 1169893
+  nfiles: 5
