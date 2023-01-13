@@ -1,11 +1,12 @@
-import numpy as np
 import pandas as pd
-from pathlib import Path
-from joblib import dump, load
-import yaml
+from joblib import load
 import argparse
-from catboost import CatBoostRegressor
+from pathlib import Path
+import numpy as np
+import yaml
 from sklearn.metrics import mean_absolute_error
+from joblib import dump
+from catboost import CatBoostRegressor
 from sklearn.model_selection import GridSearchCV
 
 def parser_args_for_sac():
@@ -14,12 +15,12 @@ def parser_args_for_sac():
                         required=False, help='path to input data directory')
     parser.add_argument('--output_dir', '-od', type=str, default='data/models/',
                         required=False, help='path to save prepared data')
-    parser.add_argument('--baseline_model', '-bm', type=str, default='data/models/DecisionTree_prod.joblib',
+    parser.add_argument('--baseline_model', '-bm', type=str, default='data/models/LinearRegression_prod.joblib',
                         required=False, help='path to linear regression prod version')
-    parser.add_argument('--params', '-p', type=str, default='params.yaml',
-                        required=False, help='file with dvc stage params')
-    parser.add_argument('--model_name', '-mn', type=str, default='CatBoost',
-                        required=False, help='file with dvc stage params')
+    parser.add_argument('--params', '-p', type=str, default='params.yaml', required=False,
+                        help='file with dvc stage params')
+    parser.add_argument('--model_name', '-mn', type=str, default='LR', required=False,
+                        help='file with dvc stage params')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -48,17 +49,15 @@ if __name__ == '__main__':
 
     model = CatBoostRegressor()
     CatBoost_model = GridSearchCV(model, params)
-    CatBoost_model= CatBoost_model.fit(X_train, y_train)
+    CatBoost_model = CatBoost_model.fit(X_train, y_train)
 
     baseline_model = load(baseline_model_path)
     y_pred_baseline = np.squeeze(baseline_model.predict(X_test))
-
     predicted_values = np.squeeze(CatBoost_model.predict(X_test))
 
     print(CatBoost_model.score(X_test, y_test))
     print(CatBoost_model.best_params_)
-
-    print("Baseline MAE: ", mean_absolute_error(y_test, y_pred_baseline))
+    print("Baseline MAE is: ", mean_absolute_error(y_test, y_pred_baseline))
     print("Model MAE: ", mean_absolute_error(y_test, predicted_values))
 
     dump(CatBoost_model, output_model_joblib_path)
