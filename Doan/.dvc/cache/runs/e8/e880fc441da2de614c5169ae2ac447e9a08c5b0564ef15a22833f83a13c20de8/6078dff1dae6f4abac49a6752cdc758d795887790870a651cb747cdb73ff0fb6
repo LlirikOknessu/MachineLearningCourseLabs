@@ -1,0 +1,29 @@
+cmd: python NeuralNetwork.py -id data/prepared/ -od data/models/ -ld data/logs/ -bm
+  data/models/LinearRegression_prod.joblib
+deps:
+- path: NeuralNetwork.py
+  md5: 9326ae6dc9bc2dc1400f32cb07609158
+  size: 8208
+- path: data/models/LinearRegression_prod.joblib
+  md5: 8e72fe1c093da362b7fcf351cdf98369
+  size: 1039
+- path: data/prepared
+  md5: 26dde4a2768a8a09223b74e4be1c9d50.dir
+  size: 73140
+  nfiles: 8
+params:
+  params.yaml:
+    NeuralNetwork:
+      n_of_neurons:
+      - 512
+      batch_size:
+      - 64
+      buffer_size: 128
+      learning_rate:
+      - 0.001
+      epochs: 400
+outs:
+- path: data/models/NeuralNetwork
+  md5: b30dbe16f1c418c5935e385ba808a1ea.dir
+  size: 1169892
+  nfiles: 5

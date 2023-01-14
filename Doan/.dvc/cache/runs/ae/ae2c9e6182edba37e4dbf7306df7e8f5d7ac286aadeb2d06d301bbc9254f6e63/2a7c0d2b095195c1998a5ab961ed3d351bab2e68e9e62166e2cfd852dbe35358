@@ -1,0 +1,44 @@
+cmd: python XGBoost.py -id data/prepared/ -od data/models/ -bm data/models/LinearRegression_prod.joblib
+  -p params.yaml
+deps:
+- path: XGBoost.py
+  md5: 28fa53dd695a9c93e26ecbe42ee4e059
+  size: 2426
+- path: data/models/LinearRegression_prod.joblib
+  md5: 8e72fe1c093da362b7fcf351cdf98369
+  size: 1039
+- path: data/prepared
+  md5: 26dde4a2768a8a09223b74e4be1c9d50.dir
+  size: 73140
+  nfiles: 8
+params:
+  params.yaml:
+    XGBoost:
+      n_estimators:
+      - 3
+      - 4
+      - 7
+      - 12
+      - 17
+      max_depth:
+      - 2
+      - 3
+      - 4
+      - 5
+      learning_rate:
+      - 0.7
+      - 0.8
+      - 0.9
+      min_child_weight:
+      - 3
+      - 5
+      - 7
+      subsample:
+      - 0.2
+      - 0.3
+      - 0.5
+      - 0.7
+outs:
+- path: data/models/XGBoost.joblib
+  md5: 282561c2ca873722f54f098047d024be
+  size: 145686

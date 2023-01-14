@@ -1,0 +1,28 @@
+cmd: python NN.py -id data/prepared -od data/models/
+deps:
+- path: NN.py
+  md5: 82df8f495e77bbe2d55b70964f7dbecd
+  size: 6460
+- path: data/prepared
+  md5: 26dde4a2768a8a09223b74e4be1c9d50.dir
+  size: 73140
+  nfiles: 8
+params:
+  params.yaml:
+    neural_net:
+      neurons_cnt:
+      - 128
+      - 256
+      - 512
+      batch_size:
+      - 32
+      - 64
+      - 128
+      learning_rate:
+      - 0.001
+      - 0.005
+outs:
+- path: data/models/NN
+  md5: b770c123ae85bba08aebb79743d13559.dir
+  size: 65543
+  nfiles: 5
