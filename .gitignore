@@ -23243,3 +23243,11 @@ Nguyen/data/models/Ridge_prod.joblib
 Nguyen/data/models/Ridge.csv
 Nguyen/data/models/Ridge.joblib
 .idea
+/Doan/data/prepared/y_val.csv
+/Doan/data/prepared/y_train.csv
+/Doan/data/prepared/y_test.csv
+/Doan/data/prepared/y_full.csv
+/Doan/data/prepared/X_val.csv
+/Doan/data/prepared/X_train.csv
+/Doan/data/prepared/X_test.csv
+/Doan/data/prepared/X_full.csv
