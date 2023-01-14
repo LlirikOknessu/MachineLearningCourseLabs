@@ -1,0 +1,15 @@
+/LinearRegression.csv
+/LinearRegression.joblib
+/LinearRegression_prod.csv
+/LinearRegression_prod.joblib
+/ExtraTree.joblib
+/CatBoost.joblib
+/RandomForest.joblib
+/XGBoost.joblib
+/ExtraTree_prod.joblib
+/DecisionTree.joblib
+/DecisionTree_prod.joblib
+/NeuralNetwork
+/RandomForest_prod.joblib
+/NeuralNetwork_prod
+/XGBoost_prod.joblib
