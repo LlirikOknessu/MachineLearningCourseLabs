@@ -1,0 +1,88 @@
+schema: '2.0'
+stages:
+  data_preparation:
+    cmd: python data_preparation.py -id data/raw -od data/prepared
+    deps:
+    - path: data/raw
+      md5: 823d84f35a7ddef67a65e87f72818436.dir
+      size: 51759
+      nfiles: 1
+    - path: data_preparation.py
+      md5: 25e8a1f83948e3e34f6df0128ae15134
+      size: 3346
+    params:
+      params.yaml:
+        data_preparation:
+          train_test_ratio: 0.7
+          train_val_ratio: 0.9
+          random_state: 42
+    outs:
+    - path: data/prepared
+      md5: 814df9318a136992f76dc2d0f8282865.dir
+      size: 52382
+      nfiles: 8
+  linear_regression:
+    cmd: python linear_regression.py -id data/prepared -od data/models -mn Ridge
+    deps:
+    - path: data/prepared
+      md5: 814df9318a136992f76dc2d0f8282865.dir
+      size: 52382
+      nfiles: 8
+    - path: linear_regression.py
+      md5: 1d1f490e86923e5948f831b4e78a5e2e
+      size: 7571
+    params:
+      params.yaml:
+        linear_regression:
+          model_name: Ridge
+    outs:
+    - path: data/models/Ridge.csv
+      md5: c6c704d71cbb902ceebfc82eee5d954a
+      size: 85
+    - path: data/models/Ridge.joblib
+      md5: a87f775ce6360fd98eb14d063f3c4573
+      size: 927
+  linear_regression_prod_version:
+    cmd: python linear_regression_full.py -id data/prepared/ -od data/models/ -mn
+      Ridge
+    deps:
+    - path: data/models/Ridge.joblib
+      md5: a87f775ce6360fd98eb14d063f3c4573
+      size: 927
+    - path: data/prepared
+      md5: 814df9318a136992f76dc2d0f8282865.dir
+      size: 52382
+      nfiles: 8
+    - path: linear_regression_full.py
+      md5: a5b2f015d2b8654e1b3d395c4a57200e
+      size: 6437
+    params:
+      params.yaml:
+        linear_regression:
+          model_name: Ridge
+    outs:
+    - path: data/models/Ridge_prod.csv
+      md5: 77849edef37f1a005800433a48581f5a
+      size: 85
+    - path: data/models/Ridge_prod.joblib
+      md5: 855d0f48d943ba050e166a6b3fa705ea
+      size: 927
+  linear_regression_validation:
+    cmd: python linear_regression_validation.py -id data/prepared/ -im data/models/Ridge.joblib
+      -mn Ridge
+    deps:
+    - path: data/models/
+      md5: dbfc204fe56fcc8c0cac5e76b90ca9e8.dir
+      size: 2024
+      nfiles: 4
+    - path: data/prepared/
+      md5: 814df9318a136992f76dc2d0f8282865.dir
+      size: 52382
+      nfiles: 8
+    - path: linear_regression_validation.py
+      md5: 5aa4a7e42b7d9abd7e4e792c3d20201e
+      size: 5040
+    params:
+      params.yaml:
+        linear_regression:
+          model_name: Ridge
