@@ -3,4 +3,20 @@ data_preparation:
   train_val_ratio: 0.9
   random_state: 42
 linear_regression:
-  model_name: 'Ridge'
+  model_name: 'LinearRegression'
+decision_tree:
+  DecisionTree:
+    max_depth: [ 2, 4, 6]
+    splitter: [ 'best', 'random' ]
+    min_samples_split: [ 2, 3, 4]
+    min_samples_leaf: [ 1, 2, 3, 4]
+  RandomForest:
+    n_estimators: [1, 2, 5, 10]
+    max_depth: [ 2, 4, 6, 8]
+    min_samples_split: [ 2, 3, 4, 6, 8]
+    min_samples_leaf: [ 1, 2, 3, 4 ]
+  ExtraTree:
+    n_estimators: [1, 2, 5, 10]
+    max_depth: [ 2, 4, 6, 8, 10]
+    min_samples_split: [ 2, 3, 4, 10]
+    min_samples_leaf: [ 1, 2, 3, 4, 10]
