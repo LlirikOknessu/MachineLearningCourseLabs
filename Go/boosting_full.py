@@ -3,21 +3,18 @@ import argparse
 from pathlib import Path
 import yaml
 import numpy as np
-from sklearn import tree
-from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor
+import catboost.core as cb
+import xgboost as xgb
 from sklearn.metrics import mean_absolute_error
-from joblib import dump
-import matplotlib.pyplot as plt
+from joblib import dump, load
 
-TREES_MODELS_MAPPER = {'DecisionTree': tree.DecisionTreeRegressor,
-                       'RandomForest': RandomForestRegressor,
-                       'ExtraTree': ExtraTreesRegressor}
+MODELS_MAPPER = {'XGBoostRegressor': xgb.XGBRegressor,
+                 'CatBoostRegressor': cb.CatBoostRegressor}
 
 # Set the best parameters that you get on training stage for all used models
-TREES_MODELS_BEST_PARAMETERS = {
-    'DecisionTree': {'max_depth': 7, 'min_samples_leaf': 4, 'min_samples_split': 2, 'splitter': 'random'},
-    'RandomForest': {'max_depth': 7, 'min_samples_leaf': 4, 'min_samples_split': 7, 'n_estimators': 15},
-    'ExtraTree': {'max_depth': 7, 'min_samples_leaf': 10, 'min_samples_split': 4, 'n_estimators': 10}}
+MODELS_BEST_PARAMETERS = {
+    'XGBoostRegressor': {'booster': 'gbtree', 'learning_rate': 0.1, 'max_depth': 4},
+    'CatBoostRegressor': {'iterations': 100, 'learning_rate': 0.1, 'depth': 4}}
 
 
 def parser_args_for_sac():
@@ -48,17 +45,9 @@ if __name__ == '__main__':
     y_train = pd.read_csv(y_train_name)
     y_train_cols = y_train.columns
 
-    best_params = TREES_MODELS_BEST_PARAMETERS.get(args.model_name)
-    reg = TREES_MODELS_MAPPER.get(args.model_name)(**best_params)
-    if isinstance(reg, RandomForestRegressor) or isinstance(reg, ExtraTreesRegressor):
+    best_params = MODELS_BEST_PARAMETERS.get(args.model_name)
+    reg = MODELS_MAPPER.get(args.model_name)(**best_params)
+    if isinstance(reg, cb.CatBoostRegressor) or isinstance(reg, xgb.XGBRegressor):
             y_train = np.ravel(y_train.values)
     reg = reg.fit(X_train, y_train)
-
-    if isinstance(reg, tree.DecisionTreeRegressor):
-        fig = plt.figure(figsize=(300,125))
-        _ = tree.plot_tree(reg,
-                           feature_names=X_train.columns,
-                           class_names=y_train_cols,
-                           filled=True)
-        fig.savefig(output_model_path)
     dump(reg, output_model_joblib_path)

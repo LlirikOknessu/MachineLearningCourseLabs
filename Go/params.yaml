@@ -1,22 +1,38 @@
 data_preparation:
-  train_test_ratio: 0.7
+  train_test_ratio: 0.8
   train_val_ratio: 0.9
   random_state: 42
 linear_regression:
   model_name: 'LinearRegression'
 decision_tree:
   DecisionTree:
-    max_depth: [ 2, 4, 6]
+    max_depth: [  7, 10, 12, 15]
     splitter: [ 'best', 'random' ]
-    min_samples_split: [ 2, 3, 4]
-    min_samples_leaf: [ 1, 2, 3, 4]
+    min_samples_split: [ 2, 3, 4 ]
+    min_samples_leaf: [ 1, 2, 3, 4 ]
   RandomForest:
-    n_estimators: [1, 2, 5, 10]
-    max_depth: [ 2, 4, 6, 8]
-    min_samples_split: [ 2, 3, 4, 6, 8]
+    n_estimators: [1, 2, 5, 10, 15]
+    max_depth: [ 7, 10, 12, 15]
+    min_samples_split: [ 2, 3, 4, 6, 7 ]
     min_samples_leaf: [ 1, 2, 3, 4 ]
   ExtraTree:
-    n_estimators: [1, 2, 5, 10]
-    max_depth: [ 2, 4, 6, 8, 10]
-    min_samples_split: [ 2, 3, 4, 10]
-    min_samples_leaf: [ 1, 2, 3, 4, 10]
+    n_estimators: [1, 2, 5, 10, 15]
+    max_depth: [  7, 10, 12, 15]
+    min_samples_split: [ 2, 3, 4, 10, 15 ]
+    min_samples_leaf: [ 1, 2, 3, 4, 10, 15 ]
+boosting:
+  XGBoostRegressor:
+    booster: ['gbtree', 'dblinear']
+    learning_rate: [3e-4, 3e-3, 0.01, 0.1, 0.3]
+    max_depth: [4,6,8,10]
+  CatBoostRegressor:
+    iterations: [10,100]
+    learning_rate: [3e-4, 3e-3, 0.01, 0.1, 0.3]
+    depth: [4,6,8,10]
+neural_network:
+  batch_size: [32, 64, 128]
+  buffer_size: [32, 64, 128]
+  neurons: [128, 256, 512]
+  learning_rate: [0.001, 0.003, 0.005]
+
+

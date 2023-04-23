@@ -1,6 +1,6 @@
 stages:
   data_preparation:
-    cmd: python data_preparation.py -id data/raw -od data/prepared #-p params.yaml
+    cmd: python data_preparation.py -id data/raw -od data/prepared
     deps:
       - data_preparation.py
       - data/raw
@@ -19,13 +19,12 @@ stages:
       - data/models/${linear_regression.model_name}.joblib
     params:
       - linear_regression
-
   linear_regression_validation:
     cmd: python linear_regression_validation.py -id data/prepared/ -im data/models/${linear_regression.model_name}.joblib -mn ${linear_regression.model_name}
     deps:
       - linear_regression_validation.py
       - data/prepared/
-      - data/models/
+      - data/models/${linear_regression.model_name}.joblib
     params:
       - linear_regression
   linear_regression_prod_version:
@@ -39,6 +38,7 @@ stages:
       - data/models/${linear_regression.model_name}_prod.joblib
     params:
       - linear_regression
+
   decision_tree:
     foreach: ${decision_tree}
     do:
@@ -74,3 +74,65 @@ stages:
         - data/models/${key}_prod.joblib
       params:
         - decision_tree
+
+  boosting:
+    foreach: ${boosting}
+    do:
+      cmd: python boosting.py -id data/prepared -od data/models -bm data/models/${linear_regression.model_name}_prod.joblib -mn ${key} -p params.yaml
+      deps:
+        - boosting.py
+        - data/prepared
+        - data/models/${linear_regression.model_name}_prod.joblib
+      outs:
+        - data/models/${key}.joblib
+      params:
+        - boosting
+  boosting_validation:
+    foreach: ${boosting}
+    do:
+        cmd: python boosting_validation.py -id data/prepared/ -im data/models/${key}.joblib -bm data/models/${linear_regression.model_name}_prod.joblib -mn ${key}
+        deps:
+          - boosting_validation.py
+          - data/prepared/
+          - data/models/${key}.joblib
+          - data/models/${linear_regression.model_name}_prod.joblib
+        params:
+          - boosting
+  boosting_prod_version:
+    foreach: ${boosting}
+    do:
+        cmd: python boosting_full.py -id data/prepared/ -od data/models/ -mn ${key}
+        deps:
+          - boosting_full.py
+          - data/prepared
+          - data/models/${key}.joblib
+        outs:
+          - data/models/${key}_prod.joblib
+        params:
+          - boosting
+
+  neural_network:
+    cmd: python NeuralNetwork.py -id data/prepared -od data/models -ld data/logs -bm data/models/${linear_regression.model_name}_prod.joblib -p params.yaml
+    deps:
+      - NeuralNetwork.py
+      - data/prepared
+      - data/models/${linear_regression.model_name}_prod.joblib
+    outs:
+      - data/models/NeuNet
+      - data/logs
+    params:
+      - neural_network
+  neural_network_test:
+    cmd: python NeuralNetwork_test.py -id data/prepared -im data/models/NeuNet -ld data/logs -bm data/models/${linear_regression.model_name}_prod.joblib
+    deps:
+      - NeuralNetwork_test.py
+      - data/prepared
+      - data/models/NeuNet
+      - data/models/${linear_regression.model_name}_prod.joblib
+  neural_network_prod:
+    cmd: python NeuralNetwork_full.py -id data/prepared -od data/models -ld data/logs_prod
+    deps:
+      - NeuralNetwork_full.py
+      - data/prepared
+    outs:
+      - data/models/NeuNetProd

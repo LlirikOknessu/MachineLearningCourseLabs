@@ -12,6 +12,7 @@ TREES_MODELS_MAPPER = {'DecisionTree': tree.DecisionTreeRegressor,
                        'RandomForest': RandomForestRegressor,
                        'ExtraTree': ExtraTreesRegressor}
 
+
 def parser_args_for_sac():
     parser = argparse.ArgumentParser(description='Paths parser')
     parser.add_argument('--input_dir', '-id', type=str, default='data/prepared/',
@@ -20,9 +21,10 @@ def parser_args_for_sac():
                         required=False, help='path to save prepared data')
     parser.add_argument('--baseline_model', '-bm', type=str, default='data/models/LinearRegression_prod.joblib',
                         required=False, help='path to linear regression prod version')
-    parser.add_argument('--model_name', '-mn', type=str, default='LinearRegression', required=False,
+    parser.add_argument('--model_name', '-mn', type=str, default='LR', required=False,
                         help='file with dvc stage params')
     return parser.parse_args()
+
 
 if __name__ == '__main__':
     args = parser_args_for_sac()
@@ -45,6 +47,5 @@ if __name__ == '__main__':
     y_pred_baseline = np.squeeze(baseline_model.predict(X_val))
 
     print(reg.score(X_val, y_val))
-
     print("Baseline MAE: ", mean_absolute_error(y_val, y_pred_baseline))
     print("Model MAE: ", mean_absolute_error(y_val, predicted_values))

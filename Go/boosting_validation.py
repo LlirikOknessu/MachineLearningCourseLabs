@@ -2,29 +2,34 @@ import pandas as pd
 import argparse
 from pathlib import Path
 import numpy as np
-from sklearn.linear_model import LinearRegression
-from sklearn.linear_model import Ridge
+import catboost.core as cb
+import xgboost as xgb
 from sklearn.metrics import mean_absolute_error
-from joblib import load
-from numpy import random
+from joblib import dump, load
+
+MODELS_MAPPER = {'XGBoostRegressor': xgb.XGBRegressor,
+                 'CatBoostRegressor': cb.CatBoostRegressor}
 
 
-def parser_args():
+def parser_args_for_sac():
     parser = argparse.ArgumentParser(description='Paths parser')
     parser.add_argument('--input_dir', '-id', type=str, default='data/prepared/',
                         required=False, help='path to input data directory')
     parser.add_argument('--input_model', '-im', type=str, default='data/models/',
                         required=False, help='path to save prepared data')
+    parser.add_argument('--baseline_model', '-bm', type=str, default='data/models/LinearRegression_prod.joblib',
+                        required=False, help='path to linear regression prod version')
     parser.add_argument('--model_name', '-mn', type=str, default='LR', required=False,
                         help='file with dvc stage params')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
-    args = parser_args()
+    args = parser_args_for_sac()
 
     input_dir = Path(args.input_dir)
     input_model = Path(args.input_model)
+    baseline_model_path = Path(args.baseline_model)
 
     X_val_name = input_dir / 'X_val.csv'
     y_val_name = input_dir / 'y_val.csv'
@@ -36,10 +41,9 @@ if __name__ == '__main__':
 
     predicted_values = np.squeeze(reg.predict(X_val))
 
-    y_pred_baseline = [random.normal() % 1]*len(y_val)
+    baseline_model = load(baseline_model_path)
+    y_pred_baseline = np.squeeze(baseline_model.predict(X_val))
 
     print(reg.score(X_val, y_val))
-    print("Mean: ", y_val.mean())
     print("Baseline MAE: ", mean_absolute_error(y_val, y_pred_baseline))
     print("Model MAE: ", mean_absolute_error(y_val, predicted_values))
-

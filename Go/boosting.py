@@ -3,16 +3,15 @@ import argparse
 from pathlib import Path
 import yaml
 import numpy as np
-from sklearn import tree
-from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor
+import catboost.core as cb
+import xgboost as xgb
 from sklearn.metrics import mean_absolute_error
 from joblib import dump, load
 import random
 from sklearn.model_selection import GridSearchCV
 
-TREES_MODELS_MAPPER = {'DecisionTree': tree.DecisionTreeRegressor,
-                       'RandomForest': RandomForestRegressor,
-                       'ExtraTree': ExtraTreesRegressor}
+MODELS_MAPPER = {'XGBoostRegressor': xgb.XGBRegressor,
+                 'CatBoostRegressor': cb.CatBoostRegressor}
 
 
 def parser_args_for_sac():
@@ -35,7 +34,7 @@ if __name__ == '__main__':
 
     with open(args.params, 'r') as f:
         params_all = yaml.safe_load(f)
-    params = params_all['decision_tree']
+    params = params_all['boosting']
 
     input_dir = Path(args.input_dir)
     output_dir = Path(args.output_dir)
@@ -55,24 +54,24 @@ if __name__ == '__main__':
     y_test = pd.read_csv(y_test_name)
 
     random.seed(42)
-    decision_tree_model = TREES_MODELS_MAPPER.get(args.model_name)()
-    decision_tree_regressor = GridSearchCV(decision_tree_model, params[args.model_name])
+    boosting_model = MODELS_MAPPER.get(args.model_name)()
+    boosting_regressor = GridSearchCV(boosting_model, params[args.model_name])
 
-    if isinstance(decision_tree_model, RandomForestRegressor) or isinstance(decision_tree_model, ExtraTreesRegressor):
+    if isinstance(boosting_model, cb.CatBoostRegressor) or isinstance(boosting_model, xgb.XGBRegressor):
         y_train = np.ravel(y_train.values)
         y_test = np.ravel(y_test.values)
-    decision_tree_regressor = decision_tree_regressor.fit(X=X_train, y=y_train)
+    boosting_regressor = boosting_regressor.fit(X=X_train, y=y_train)
 
     baseline_model = load(baseline_model_path)
     y_pred_baseline = np.squeeze(baseline_model.predict(X_test))
 
-    predicted_values = np.squeeze(decision_tree_regressor.predict(X_test))
+    predicted_values = np.squeeze(boosting_regressor.predict(X_test))
 
-    print(decision_tree_regressor.score(X_test, y_test))
-    print(decision_tree_regressor.best_params_)
+    print(boosting_regressor.score(X_test, y_test))
+    print(boosting_regressor.best_params_)
 
     print("Baseline MAE: ", mean_absolute_error(y_test, y_pred_baseline))
     print("Model MAE: ", mean_absolute_error(y_test, predicted_values))
 
-    dump(decision_tree_regressor, output_model_joblib_path)
+    dump(boosting_regressor, output_model_joblib_path)
 

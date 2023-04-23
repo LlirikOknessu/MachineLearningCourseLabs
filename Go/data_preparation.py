@@ -22,10 +22,6 @@ def to_catagorical(df: pd.DataFrame):
     df = df.assign(bmi=df.bmi.cat.codes)
     df.smoker = pd.Categorical(df.smoker)
     df = df.assign(smoker=df.smoker.cat.codes)
-    #df.region = pd.Categorical(df.region)
-    #df = df.assign(region=df.region.cat.codes)
-    #df.children = pd.Categorical(df.children)
-    #df = df.assign(children=df.children.cat.codes)
     return df
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
@@ -44,12 +40,13 @@ if __name__ == '__main__':
     input_dir = Path(args.input_dir)
     output_dir = Path(args.output_dir)
 
-    output_dir.mkdir(exist_ok=True, parents=True)
+    output_dir.mkdir(exist_ok=True, parents=True)  # create a subdirectory
 
-    for data_file in input_dir.glob('*.csv'):
+    for data_file in input_dir.glob('*.csv'):  # find .csv file
         full_data = pd.read_csv(data_file)
         cleaned_data = clean_data(df=full_data)
-        X, y = cleaned_data.drop("charges", axis=1), cleaned_data['charges']
+        X = cleaned_data.drop("charges", axis=1)  # clean the Charges in file x
+        y = np.log(cleaned_data['charges'])  # save the Charges value in file y
         X_train, X_test, y_train, y_test = train_test_split(X,y,
                                                             train_size=params.get('train_test_ratio'),
                                                             random_state=params.get('random_state'))
@@ -74,3 +71,6 @@ if __name__ == '__main__':
         y_test.to_csv(y_test_name, index=False)
         X_val.to_csv(X_val_name, index=False)
         y_val.to_csv(y_val_name, index=False)
+
+
+
