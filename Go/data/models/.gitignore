@@ -4,13 +4,13 @@
 /LinearRegression_prod.joblib
 /RandomForest.joblib
 /ExtraTree.joblib
-/DecisionTree.joblib
-/DecisionTree_prod.joblib
-/RandomForest_prod.joblib
 /ExtraTree_prod.joblib
 /XGBoostRegressor.joblib
-/CatBoostRegressor.joblib
 /XGBoostRegressor_prod.joblib
+/RandomForest_prod.joblib
+/CatBoostRegressor.joblib
 /CatBoostRegressor_prod.joblib
 /NeuNet
 /NeuNetProd
+/DecisionTree.joblib
+/DecisionTree_prod.joblib
