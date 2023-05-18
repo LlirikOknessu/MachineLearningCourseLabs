@@ -44,7 +44,7 @@ if __name__ == '__main__':
     reg = LINEAR_MODELS_MAPPER.get(args.model_name)().fit(X_train, y_train)
 
     y_mean = y_test.mean()
-    y_pred_baseline = [y_mean] * len(y_test)
+    y_pred_baseline = np.random.uniform(y_test.min(), y_test.max(), len(y_test))
 
     predicted_values = np.squeeze(reg.predict(X_test))
 

@@ -39,9 +39,9 @@ def get_log_dirs(params):
 
     return train_log_dir, test_log_dir, fit_log_dir
 
-class NotNotMyModel(Model):
+class NeuralNetwork(Model):
     def __init__(self, n_of_neurons=64):
-        super(NotNotMyModel, self).__init__()
+        super(NeuralNetwork, self).__init__()
 
         self.d_in = Dense(25, activation='relu')
         self.d_1 = Dense(n_of_neurons, activation = 'relu')
@@ -137,7 +137,7 @@ if __name__ == '__main__':
                 fit_summary_writer = tf.summary.create_file_writer(str(logdir))
                 print("Params are: BATCH_SIZE={}, LEARNING_RATE={}, NUMBER_OF_NEURONS={}".format(batch, lr, n_neurons))
                 tf.summary.trace_on(graph=True, profiler=True)
-                model = NotNotMyModel(n_of_neurons=n_neurons)
+                model = NeuralNetwork(n_of_neurons=n_neurons)
                 optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
                 # print(getattr(model, 'x'))
 

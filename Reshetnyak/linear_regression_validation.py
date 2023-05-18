@@ -38,7 +38,7 @@ if __name__ == '__main__':
     predicted_values = np.squeeze(reg.predict(X_val))
 
     y_mean = y_val.mean()
-    y_pred_baseline = [y_mean] * len(y_val)
+    y_pred_baseline = np.random.uniform(y_val.min(), y_val.max(), len(y_val))
 
     print(reg.score(X_val, y_val))
     print("Mean:", y_mean)

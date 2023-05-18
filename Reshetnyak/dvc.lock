@@ -8,8 +8,8 @@ stages:
       size: 700798
       nfiles: 1
     - path: data_preparation.py
-      md5: 148dc6b94aae0fad6d2f5d3e76187b50
-      size: 6456
+      md5: cccee48f60d9ab5693b76b9771f22f1c
+      size: 6107
     params:
       params.yaml:
         data_preparation:
@@ -18,69 +18,69 @@ stages:
           random_state: 42
     outs:
     - path: data/prepared
-      md5: d4d01a6aed53782d866444b25efdb1f2.dir
-      size: 667276
+      md5: 4ef60f41758557306fd29f6d9c04a129.dir
+      size: 490504
       nfiles: 8
   linear_regression:
     cmd: python linear_regression.py -id data/prepared -od data/models -mn LinearRegression
     deps:
     - path: data/prepared
-      md5: d4d01a6aed53782d866444b25efdb1f2.dir
-      size: 667276
+      md5: 4ef60f41758557306fd29f6d9c04a129.dir
+      size: 490504
       nfiles: 8
     - path: linear_regression.py
-      md5: b4853d76069f92ba9fa476ecaec00185
-      size: 2531
+      md5: 50e54ac05f4a5a36c1693e42dda7375c
+      size: 2567
     params:
       params.yaml:
         linear_regression:
           model_name: LinearRegression
     outs:
     - path: data/models/LinearRegression.csv
-      md5: 8aa2042fbe6b8738dba278b0d3afaa2c
-      size: 652
+      md5: 6607cfe111401f1e0a62a85640dbe315
+      size: 488
     - path: data/models/LinearRegression.joblib
-      md5: 9284da1c334c2804d5c709c0a67e6ea8
-      size: 1759
+      md5: 9ce16deec1ae0703b6a29066ba9eded8
+      size: 1567
   linear_regression_prod_version:
     cmd: python linear_regression_full.py -id data/prepared/ -od data/models/ -mn
       LinearRegression
     deps:
     - path: data/models/LinearRegression.joblib
-      md5: 9284da1c334c2804d5c709c0a67e6ea8
-      size: 1759
+      md5: 9ce16deec1ae0703b6a29066ba9eded8
+      size: 1567
     - path: data/prepared
-      md5: d4d01a6aed53782d866444b25efdb1f2.dir
-      size: 667276
+      md5: 4ef60f41758557306fd29f6d9c04a129.dir
+      size: 490504
       nfiles: 8
     - path: linear_regression_full.py
-      md5: 7da4cfd351e037c1649c695d06415c7b
-      size: 2358
+      md5: 1a260dd56fa6582d391ecee58ebb74ed
+      size: 2384
     params:
       params.yaml:
         linear_regression:
           model_name: LinearRegression
     outs:
     - path: data/models/LinearRegression_prod.csv
-      md5: 0cfd34d4b9024d3730140ddb4bdc616f
-      size: 652
+      md5: 9fd65cb02a7d0372993677f236f3b624
+      size: 489
     - path: data/models/LinearRegression_prod.joblib
-      md5: 0d4383f3d952d59c7155e8ab96996cd8
-      size: 1759
+      md5: 873c2894a90633dc74f345cefc212ce0
+      size: 1567
   decision_tree@ExtraTree:
     cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/LinearRegression_prod.joblib
       -mn ExtraTree -p params.yaml
     deps:
     - path: data/models/LinearRegression_prod.joblib
-      md5: 0d4383f3d952d59c7155e8ab96996cd8
-      size: 1759
+      md5: 873c2894a90633dc74f345cefc212ce0
+      size: 1567
     - path: data/prepared
-      md5: d4d01a6aed53782d866444b25efdb1f2.dir
-      size: 667276
+      md5: 4ef60f41758557306fd29f6d9c04a129.dir
+      size: 490504
       nfiles: 8
     - path: decision_tree.py
-      md5: 61d3009982619830b1094d121634b921
-      size: 3186
+      md5: c51943ee600179f20d3f31ccb0d34472
+      size: 3193
     params:
       params.yaml:
         decision_tree:
@@ -152,21 +152,21 @@ stages:
             - 15
     outs:
     - path: data/models/ExtraTree.joblib
-      md5: d519b4941061a30ef1621416da801aec
-      size: 666271
+      md5: 4aac5ac4d2e49fee0a8a0b31e3f8a94a
+      size: 698303
   decision_tree_prod_version@ExtraTree:
     cmd: python decision_tree_full.py -id data/prepared/ -od data/models/ -mn ExtraTree
     deps:
     - path: data/models/ExtraTree.joblib
-      md5: d519b4941061a30ef1621416da801aec
-      size: 666271
+      md5: 4aac5ac4d2e49fee0a8a0b31e3f8a94a
+      size: 698303
     - path: data/prepared
-      md5: d4d01a6aed53782d866444b25efdb1f2.dir
-      size: 667276
+      md5: 4ef60f41758557306fd29f6d9c04a129.dir
+      size: 490504
       nfiles: 8
     - path: decision_tree_full.py
-      md5: 4f6c14f233772e1ca48269cdacf97e73
-      size: 2697
+      md5: e5d1c9905f5aec9f577f9d115d88ab4e
+      size: 2699
     params:
       params.yaml:
         decision_tree:
@@ -238,22 +238,22 @@ stages:
             - 15
     outs:
     - path: data/models/ExtraTree_prod.joblib
-      md5: 0581f81a1897df302c19e28adef6168e
-      size: 2022529
+      md5: cd0c979093e6aebe7b9ca19180ed9f59
+      size: 918689
   decision_tree@RandomForest:
     cmd: python decision_tree.py -id data/prepared -od data/models -bm data/models/LinearRegression_prod.joblib
       -mn RandomForest -p params.yaml
     deps:
     - path: data/models/LinearRegression_prod.joblib
-      md5: 0d4383f3d952d59c7155e8ab96996cd8
-      size: 1759
+      md5: 873c2894a90633dc74f345cefc212ce0
+      size: 1567
     - path: data/prepared
-      md5: d4d01a6aed53782d866444b25efdb1f2.dir
-      size: 667276
+      md5: 4ef60f41758557306fd29f6d9c04a129.dir
+      size: 490504
       nfiles: 8
     - path: decision_tree.py
-      md5: 61d3009982619830b1094d121634b921
-      size: 3186
+      md5: c51943ee600179f20d3f31ccb0d34472
+      size: 3193
     params:
       params.yaml:
         decision_tree:
@@ -325,8 +325,8 @@ stages:
             - 15
     outs:
     - path: data/models/RandomForest.joblib
-      md5: 9787277408f56542011f361b6e5478e7
-      size: 535727
+      md5: 06aa21898f9e90af559d551c8ef9f1e4
+      size: 390223
   decision_tree_validation@RandomForest:
     cmd: python decision_tree_validation.py -id data/prepared/ -im data/models/RandomForest.joblib
       -bm data/models/LinearRegression_prod.joblib -mn RandomForest
@@ -418,7 +418,7 @@ stages:
       -mn DecisionTree -p params.yaml
     deps:
     - path: data/models/LinearRegression_prod.joblib
-      md5: 0d4383f3d952d59c7155e8ab96996cd8
+      md5: 9ed39e5878f3949cc01fcf6cbcfcf730
       size: 1759
     - path: data/prepared
       md5: d4d01a6aed53782d866444b25efdb1f2.dir
@@ -498,8 +498,8 @@ stages:
             - 15
     outs:
     - path: data/models/DecisionTree.joblib
-      md5: 583c715c137ade5bcd8419d2306b155d
-      size: 27743
+      md5: b14cef0deb672d486b459ba001003940
+      size: 29151
   decision_tree_validation@DecisionTree:
     cmd: python decision_tree_validation.py -id data/prepared/ -im data/models/DecisionTree.joblib
       -bm data/models/LinearRegression_prod.joblib -mn DecisionTree
@@ -591,15 +591,15 @@ stages:
       -mn LinearRegression
     deps:
     - path: data/models/LinearRegression.joblib
-      md5: 9284da1c334c2804d5c709c0a67e6ea8
-      size: 1759
+      md5: 9ce16deec1ae0703b6a29066ba9eded8
+      size: 1567
     - path: data/prepared/
-      md5: d4d01a6aed53782d866444b25efdb1f2.dir
-      size: 667276
+      md5: 4ef60f41758557306fd29f6d9c04a129.dir
+      size: 490504
       nfiles: 8
     - path: linear_regression_validation.py
-      md5: 41e7af6435a411e4294d9c4933bfe66b
-      size: 1636
+      md5: 679614ef1e1db222b4d3de836e03a4e1
+      size: 1670
     params:
       params.yaml:
         linear_regression:
@@ -780,15 +780,15 @@ stages:
     cmd: python decision_tree_full.py -id data/prepared/ -od data/models/ -mn RandomForest
     deps:
     - path: data/models/RandomForest.joblib
-      md5: 9787277408f56542011f361b6e5478e7
-      size: 535727
+      md5: 06aa21898f9e90af559d551c8ef9f1e4
+      size: 390223
     - path: data/prepared
-      md5: d4d01a6aed53782d866444b25efdb1f2.dir
-      size: 667276
+      md5: 4ef60f41758557306fd29f6d9c04a129.dir
+      size: 490504
       nfiles: 8
     - path: decision_tree_full.py
-      md5: 4f6c14f233772e1ca48269cdacf97e73
-      size: 2697
+      md5: e5d1c9905f5aec9f577f9d115d88ab4e
+      size: 2699
     params:
       params.yaml:
         decision_tree:
@@ -860,21 +860,21 @@ stages:
             - 15
     outs:
     - path: data/models/RandomForest_prod.joblib
-      md5: 29763a55ada9f2a3811fd6dcdc26e714
-      size: 843265
+      md5: a794ba0cd80e05c7b2260d864a0d353e
+      size: 414881
   boosting@XGBoostRegressor:
     cmd: python boosting.py -id data/prepared -od data/models -bm data/models/LinearRegression_prod.joblib
       -mn XGBoostRegressor -p params.yaml
     deps:
     - path: boosting.py
-      md5: 9c8d46a7bdeede8deda7f58a1b47043e
-      size: 3010
+      md5: 3b58f84fc6093bb60f1d4e2eeed7dfa0
+      size: 3009
     - path: data/models/LinearRegression_prod.joblib
-      md5: 0d4383f3d952d59c7155e8ab96996cd8
-      size: 1759
+      md5: 873c2894a90633dc74f345cefc212ce0
+      size: 1567
     - path: data/prepared
-      md5: d4d01a6aed53782d866444b25efdb1f2.dir
-      size: 667276
+      md5: 4ef60f41758557306fd29f6d9c04a129.dir
+      size: 490504
       nfiles: 8
     params:
       params.yaml:
@@ -911,8 +911,8 @@ stages:
             - 10
     outs:
     - path: data/models/XGBoostRegressor.joblib
-      md5: e6ff6a98c7cad9e72316b44fd14cd310
-      size: 160758
+      md5: 6f432ea47042eeb3b1b04123d3d95ae7
+      size: 159526
   boosting_prod_version@XGBoostRegressor:
     cmd: python boosting_full.py -id data/prepared/ -od data/models/ -mn XGBoostRegressor
     deps:
@@ -920,11 +920,11 @@ stages:
       md5: e2b3d9301b91980ab43ba2214b3de38a
       size: 2082
     - path: data/models/XGBoostRegressor.joblib
-      md5: e6ff6a98c7cad9e72316b44fd14cd310
-      size: 160758
+      md5: 6f432ea47042eeb3b1b04123d3d95ae7
+      size: 159526
     - path: data/prepared
-      md5: d4d01a6aed53782d866444b25efdb1f2.dir
-      size: 667276
+      md5: 4ef60f41758557306fd29f6d9c04a129.dir
+      size: 490504
       nfiles: 8
     params:
       params.yaml:
@@ -961,8 +961,8 @@ stages:
             - 10
     outs:
     - path: data/models/XGBoostRegressor_prod.joblib
-      md5: 03cf27b10e11bedbec60bc3377e146a2
-      size: 74890
+      md5: 04b10194e0c40a38feb063ff5bc36fbc
+      size: 74691
   boosting@CatBoostRegressor:
     cmd: python boosting.py -id data/prepared -od data/models -bm data/models/LinearRegression_prod.joblib
       -mn CatBoostRegressor -p params.yaml
@@ -1072,14 +1072,14 @@ stages:
       md5: 3025c701e98043f680df24190e5f8647
       size: 1848
     - path: data/models/LinearRegression_prod.joblib
-      md5: 0d4383f3d952d59c7155e8ab96996cd8
-      size: 1759
+      md5: 873c2894a90633dc74f345cefc212ce0
+      size: 1567
     - path: data/models/XGBoostRegressor.joblib
-      md5: e6ff6a98c7cad9e72316b44fd14cd310
-      size: 160758
+      md5: 6f432ea47042eeb3b1b04123d3d95ae7
+      size: 159526
     - path: data/prepared/
-      md5: d4d01a6aed53782d866444b25efdb1f2.dir
-      size: 667276
+      md5: 4ef60f41758557306fd29f6d9c04a129.dir
+      size: 490504
       nfiles: 8
     params:
       params.yaml:

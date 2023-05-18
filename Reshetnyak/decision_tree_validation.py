@@ -17,7 +17,7 @@ def parser_args_for_sac():
     parser = argparse.ArgumentParser(description='Paths parser')
     parser.add_argument('--input_dir', '-id', type=str, default='data/prepared/',
                         required=False, help='path to input data directory')
-    parser.add_argument('--input_model', '-im', type=str, default='data/models/',
+    parser.add_argument('--input_model', '-im', type=str, default='data/models/DecisionTree.joblib',
                         required=False, help='path to save prepared data')
     parser.add_argument('--baseline_model', '-bm', type=str, default='data/models/LinearRegression_prod.joblib',
                         required=False, help='path to linear regression prod version')

@@ -32,7 +32,7 @@ boosting:
 NeuralNetwork:
   n_of_neurons: [64, 128, 256]
   batch_size: [64, 96, 128]
-  buffer_size: 256
+  buffer_size: 128
   learning_rate: [0.1, 0.05, 0.01, 0.005]
   epochs: 100
 NeuralNetwork_full:

@@ -42,8 +42,7 @@ if __name__ == '__main__':
     reg = LinearRegression().fit(X_train, y_train)
 
     predicted_values = np.squeeze(reg.predict(X_train))
-
-    y_pred_baseline = [random.normal() % 1] * len(y_train)
+    y_pred_baseline = np.random.uniform(y_train.min(), y_train.max(), len(y_train))
 
     print(reg.score(X_train, y_train))
     print("Mean: ", y_train.mean())
