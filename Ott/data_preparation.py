@@ -23,14 +23,14 @@ def imputing(X_train, X_val, X_test, X, strat='median'):
     X_test_imputed = pd.DataFrame(my_imputer.transform(X_test))
     X_imputed = pd.DataFrame(my_imputer.transform(X))
 
-    X_train_imputed.columns = X_train.columns
+    X_train_imputed.columns = X_train.columns1
     X_test_imputed.columns = X_test.columns
     X_val_imputed.columns = X_val.columns
     X_imputed.columns = X.columns
     return X_train_imputed, X_val_imputed, X_test_imputed, X_imputed
 
 def data_cleaner(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.dropna(axis=0, subset=['Life expectancy '])
+    df = df.dropna(axis=0, subset=['Life expectancy ']) 
     df = df.drop(columns='Country')
     # developing - 0, developed - 1
     df['Status'] = df['Status'].apply(lambda x: 0 if x == 'Developing' else 1)
