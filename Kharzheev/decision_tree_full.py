@@ -15,10 +15,9 @@ TREES_MODELS_MAPPER = {'DecisionTree': tree.DecisionTreeRegressor,
 
 # Set the best parameters that you get on training stage for all used models
 TREES_MODELS_BEST_PARAMETERS = {
-    'DecisionTree': {'max_depth': 6, 'min_samples_leaf': 3, 'min_samples_split': 3, 'splitter': 'best'},
-    'RandomForest': {'max_depth': 6, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 15},
-    'ExtraTree': {'max_depth': 7, 'min_samples_leaf': 1, 'min_samples_split': 4, 'n_estimators': 15}}
-
+    'DecisionTree': {'max_depth': 4, 'min_samples_leaf': 4, 'min_samples_split': 2, 'splitter': 'best'},
+    'RandomForest': {'max_depth': 10, 'min_samples_leaf': 4, 'min_samples_split': 4, 'n_estimators': 15},
+    'ExtraTree': {'max_depth': 15, 'min_samples_leaf': 2, 'min_samples_split': 15, 'n_estimators': 15}}
 
 def parser_args_for_sac():
     parser = argparse.ArgumentParser(description='Paths parser')
@@ -26,7 +25,7 @@ def parser_args_for_sac():
                         required=False, help='path to input data directory')
     parser.add_argument('--output_dir', '-od', type=str, default='data/models/',
                         required=False, help='path to save prepared data')
-    parser.add_argument('--model_name', '-mn', type=str, default='ExtraTree', required=False,
+    parser.add_argument('--model_name', '-mn', type=str, default='DecisionTree', required=False,
                         help='file with dvc stage params')
     return parser.parse_args()
 
@@ -51,11 +50,11 @@ if __name__ == '__main__':
     best_params = TREES_MODELS_BEST_PARAMETERS.get(args.model_name)
     reg = TREES_MODELS_MAPPER.get(args.model_name)(**best_params)
     if isinstance(reg, RandomForestRegressor) or isinstance(reg, ExtraTreesRegressor):
-        y_train = np.ravel(y_train.values)
+            y_train = np.ravel(y_train.values)
     reg = reg.fit(X_train, y_train)
 
     if isinstance(reg, tree.DecisionTreeRegressor):
-        fig = plt.figure(figsize=(100, 40), dpi=200)
+        fig = plt.figure(figsize=(60,25))
         _ = tree.plot_tree(reg,
                            feature_names=X_train.columns,
                            class_names=y_train_cols,

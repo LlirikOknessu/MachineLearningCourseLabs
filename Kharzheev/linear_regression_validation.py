@@ -15,9 +15,9 @@ def parser_args_for_sac():
     parser = argparse.ArgumentParser(description='Paths parser')
     parser.add_argument('--input_dir', '-id', type=str, default='data/prepared/',
                         required=False, help='path to input data directory')
-    parser.add_argument('--input_model', '-im', type=str, default='data/models/',
+    parser.add_argument('--input_model', '-im', type=str, default='data/models/LinearRegression.joblib',
                         required=False, help='path to save prepared data')
-    parser.add_argument('--model_name', '-mn', type=str, default='LR', required=False,
+    parser.add_argument('--model_name', '-mn', type=str, default='LinearRegression', required=False,
                         help='file with dvc stage params')
     return parser.parse_args()
 
@@ -35,14 +35,12 @@ if __name__ == '__main__':
 
     reg = load(input_model)
 
-    y_mean = y_val.mean()
-    y_std = y_val.std()
-    y_height = y_val.shape[0]
-
-    y_pred_baseline = np.random.normal(y_mean, y_std, y_height)
-
     predicted_values = np.squeeze(reg.predict(X_val))
 
+    y_mean = y_val.mean()
+    y_pred_baseline = np.random.uniform(y_val.min(), y_val.max(), len(y_val))
+
     print(reg.score(X_val, y_val))
-    print("Baseline MAE : ", mean_absolute_error(y_val, y_pred_baseline))
+    print("Mean: ", y_mean)
+    print("Baseline MAE: ", mean_absolute_error(y_val, y_pred_baseline))
     print("Model MAE: ", mean_absolute_error(y_val, predicted_values))

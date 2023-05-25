@@ -17,11 +17,11 @@ def parser_args_for_sac():
     parser = argparse.ArgumentParser(description='Paths parser')
     parser.add_argument('--input_dir', '-id', type=str, default='data/prepared/',
                         required=False, help='path to input data directory')
-    parser.add_argument('--input_model', '-im', type=str, default='data/models/',
+    parser.add_argument('--input_model', '-im', type=str, default='data/models/DecisionTree.joblib',
                         required=False, help='path to save prepared data')
     parser.add_argument('--baseline_model', '-bm', type=str, default='data/models/LinearRegression_prod.joblib',
                         required=False, help='path to linear regression prod version')
-    parser.add_argument('--model_name', '-mn', type=str, default='ExtraTree', required=False,
+    parser.add_argument('--model_name', '-mn', type=str, default='DecisionTree', required=False,
                         help='file with dvc stage params')
     return parser.parse_args()
 
@@ -32,7 +32,6 @@ if __name__ == '__main__':
     input_dir = Path(args.input_dir)
     input_model = Path(args.input_model)
     baseline_model_path = Path(args.baseline_model)
-    model = args.model_name + '.joblib'
 
     X_val_name = input_dir / 'X_val.csv'
     y_val_name = input_dir / 'y_val.csv'
@@ -40,7 +39,7 @@ if __name__ == '__main__':
     X_val = pd.read_csv(X_val_name)
     y_val = pd.read_csv(y_val_name)
 
-    reg = load(input_model / model)
+    reg = load(input_model)
 
     predicted_values = np.squeeze(reg.predict(X_val))
 
